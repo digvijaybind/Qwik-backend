@@ -13,6 +13,10 @@ const AdminSchema = new Mongoose.Schema({
     type: Number,
     required: true,
   },
+  role:{
+    type:String,
+   required:true
+  }
 });
 
 module.exports = Mongoose.model("Admin", AdminSchema);

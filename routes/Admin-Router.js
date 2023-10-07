@@ -7,7 +7,8 @@ const asyncMiddleware = require("../middleware/async-middleware");
 
 router.post("/register", asyncMiddleware(AdminController.Register));
 
-// // router.post("/login", AdminController);
+router.post("/login", asyncMiddleware(AdminController.Login));
+
 // router.get("/get");
 // router.get("/margin", AdminController.AdminPrice);
 
