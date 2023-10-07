@@ -4,10 +4,12 @@ const OperatorSchema = new Mongoose.Schema({
   company_name: {
     type: String,
     required: true,
+    
   },
   email_address: {
     type: String,
     required: true,
+    unique:true
   },
   contact_number: {
     type: Number,
