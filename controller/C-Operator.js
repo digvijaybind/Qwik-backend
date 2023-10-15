@@ -88,6 +88,7 @@ exports.AddAircrafts = async (req, res, next) => {
   if (!AirOperator) {
     return next(new ErrorHandler("All field is required", 400));
   }
+  
   const operator = await OperatorService.createOperator(AirOperator);
   operator.save();
   return res.json({
