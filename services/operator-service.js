@@ -12,14 +12,7 @@ class OperatorService {
       throw error;
     }
   }
-  // getOpeartorsSearchFilter = async (filter) => {
-  //   const key = Object.key(filter);
-  //   const value = filter[key];
-  //   const reg = {
-  //     [key]: new RegExp(value, "i"),
-  //   };
-  //   return await Operator.find(reg);
-  // };
+
   getOpeartorsSearchFilter = async (filter) => {
     const key = Object.keys(filter)[0]; // Get the first (and presumably only) key
     const value = filter[key];
