@@ -88,6 +88,7 @@ exports.AddAircrafts = async (req, res, next) => {
   if (!AirOperator) {
     return next(new ErrorHandler("All field is required", 400));
   }
+  
   const operator = await OperatorService.createOperator(AirOperator);
   operator.save();
   return res.json({
@@ -148,6 +149,14 @@ exports.DeleteOperator = async (req, res) => {
   }
 };
 
+
+
+
+exports.GetAllLocation = async (req, res) => {
+  const operator = await OperatorService.getAllOperatorsLocation();
+ 
+  res.json({ succes: true, message: "operator List found", data: operator });
+};
 exports.getSingleOperator=async(req,res)=>{
   const { _id } = req.params;
 
