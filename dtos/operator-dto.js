@@ -1,8 +1,8 @@
 class OperatorDto {
-
   Aircraft_type;
   Tail_sign;
-  password;
+  location;
+  icao;
   charges_per_hour;
   speed;
 
