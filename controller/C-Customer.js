@@ -137,21 +137,26 @@ exports.calculateFlightTime = async (req, res) => {
     }
     const response = await axios(buildRequestConfig(data));
     console.log(response.data);
-    if (!response.data.airport.techstop[0]) {
+   
+    if (
+      !response.data.airport.techstop ||
+      response.data.airport.techstop.length === 0
+    ) {
       //when techstop not coming
       const total_time = response.data.time.airway;
-      return total_time;
+      return res.json({"Total_time in minute": total_time/ 60});
     } else {
       // if coming then
       let data = `{"departure_airport": "${from}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-      console.log("First Tech halts", response.data.airport.techstop[0]);
+      // console.log("First Tech halts", response.data.airport.techstop[0]);
 
       const responseTech = await axios(buildRequestConfig(data));
       console.log("secondtime", responseTech.data.airport.techstop[0]);
-      if (!responseTech.data.airport.techstop[0]) {
+      if (!responseTech.data.airport.techstop[0] ||
+        response.data.airport.techstop.length === 0) {
         // console.log(responseTech.data.airport.techstop[0])
         const total_time_tech = response.data.time.airway;
-        return total_time_tech;
+        return res.json({"Total_time in minute":total_time_tech/ 60});
       } else {
         let data = `{"departure_airport": "${from}", "arrival_airport": "${responseTech.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
         const responseTech_tech2 = await axios(buildRequestConfig(data));
@@ -213,44 +218,58 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 exports.calculateFlightTimeForTakeall = async (req, res) => {
-  const {From, To, Aircraft} = req.body;
+  const { From, To, Aircraft } = req.body;
   let from = From.toString();
   let to = To.toString();
-  let aircraft=Aircraft.toString()
+  let aircraft = Aircraft.toString();
 
-
-  let data = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+  let data =
+    `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
 
   const response = await axios(buildRequestConfig(data));
 
-  if (!response.data.airport.techstop || response.data.airport.techstop.length === 0) {
- 
+  if (
+    !response.data.airport.techstop ||
+    response.data.airport.techstop.length === 0
+  ) {
     //when techstop not coming
     const total_time = response.data.time.airway;
-    return res.json({ total_time});
-  } 
-  else {
+    return res.json({"Total_time in minute": total_time/ 60});
+  } else {
     // if coming then
-    let data = `{"departure_airport": "${from}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+    let data = `{"departure_airport": "${from}", "arrival_airport": "${
+      response.data.airport.techstop[0]
+    }", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
     console.log("First Tech halts", response.data.airport.techstop[0]);
 
     const responseTech = await axios(buildRequestConfig(data));
     console.log("secondtime", responseTech.data.airport.techstop[0]);
-    if (!response.data.airport.techstop || response.data.airport.techstop.length === 0) {
+    if (
+      !responseTech``.data.airport.techstop ||
+      responseTech``.data.airport.techstop.length === 0
+    ) {
       // console.log(responseTech.data.airport.techstop[0])
       const total_time_tech = response.data.time.airway;
-      return res.json({ total_time_tech }); 
+      return res.json({"Total_time in minute": total_time_tech/ 60});
     } else {
-      let data = `{"departure_airport": "${from}", "arrival_airport": "${responseTech.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+      let data = `{"departure_airport": "${from}", "arrival_airport": "${
+        responseTech.data.airport.techstop[0]
+      }", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
       const responseTech_tech2 = await axios(buildRequestConfig(data));
-      const Time1To2 = responseTech_tech2.data.time.airway ;
+      const Time1To2 = responseTech_tech2.data.time.airway;
       // res.status(200).json({data: Time1To2});
       console.log("Thirdtechhalts", responseTech_tech2.data.time.airway);
-      let data2 = `{"departure_airport": "${responseTech.data.airport.techstop[0]}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+      let data2 = `{"departure_airport": "${
+        responseTech.data.airport.techstop[0]
+      }", "arrival_airport": "${
+        response.data.airport.techstop[0]
+      }", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
       const responseTech_tech3 = await axios(buildRequestConfig(data2));
-      const Time2to3 = responseTech_tech3.data.time.airway ;
+      const Time2to3 = responseTech_tech3.data.time.airway;
       console.log("Time2to3", Time2to3);
-      let data4 = `{"departure_airport": "${response.data.airport.techstop[0]}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+      let data4 = `{"departure_airport": "${
+        response.data.airport.techstop[0]
+      }", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
       const responseTech_tech4 = await axios(buildRequestConfig(data4));
       const Time3to4 = responseTech_tech4.data.time.airway;
       console.log("Time3to4", Time3to4);
@@ -258,22 +277,17 @@ exports.calculateFlightTimeForTakeall = async (req, res) => {
       // console.log("total Internal time", Total_Internal_time / 60);
       const responseObj = {
         Total_Internal_time: Total_Internal_time / 60, // Assuming you want to convert it to minutes
-       
       };
-      console.log(responseObj)
+      console.log(responseObj);
       res.json(responseObj);
       console.log(
         "total time with tech halt of 45min",
-        Total_Internal_time / 60
+        Total_Internal_time / 60,
       );
     }
   }
   return response.data;
-
-}
-
-
-
+};
 
 // async function calculateNearestOperator(requestData) {
 //   try {
