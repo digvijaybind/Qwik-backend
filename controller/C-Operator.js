@@ -1,6 +1,6 @@
 const Auth = require("../db/Auth");
 const bcrypt = require("bcrypt");
-
+const axios = require("axios");
 const { Operator, AircraftOPerator } = require("../db/Operator");
 
 const Token = require("../configs/jwtToken");
@@ -73,31 +73,57 @@ exports.Login = async (req, res) => {
   }
 
 };
+
+
+
+
+
+
+
+
 exports.AddAircrafts = async (req, res, next) => {
-  console.log(req.body);
+  try {
+    const searchCity = req.body.location; // Use req.body.location as the search parameter
 
-  const AirOperator = {
-    Aircraft_type: req.body.Aircraft_type,
-    Tail_sign: req.body.Tail_sign,
-    location: req.body.location,
-    charges_per_hour: req.body.charges_per_hour,
-    speed: req.body.speed,
-  };
-  console.log(AirOperator);
+    // Perform the GET request to fetch airports based on location
+    const response = await axios.get('https://dir.aviapages.com/api/airports/', {
+      headers: {
+        'accept': 'application/json',
+        'Authorization': process.env.AVID_API_TOKEN, // Replace 'your_token_here' with your actual token
+      },
+      params: {
+        search_city: searchCity, // Include the search_city query parameter in the request
+      },
+    });
 
-  if (!AirOperator) {
-    return next(new ErrorHandler("All field is required", 400));
+    if (response.status === 200) {
+      // Extract the icao code from the response
+      const icaoCode = response.data.results[0] ? response.data.results[0].icao : null;
+
+      // Create the AircraftOperator object with the extracted icao code
+      const AirOperator = {
+        Aircraft_type: req.body.Aircraft_type,
+        Tail_sign: req.body.Tail_sign,
+        location: req.body.location,
+        charges_per_hour: req.body.charges_per_hour,
+        speed: req.body.speed,
+        icao: icaoCode,
+      };
+
+      // Insert AirOperator into the database or perform other necessary actions
+      const operator = await OperatorService.createOperator(AirOperator);
+          await operator.save();
+      res.json({ message: 'Aircraft created successfully', AirOperator });
+    } else {
+      res.status(response.status).json({ error: 'Failed to fetch airport data' });
+    }
+  } catch (error) {
+    console.error(error);
+    return next(new ErrorHandler("Error creating aircraft", 500));
   }
-  
-  const operator = await OperatorService.createOperator(AirOperator);
-  operator.save();
-  return res.json({
-    success: true,
-    message: "Operator has been added Succesfully",
-    statusCode: "201",
-    data: new OperatorDto(operator),
-  });
 };
+
+
 
 exports.getOperatorlists = async (req, res) => {
   const operator = await OperatorService.getOperators();
