@@ -29,6 +29,9 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   location: {
     type: String,
   },
+  icao:{
+    type:String
+  },
   charges_per_hour: {
     type: Number,
   },

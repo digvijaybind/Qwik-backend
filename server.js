@@ -65,49 +65,106 @@ app.post('/calculateFlightTime', async (req, res) => {
   }
 });
 
-async function getAllAirports() {
-  let allAirports = [];
-  let nextPage = 'https://dir.aviapages.com/api/airports/';
+// async function getAllAirports() {
+//   let allAirports = [];
+//   let nextPage = 'https://dir.aviapages.com/api/airports/';
 
-  while (nextPage) {
-    try {
-      const response = await axios.get(nextPage, {
-        headers: {
-          'accept': 'application/json',
-          'Authorization':process.env.AVID_API_TOKEN, 
-        },
-      });
+//   while (nextPage) {
+//     try {
+//       const response = await axios.get(nextPage, {
+//         headers: {
+//           'accept': 'application/json',
+//           'Authorization':process.env.AVID_API_TOKEN, 
+//         },
+//       });
 
-      if (response.status === 200) {
-        const pageData = response.data.results;
-        allAirports = allAirports.concat(pageData);
-        nextPage = response.data.next;
-      } else {
-        console.error('Failed to fetch airport data');
-        break;
-      }
-    } catch (error) {
-      console.error('Error fetching airport data');
-      break;
-    }
-  }
+//       if (response.status === 200) {
+//         const pageData = response.data.results;
+//         allAirports = allAirports.concat(pageData);
+//         nextPage = response.data.next;
+//       } else {
+//         console.error('Failed to fetch airport data');
+//         break;
+//       }
+//     } catch (error) {
+//       console.error('Error fetching airport data');
+//       break;
+//     }
+//   }
 
-  return allAirports;
-}
+//   return allAirports;
+// }
+
+// app.get('/all-airports', async (req, res) => {
+
+//   try {
+//     const airports = await getAllAirports(cityNameParam);
+//     res.json(airports.map(airport => ({
+      
+//       city_name: airport.city_name,
+//       icao: airport.icao,
+//     })));
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Error fetching airport data' });
+//   }
+// });
+
+// app.get('/all-airports', async (req, res) => {
+//   try {
+//     const response = await axios.get('https://dir.aviapages.com/api/airports/', {
+//       headers: {
+//         'accept': 'application/json',
+//         'Authorization':process.env.AVID_API_TOKEN, // Replace 'your_token_here' with your actual token
+//       },
+//     });
+
+//     if (response.status === 200) {
+//       const airports = response.data.results.map(airport => ({
+//         city_name: airport.city_name,
+//         icao: airport.icao,
+//       }));
+
+//       res.json(airports);
+//     } else {
+//       res.status(response.status).json({ error: 'Failed to fetch airport data' });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Error fetching airport data' });
+//   }
+// });
 
 app.get('/all-airports', async (req, res) => {
   try {
-    const airports = await getAllAirports();
-    res.json(airports.map(airport => ({
-      
-      city_name: airport.city_name,
-      icao: airport.icao,
-    })));
+    const searchCity = req.query.search_city; // Get the search_city query parameter from the request
+
+    const response = await axios.get('https://dir.aviapages.com/api/airports/', {
+      headers: {
+        'accept': 'application/json',
+        'Authorization': process.env.AVID_API_TOKEN, // Replace 'your_token_here' with your actual token
+      },
+      params: {
+        search_city: searchCity, // Include the search_city query parameter in the request
+      },
+    });
+
+    if (response.status === 200) {
+      const airports = response.data.results.map(airport => ({
+        city_name: airport.city_name,
+        icao: airport.icao,
+      }));
+
+      res.json(airports);
+    } else {
+      res.status(response.status).json({ error: 'Failed to fetch airport data' });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error fetching airport data' });
   }
 });
+
 
 async function getAllCrafts() {
   let allAirCrafts = [];
@@ -301,9 +358,7 @@ app.get("/blog", (req, res) => {
 app.use("/customer", CustomerRouter);
 app.use("/operator", OperatorRouter);
 app.use("/admin", AdminRouter);
-// app.use("/operator");
-// app.use("/customer");
-// app.use("/admin");
+
 app.use(errorMiddleware);
 
 app.listen(3000, () => {
