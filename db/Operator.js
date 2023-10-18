@@ -32,6 +32,9 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   icao:{
     type:String
   },
+  country_name:{
+    type:String
+  },
   charges_per_hour: {
     type: Number,
   },
