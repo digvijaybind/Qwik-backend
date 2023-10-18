@@ -98,8 +98,9 @@ exports.AddAircrafts = async (req, res, next) => {
 
     if (response.status === 200) {
       // Extract the icao code from the response
+     console.log(response.data.results[0])
       const icaoCode = response.data.results[0] ? response.data.results[0].icao : null;
-
+const country_name=response.data.results[0] ? response.data.results[0].country_name : null;
       // Create the AircraftOperator object with the extracted icao code
       const AirOperator = {
         Aircraft_type: req.body.Aircraft_type,
@@ -108,6 +109,7 @@ exports.AddAircrafts = async (req, res, next) => {
         charges_per_hour: req.body.charges_per_hour,
         speed: req.body.speed,
         icao: icaoCode,
+        country_name:country_name
       };
 
       // Insert AirOperator into the database or perform other necessary actions
