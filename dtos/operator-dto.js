@@ -3,6 +3,7 @@ class OperatorDto {
   Tail_sign;
   location;
   icao;
+  country_name;
   charges_per_hour;
   speed;
 
