@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 const { Customer } = require("../db/Customer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -9,7 +9,7 @@ const { AircraftOPerator } = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
 const geocoder = NodeGeocoder({
   provider: "google", // Use the Google Maps Geocoding API
-  apiKey: "AIzaSyCZnNZ9-uHBg0rj8YHKHQC25jHWqXP9Yoc", // Replace with your actual API key
+  apiKey: process.env.GOOGLE_API_KEY, // Replace with your actual API key
 });
 
 // Registration controller
