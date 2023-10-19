@@ -1,29 +1,30 @@
-
-const {Customer} = require("../db/Customer");
+require('dotenv').config();
+const { Customer } = require("../db/Customer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {check, validationResult} = require("express-validator");
-const axios = require('axios');
-const { buildRequestConfig } = require('../configs/aviapi.config');
-const { Operator, AircraftOPerator } = require("../db/Operator");
+const { validationResult } = require("express-validator");
+const axios = require("axios");
+const { buildRequestConfig } = require("../configs/aviapi.config");
+const { AircraftOPerator } = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
 const geocoder = NodeGeocoder({
-  provider: 'google', // Use the Google Maps Geocoding API
-  apiKey: 'AIzaSyCZnNZ9-uHBg0rj8YHKHQC25jHWqXP9Yoc', // Replace with your actual API key
+  provider: "google", // Use the Google Maps Geocoding API
+  apiKey: process.env.GOOGLE_API_KEY, // Replace with your actual API key
 });
 
+// Registration controller
 exports.Register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({errors: errors.array()});
+    return res.status(400).json({ errors: errors.array() });
   }
-  const {email, password, contact_number} = req.body;
+  const { email, password } = req.body;
 
   try {
-    const existingUser = await Customer.findOne({email});
+    const existingUser = await Customer.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({message: "User is already exist"});
+      return res.status(400).json({ message: "User is already exist" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,150 +35,247 @@ exports.Register = async (req, res) => {
     });
     await user.save();
 
-    res.status(201).json({message: "User register succesfully"});
+    res.status(201).json({ message: "User register succesfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({message: "Internal server error"});
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Login controller
 exports.Login = async (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
   console.log(email, password);
   try {
-    const user = await Customer.findOne({email});
+    const user = await Customer.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({message: "Customer not found"});
+      return res.status(401).json({ message: "Customer not found" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({message: "Authcation is failed"});
+      return res.status(401).json({ message: "Authcation is failed" });
     }
 
-    const token = jwt.sign({userId: user._id}, "auth", {
+    const token = jwt.sign({ userId: user._id }, "auth", {
       expiresIn: "1d",
     });
 
-    res.json({token});
+    res.json({ token });
   } catch (error) {
     console.log(error);
-    res.status(500).json({message: "Internal server Error"});
+    res.status(500).json({ message: "Internal server Error" });
   }
 };
 
-
-
-
-
+// Search For Flight Controller
 exports.calculateFlightTime = async (req, res) => {
-  const {From, To, Aircraft} = req.body;
+  const { From, To, Aircraft } = req.body;
   let from = From.toString();
   let to = To.toString();
-  let aircraft=Aircraft.toString()
+  let aircraft = Aircraft.toString();
 
-  let data = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+  let data =
+    `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
   async function calculateNearestOperator() {
     try {
-    
-    
-      const departureAirportCode = From
-  
-      // Get latitude and longitude for the departure airport
-      const departureAirportLocation = await getLatLonFromLocation(departureAirportCode);
-  
-      // Retrieve aircraft operators from MongoDB
-      const aircraftOperators = await  AircraftOPerator.find();
-      console.log(aircraftOperators)
+      const departureAirportCode = From;
 
+      // Perform the GET request to fetch airports based on location
+      const responseSearch = await axios.get(
+        "https://dir.aviapages.com/api/airports/",
+        {
+          headers: {
+            "accept": "application/json",
+            "Authorization": process.env.AVID_API_TOKEN, 
+          },
+          params: {
+            search: departureAirportCode, 
+          },
+        },
+      );
 
-      const validAircraftOperators = aircraftOperators.filter((operator) => operator.Aircraft_type === aircraft);
+      const aircraftOperators = await AircraftOPerator.find();
+      console.log(aircraftOperators);
+
+      const validAircraftOperators = aircraftOperators.filter((operator) =>
+        operator.country_name === responseSearch.data.results[0].country_name
+      );
 
       // Calculate distances for each operator
-      const operatorsWithDistance = await Promise.all(validAircraftOperators.map(async (operator) => {
-        try {
-          const operatorLocation = await getLatLonFromLocation(operator.location);
-  
-          const distance = haversineDistance(
-            operatorLocation.lat,
-            operatorLocation.lon,
-            departureAirportLocation.lat,
-            departureAirportLocation.lon
-          );
-  
-          // Calculate time in hours based on distance and aircraft speed
-          const timeHours = distance / (operator.speed || 1);
-          return { operator, distance, timeHours};
-        } catch (error) {
-       
-          return null;
-        }
-      }));
-  
+      const operatorsWithDistance = await Promise.all(
+        validAircraftOperators.map(async (operator) => {
+          try {
+            const operatorLocation = await getLatLonFromLocation(
+              operator.location,
+            );
+
+            const distance = haversineDistance(
+              operatorLocation.lat,
+              operatorLocation.lon,
+              responseSearch.data.results[0].latitude,
+              responseSearch.data.results[0].longitude,
+            );
+
+            // Calculate time in hours based on distance and aircraft speed
+            const timeHours = distance / (operator.speed || 1);
+            
+            const requestData = {
+              departure_airport: From, 
+              arrival_airport: operator.icao, 
+              aircraft: aircraft,
+              airway_time: true,
+              great_circle_distance: true,
+              advise_techstop: true,
+            };
+
+            const aviapagesApiConfig = {
+              method: "post",
+              url: "https://frc.aviapages.com/flight_calculator/",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: process.env.AVID_API_TOKEN, 
+              },
+              data: requestData,
+            };
+
+            const response = await axios(aviapagesApiConfig);
+
+            return {
+              operator,
+              distance,
+              timeHours,
+              aviapagesResponse: response.data,
+            };
+          } catch (error) {
+            return null;
+          }
+        }),
+      );
+
       // Filter out null results (locations not found)
-      const validOperatorsWithDistance = operatorsWithDistance.filter((result) => result !== null);
+      const validOperatorsWithDistance = operatorsWithDistance.filter((
+        result,
+      ) => result !== null);
 
       // Sort the valid operators by distance in ascending order
       validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
-      
-      return validOperatorsWithDistance;
+
+      return validOperatorsWithDistance.slice(0, 5);
     } catch (error) {
       throw error;
     }
   }
-  
+
   try {
     const nearestOperator = await calculateNearestOperator();
+    console.log(nearestOperator);
     if (nearestOperator === null) {
-      res.json({ error: 'No nearest distance to the departure location' });
+      res.json({ error: "No nearest distance to the departure location" });
     } else {
-      console.log("everything works")
+      console.log("everything works");
     }
+
     const response = await axios(buildRequestConfig(data));
-    console.log(response.data);
-    if (!response.data.airport.techstop[0]) {
+    console.log("response is " + response.data);
+
+    if (
+      !response.data.airport.techstop ||
+      response.data.airport.techstop.length === 0
+    ) {
+      const nearestOperatorWithPrice = nearestOperator.map((operator) => ({
+        ...operator,
+        price: operator.operator.charges_per_hour *
+          (operator.aviapagesResponse.time.airway +
+            response.data.time.airway / 60), // Set the price value as needed
+      }));
+
       //when techstop not coming
       const total_time = response.data.time.airway;
-      return total_time;
+      const responseObj = {
+        Total_Internal_time: total_time / 60, //Time in hour
+        nearestOperatorWithPrice,
+      };
+      return res.json(responseObj);
     } else {
-      // if coming then
-      let data = `{"departure_airport": "${from}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-      console.log("First Tech halts", response.data.airport.techstop[0]);
+      let totalTechStopTime = 0;
+      let previousAirport = from;
+      let additional = 0;
+      let techStopAirportDetails = [];
+      for (let i = 0; i < response.data.airport.techstop.length; i++) {
+        const techStopAirport = response.data.airport.techstop[i];
+        techStopAirportDetails.push(techStopAirport);
+        let techStopData = `{
+      "departure_airport": "${previousAirport}",
+      "arrival_airport": "${techStopAirport}",
+      "aircraft": "${aircraft}",
+      "airway_time": true,
+      "advise_techstops": true
+    }`;
+        additional = i + 1;
+        const techStopResponse = await axios(buildRequestConfig(techStopData));
 
-      const responseTech = await axios(buildRequestConfig(data));
-      console.log("secondtime", responseTech.data.airport.techstop[0]);
-      if (!responseTech.data.airport.techstop[0]) {
-        // console.log(responseTech.data.airport.techstop[0])
-        const total_time_tech = response.data.time.airway;
-        return total_time_tech;
-      } else {
-        let data = `{"departure_airport": "${from}", "arrival_airport": "${responseTech.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-        const responseTech_tech2 = await axios(buildRequestConfig(data));
-        const Time1To2 = responseTech_tech2.data.time.airway ;
-        // res.status(200).json({data: Time1To2});
-        console.log("Thirdtechhalts", responseTech_tech2.data.time.airway);
-        let data2 = `{"departure_airport": "${responseTech.data.airport.techstop[0]}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-        const responseTech_tech3 = await axios(buildRequestConfig(data2));
-        const Time2to3 = responseTech_tech3.data.time.airway ;
-        console.log("Time2to3", Time2to3);
-        let data4 = `{"departure_airport": "${response.data.airport.techstop[0]}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-        const responseTech_tech4 = await axios(buildRequestConfig(data4));
-        const Time3to4 = responseTech_tech4.data.time.airway;
-        console.log("Time3to4", Time3to4);
-        const Total_Internal_time = Time1To2 + Time2to3 + Time3to4;
-        // console.log("total Internal time", Total_Internal_time / 60);
-        const responseObj = {
-          Total_Internal_time: Total_Internal_time / 60, // Assuming you want to convert it to minutes
-          nearestOperator,
-        };
-        res.json(responseObj);
-        console.log(
-          "total time with tech halt of 45min",
-          Total_Internal_time / 60
-        );
+        if (
+          !techStopResponse.data.airport.techstop ||
+          techStopResponse.data.airport.techstop.length === 0
+        ) {
+          const techStopTime = techStopResponse.data.time.airway;
+
+          totalTechStopTime += techStopTime;
+        }
+        // Log tech stop details
+        console.log(`: ${techStopAirport}`);
+
+        previousAirport = techStopAirport;
       }
+      console.log("additional", additional);
+      // Calculate time for the final leg of the journey
+      const finalLegData = `{
+    "departure_airport": "${previousAirport}",
+    "arrival_airport": "${to}",
+    "aircraft": "${aircraft}",
+    "airway_time": true,
+    "advise_techstops": true
+  }`;
+
+      const finalLegResponse = await axios(buildRequestConfig(finalLegData));
+
+      if (
+        !finalLegResponse.data.airport.techstop ||
+        finalLegResponse.data.airport.techstop.length === 0
+      ) {
+        const finalLegTime = finalLegResponse.data.time.airway;
+        totalTechStopTime += finalLegTime;
+      }
+
+      const totalInternalTime = response.data.time.airway + totalTechStopTime;
+
+      const nearestOperatorWithPrice = nearestOperator.map((operator) => ({
+        ...operator,
+        NormalPrice: operator.operator.charges_per_hour *
+          (operator.aviapagesResponse.time.airway + totalInternalTime / 60 +
+            additional * 0.75),
+        techStopAirport: {
+          techStopAirportDetails: techStopAirportDetails,
+          EachtechStopTime: `${0.75}hour / 45minute`,
+          totalTechStopTime: `${additional * 0.75}hour `,
+          EachtechStopCost: `${50000}rs`,
+          totaltechStopCost: `${additional * 50000}rs`,
+        },
+        TotalPriceWithTechStop: (operator.operator.charges_per_hour *
+          (operator.aviapagesResponse.time.airway + totalInternalTime / 60 +
+            additional * 0.75)) + additional * 50000,
+        // Set the price value as needed
+      }));
+
+      const responseObj = {
+        Total_Internal_time: totalInternalTime / 60 + additional * 0.75, // Time in hour
+        nearestOperatorWithPrice,
+      };
+      res.json(responseObj);
+      console.log("Total time with tech halts: ", totalInternalTime / 60);
     }
     return response.data;
   } catch (error) {
@@ -191,7 +289,7 @@ async function getLatLonFromLocation(location) {
     const result = await geocoder.geocode(location);
     if (result.length > 0) {
       return { lat: result[0].latitude, lon: result[0].longitude };
-    } 
+    }
   } catch (error) {
     throw error;
   }
@@ -207,117 +305,7 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   // Haversine formula
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
-
-exports.calculateFlightTimeForTakeall = async (req, res) => {
-  const {From, To, Aircraft} = req.body;
-  let from = From.toString();
-  let to = To.toString();
-  let aircraft=Aircraft.toString()
-
-
-  let data = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-
-  const response = await axios(buildRequestConfig(data));
-
-  if (!response.data.airport.techstop || response.data.airport.techstop.length === 0) {
- 
-    //when techstop not coming
-    const total_time = response.data.time.airway;
-    return res.json({ total_time});
-  } 
-  else {
-    // if coming then
-    let data = `{"departure_airport": "${from}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-    console.log("First Tech halts", response.data.airport.techstop[0]);
-
-    const responseTech = await axios(buildRequestConfig(data));
-    console.log("secondtime", responseTech.data.airport.techstop[0]);
-    if (!response.data.airport.techstop || response.data.airport.techstop.length === 0) {
-      // console.log(responseTech.data.airport.techstop[0])
-      const total_time_tech = response.data.time.airway;
-      return res.json({ total_time_tech }); 
-    } else {
-      let data = `{"departure_airport": "${from}", "arrival_airport": "${responseTech.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-      const responseTech_tech2 = await axios(buildRequestConfig(data));
-      const Time1To2 = responseTech_tech2.data.time.airway ;
-      // res.status(200).json({data: Time1To2});
-      console.log("Thirdtechhalts", responseTech_tech2.data.time.airway);
-      let data2 = `{"departure_airport": "${responseTech.data.airport.techstop[0]}", "arrival_airport": "${response.data.airport.techstop[0]}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-      const responseTech_tech3 = await axios(buildRequestConfig(data2));
-      const Time2to3 = responseTech_tech3.data.time.airway ;
-      console.log("Time2to3", Time2to3);
-      let data4 = `{"departure_airport": "${response.data.airport.techstop[0]}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
-      const responseTech_tech4 = await axios(buildRequestConfig(data4));
-      const Time3to4 = responseTech_tech4.data.time.airway;
-      console.log("Time3to4", Time3to4);
-      const Total_Internal_time = Time1To2 + Time2to3 + Time3to4;
-      // console.log("total Internal time", Total_Internal_time / 60);
-      const responseObj = {
-        Total_Internal_time: Total_Internal_time / 60, // Assuming you want to convert it to minutes
-       
-      };
-      console.log(responseObj)
-      res.json(responseObj);
-      console.log(
-        "total time with tech halt of 45min",
-        Total_Internal_time / 60
-      );
-    }
-  }
-  return response.data;
-
-}
-
-
-
-
-// async function calculateNearestOperator(requestData) {
-//   try {
-//     // Fetch the Aviapages response
-//     const aviapagesResponse = await fetchAviapagesResponse(requestData);
-//     const departureAirportCode = aviapagesResponse.airport.departure_airport;
-
-//     // Get latitude and longitude for the departure airport
-//     const departureAirportLocation = await getLatLonFromLocation(departureAirportCode);
-
-//     // Retrieve aircraft operators from MongoDB
-//     const aircraftOperators = await  AircraftOPerator.find();
-//     console.log(aircraftOperators)
-
-//     // Calculate distances for each operator
-//     const operatorsWithDistance = await Promise.all(aircraftOperators.map(async (operator) => {
-//       try {
-//         const operatorLocation = await getLatLonFromLocation(operator.location);
-
-//         const distance = haversineDistance(
-//           operatorLocation.lat,
-//           operatorLocation.lon,
-//           departureAirportLocation.lat,
-//           departureAirportLocation.lon
-//         );
-
-//         // Calculate time in hours based on distance and aircraft speed
-//         const timeHours = distance / (operator.speed || 1);
-//         return { operator, distance, timeHours};
-//       } catch (error) {
-     
-//         return null;
-//       }
-//     }));
-
-//     // Filter out null results (locations not found)
-//     const validOperatorsWithDistance = operatorsWithDistance.filter((result) => result !== null);
-
-
-//     // Find the operator with the minimum distance
-//     const nearestOperator = validOperatorsWithDistance.reduce((min, p) => (p.distance < min.distance ? p : min), validOperatorsWithDistance[0]);
-
-//     return nearestOperator;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
