@@ -12,13 +12,8 @@ const errorMiddleware = require("./middleware/error-middleware");
 const dotenv = require("dotenv");
 require("./database/Database");
 dotenv.config();
-const { Operator, AircraftOPerator } = require("./db/Operator");
-const CustomerController=require("./controller/C-Customer")
-const NodeGeocoder = require("node-geocoder");
-const geocoder = NodeGeocoder({
-  provider: 'google', // Use the Google Maps Geocoding API
-  apiKey: 'AIzaSyCZnNZ9-uHBg0rj8YHKHQC25jHWqXP9Yoc', // Replace with your actual API key
-});
+
+
 
 
 app.use(
@@ -43,29 +38,6 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("Hello node API");
 });
-
-
-app.post('/calculateFlightTime', async (req, res) => {
-  const requestData = {
-    departure_airport: req.body.departure_airport,
-    arrival_airport:req.body.arrival_airport,
-    aircraft: req.body.aircraft,
-    airway_time: req.body.airway_time,
-    great_circle_distance:true, 
-    advise_techstop:true
-  };
-
-  try {
-    // Call the Aviapages API to calculate flight time using requestData
-    const flightTime = await CustomerController.calculateFlightTime(requestData);
-
-    res.json(flightTime);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-
 
 
 app.get('/all-airports', async (req, res) => {
@@ -150,9 +122,10 @@ app.get('/all-airCrafts', async (req, res) => {
 app.get("/blog", (req, res) => {
   res.send("Hello bog is running");
 });
-app.use("/customer", CustomerRouter);
-app.use("/operator", OperatorRouter);
+
 app.use("/admin", AdminRouter);
+app.use("/operator", OperatorRouter);
+app.use("/customer", CustomerRouter);
 
 app.use(errorMiddleware);
 

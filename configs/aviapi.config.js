@@ -1,6 +1,4 @@
 // aviapages.config.js
-const axios = require('axios');
-
 const buildRequestConfig=(data) =>{
   return {
     method: 'post',
