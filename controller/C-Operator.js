@@ -78,20 +78,38 @@ exports.AddAircrafts = async (req, res, next) => {
         headers: {
           "accept": "application/json",
           "Authorization": process.env.AVID_API_TOKEN, 
-          search_city: searchCity, 
+         
+        },
+        params: {
+          search_city: searchCity, // Include the search_city query parameter in the request
         },
       },
     );
-
+let country_name='';
+let icaoCode='';
     if (response.status === 200) {
       // Extract the icao code from the response
       console.log(response.data.results[0]);
-      const icaoCode = response.data.results[0]
-        ? response.data.results[0].icao
-        : null;
-      const country_name = response.data.results[0]
-        ? response.data.results[0].country_name
-        : null;
+  if(response.data.results.length === 1){
+    icaoCode = response.data.results[0]
+    ? response.data.results[0].icao
+    : null;
+  country_name = response.data.results[0]
+    ? response.data.results[0].country_name
+    : null;
+  }
+  else if(response.data.results.length>1){
+    const results = response.data.results;
+
+    // Loop through the results
+    for (const result of results) {
+      if (result.icao) {
+        // If icao is not null, set the variable and break the loop
+        icaoCode = result.icao;
+        country_name=result.country_name
+        break;
+      }
+  }}
       // Create the AircraftOperator object with the extracted icao code
       const AirOperator = {
         Aircraft_type: req.body.Aircraft_type,
