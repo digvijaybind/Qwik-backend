@@ -3,14 +3,16 @@ class OperatorService {
   getOperators = async () => {
     return await AircraftOPerator.find();
   };
-  // getOpeartorsSearchFilter = async (filter) => {
-  //   const key = Object.key(filter);
-  //   const value = filter[key];
-  //   const reg = {
-  //     [key]: new RegExp(value, "i"),
-  //   };
-  //   return await Operator.find(reg);
-  // };
+
+  getAllOperatorsLocation=async()=>{
+    try {
+      const uniqueLocations = await AircraftOPerator.distinct('location');
+      return uniqueLocations;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   getOpeartorsSearchFilter = async (filter) => {
     const key = Object.keys(filter)[0]; // Get the first (and presumably only) key
     const value = filter[key];
