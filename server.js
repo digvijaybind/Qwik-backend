@@ -40,40 +40,11 @@ app.get("/", (req, res) => {
 });
 
 
-app.get('/all-airports', async (req, res) => {
-  try {
-    const searchCity = req.query.search_city; // Get the search_city query parameter from the request
-
-    const response = await axios.get('https://dir.aviapages.com/api/airports/', {
-      headers: {
-        'accept': 'application/json',
-        'Authorization': process.env.AVID_API_TOKEN, // Replace 'your_token_here' with your actual token
-      },
-      params: {
-        search_city: searchCity, // Include the search_city query parameter in the request
-      },
-    });
-
-    if (response.status === 200) {
-      const airports = response.data.results.map(airport => ({
-        city_name: airport.city_name,
-        icao: airport.icao,
-      }));
-
-      res.json(airports);
-    } else {
-      res.status(response.status).json({ error: 'Failed to fetch airport data' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error fetching airport data' });
-  }
-});
 
 
-async function getAllCrafts() {
-  let allAirCrafts = [];
-  let nextPage = 'https://dir.aviapages.com/api/aircraft/';
+async function getAllAirports() {
+  let allAirports = [];
+  let nextPage = 'https://dir.aviapages.com/api/airports/';
 
   while (nextPage) {
     try {
@@ -86,7 +57,7 @@ async function getAllCrafts() {
 
       if (response.status === 200) {
         const pageData = response.data.results;
-        allAirCrafts = allAirCrafts.concat(pageData);
+        allAirports  = allAirports.concat(pageData);
         nextPage = response.data.next;
       } else {
         console.error('Failed to fetch aircraft data');
@@ -98,25 +69,26 @@ async function getAllCrafts() {
     }
   }
 
-  return allAirCrafts;
+  return allAirports;
 }
 
-app.get('/all-airCrafts', async (req, res) => {
-  try {
-    const aircraft = await getAllCrafts();
 
-    res.json(aircraft.map(aircraft => ({
-      aircraft_id: aircraft.aircraft_id,
-      aircraft_type_name: aircraft.aircraft_type_name,
+
+app.get('/all-airports', async (req, res) => {
+  try {
+    const airport = await getAllAirports();
+
+    res.json(airport.map(airport => ({
+      airport_id: airport.airport_id,
+      country_name: airport.country_name,
+      icao:airport.icao,
+      city_name:airport.city_name
     })));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error fetching aircraft data' });
   }
 });
-
-
-
 
 
 app.get("/blog", (req, res) => {
