@@ -21,7 +21,7 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   },
   Aircraft_type: {
     type: String,
-    enum: ["Challenger 605", "Learjet", "B200", "C90"],
+    enum: ["Challenger 605", "Learjet", "C90"],
   },
   Tail_sign: {
     type: String,
@@ -29,11 +29,11 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   location: {
     type: String,
   },
-  icao:{
-    type:String
+  icao: {
+    type: String,
   },
-  country_name:{
-    type:String
+  country_name: {
+    type: String,
   },
   charges_per_hour: {
     type: Number,
