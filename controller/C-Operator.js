@@ -1,14 +1,14 @@
-const Auth = require("../db/Auth");
 const bcrypt = require("bcrypt");
+const NodeCache = require('node-cache');
 const axios = require("axios");
 const { Operator} = require("../db/Operator");
 
-const Token = require("../configs/jwtToken");
 const ErrorHandler = require("../utils/error-handler");
 const OperatorService = require("../services/operator-service");
 
 
 const generateToken = require("../configs/jwtToken");
+
 
 exports.Register = async (req, res, next) => {
   const { company_name, email_address, password } = req.body;
@@ -67,50 +67,51 @@ exports.Login = async (req, res) => {
   }
 };
 
+// Initialize a cache with a longer TTL (30 days)
+const cache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 }); // Cache data for 30 days
+
+const EventEmitter = require('events');
+const TLSSocket = require('tls').TLSSocket;
+
+class MyTLSSocket extends TLSSocket {
+  constructor() {
+    super();
+
+    // Create an EventEmitter object to manage the listeners
+    this.emitter = new EventEmitter();
+  }
+
+  on(event, listener) {
+    // Add the listener to the EventEmitter object
+    this.emitter?.on(event, listener);
+  }
+
+  removeListener(event, listener) {
+    // Remove the listener from the EventEmitter object
+    this.emitter.removeListener(event, listener);
+  }
+
+  close() {
+    // Call the close() method on the TLSSocket object
+    super.end();
+
+    // Emit the 'close' event on the EventEmitter object
+    this.emitter.emit('close');
+  }
+}
+
+// 
+
+
 exports.AddAircrafts = async (req, res, next) => {
   try {
-    const searchCity = req.body.location; 
+    const searchCity = req.body.location;
 
-    
-    const response = await axios.get(
-      "https://dir.aviapages.com/api/airports/",
-      {
-        headers: {
-          "accept": "application/json",
-          "Authorization": process.env.AVID_API_TOKEN, 
-         
-        },
-        params: {
-          search_city: searchCity, // Include the search_city query parameter in the request
-        },
-      },
-    );
-let country_name='';
-let icaoCode='';
-    if (response.status === 200) {
-      // Extract the icao code from the response
-      console.log(response.data.results[0]);
-  if(response.data.results.length === 1){
-    icaoCode = response.data.results[0]
-    ? response.data.results[0].icao
-    : null;
-  country_name = response.data.results[0]
-    ? response.data.results[0].country_name
-    : null;
-  }
-  else if(response.data.results.length>1){
-    const results = response.data.results;
-
-    // Loop through the results
-    for (const result of results) {
-      if (result.icao) {
-        // If icao is not null, set the variable and break the loop
-        icaoCode = result.icao;
-        country_name=result.country_name
-        break;
-      }
-  }}
-      // Create the AircraftOperator object with the extracted icao code
+    // Check if the data is already cached
+    const cachedData = cache.get(searchCity);
+    if (cachedData) {
+      // If cached data exists, use it instead of making an API call
+      const { icaoCode, country_name } = cachedData;
       const AirOperator = {
         Aircraft_type: req.body.Aircraft_type,
         Tail_sign: req.body.Tail_sign,
@@ -126,9 +127,71 @@ let icaoCode='';
       await operator.save();
       res.json({ message: "Aircraft created successfully", AirOperator });
     } else {
-      res.status(response.status).json({
-        error: "Failed to fetch airport data",
-      });
+      // If not cached, make the API call
+    
+       const tlsSocket = new MyTLSSocket();
+
+       tlsSocket.on('close', () => {
+         // Remove the listener to avoid memory leaks
+         tlsSocket.emitter.removeListener('close', () => {
+           // ...
+         });
+       });
+ 
+      const response = await axios.get(
+        "https://dir.aviapages.com/api/airports/",
+        {
+          headers: {
+            "accept": "application/json",
+            "Authorization": process.env.AVID_API_TOKEN,
+          },
+          params: {
+            search_city: searchCity, // Include the search_city query parameter in the request
+          },
+          socket: tlsSocket
+        }
+      );
+
+      let icaoCode = '';
+      let country_name = '';
+
+      if (response.status === 200) {
+        if (response.data.results.length === 1) {
+          icaoCode = response.data.results[0] ? response.data.results[0].icao : null;
+          country_name = response.data.results[0] ? response.data.results[0].country_name : null;
+        } else if (response.data.results.length > 1) {
+          const results = response.data.results;
+          for (const result of results) {
+            if (result.icao) {
+              icaoCode = result.icao;
+              country_name = result.country_name;
+              break;
+            }
+          }
+        }
+
+        // Cache the data for a month (30 days) for future use
+        cache.set(searchCity, { icaoCode, country_name });
+
+        const AirOperator = {
+          Aircraft_type: req.body.Aircraft_type,
+          Tail_sign: req.body.Tail_sign,
+          location: req.body.location,
+          charges_per_hour: req.body.charges_per_hour,
+          speed: req.body.speed,
+          icao: icaoCode,
+          country_name: country_name,
+        };
+
+        // Insert AirOperator into the database or perform other necessary actions
+        const operator = await OperatorService.createOperator(AirOperator);
+        await operator.save();
+        res.json({ message: "Aircraft created successfully", AirOperator });
+      } else {
+        res.status(response.status).json({
+          error: "Failed to fetch airport data",
+        });
+      }
     }
   } catch (error) {
     console.error(error);
