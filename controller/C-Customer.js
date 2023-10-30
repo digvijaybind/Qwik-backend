@@ -300,6 +300,7 @@ exports.calculateFlightTime = async (req, res) => {
 
       // for getting at least max techstop during the journey 
       let selectedTechStops = []
+      let getMoreTechstop;
       let finalLegAverageSpeedTime;
       let techStopAirportDetails = [];
       let techStopAirport;
@@ -363,7 +364,7 @@ exports.calculateFlightTime = async (req, res) => {
 
 
 
-        while (finalLegTechStopDepatureOne !== toAirport) {
+        if (finalLegTechStopDepatureOne !== toAirport) {
           const techStopData = `{
       "departure_airport": "${fromAirport}",
       "arrival_airport": "${toAirport}",
@@ -407,10 +408,7 @@ exports.calculateFlightTime = async (req, res) => {
               console.log("finalLegTechStopDepatureOneo", finalLegTechStopDepatureOne)
             }
           }
-          else {
-            // No more tech stops are suggested, break the loop
-            break;
-          }
+
         }
 
         // console.log("Total Tech Stop Timeeee:", totalTechStopTime);
@@ -420,7 +418,7 @@ exports.calculateFlightTime = async (req, res) => {
 
           let totalTechStopTime = 0;
 
-          while (finalLegTechStopDepatureOne !== toAirport) {
+          if (finalLegTechStopDepatureOne !== toAirport) {
             const techStopData = `{
           "departure_airport": "${fromAirport}",
           "arrival_airport": "${toAirport}",
@@ -450,7 +448,8 @@ exports.calculateFlightTime = async (req, res) => {
           }`;
 
               const airwayTimeResponse = await axios(buildRequestConfig(airwayTimeData));
-              console.log("Airway Time Responsee2222", airwayTimeResponse.data);
+              getMoreTechstop = airwayTimeResponse
+              console.log("Airway Time Responsee2222", airwayTimeResponse.data.airport.techstop);
 
               // Update the finalLegTechStopDepature
               finalLegTechStopDepatureOne = nextTechStop;
@@ -464,14 +463,14 @@ exports.calculateFlightTime = async (req, res) => {
                 console.log("finalLegTechStopDepatureOne", finalLegTechStopDepatureOne)
               }
             }
-            else {
-              // No more tech stops are suggested, break the loop
-              break;
-            }
+
           }
 
           console.log("Total Tech Stop Timeeee:", totalTechStopTime);
           console.log("Final Destinationww:", toAirport);
+
+
+
 
         }
         // for knowing the averagespeed from the From to To Location
@@ -495,24 +494,46 @@ exports.calculateFlightTime = async (req, res) => {
             const totalTimeFromToto = (finalLegAverageSpeedTime) / 60 + 2;
             console.log(totalTimeFromToto);
 
-            const nearestOperatorWithPrice = nearestOperator.map((operator) => ({
-              ...operator,
-              totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
-              techStopAirport: {
-                selectedTechStops: selectedTechStops,
-                techStopTime: `${0.75}hour / 45minute`,
-                techStopCost: `${50000}rs`,
-              },
-              TotalPriceWithTechStop: (operator.operator.charges_per_hour *
-                (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.75)) + selectedTechStops.length * 50000,
+            const nearestOperatorWithPriceForTechSTopGreaterThanThree = nearestOperator
+              .filter(operator => operator.operator.Aircraft_type === 'Challenger 605').map((operator) => ({
+                ...operator,
+                totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
+                techStopAirport: {
+                  selectedTechStops: selectedTechStops,
+                  techStopTime: `${0.5}hour / 45minute`,
+                  techStopCost: `${50000}rs`,
+                },
+                TotalPriceWithTechStop: (operator.operator.charges_per_hour *
+                  (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000,
 
-            }));
+              }));
+              console.log("nearestOperatorWithPriceForTechSTopGreaterThanThree", nearestOperatorWithPriceForTechSTopGreaterThanThree)
+              const nearestOperatorWithPrice=nearestOperator.map((operator) => ({
+                ...operator,
+                totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
+                techStopAirport: {
+                  selectedTechStops: selectedTechStops,
+                  techStopTime: `${0.5}hour / 45minute`,
+                  techStopCost: `${50000}rs`,
+                },
+                TotalPriceWithTechStop: (operator.operator.charges_per_hour *
+                  (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000,
 
-            const responseObj = {
-              nearestOperatorWithPrice,
-            };
-            console.log("nearestOperator", responseObj);
-            return res.json(responseObj);
+              }));
+              if(selectedTechStops.length >=3){
+                const responseObj = {
+                  nearestOperatorWithPriceForTechSTopGreaterThanThree,
+                };
+                console.log("nearestOperator", responseObj);
+                return res.json(responseObj);
+              }else{
+                const responseObj = {
+                  nearestOperatorWithPrice,
+                };
+                console.log("nearestOperator", responseObj);
+                return res.json(responseObj);
+              }
+         
           }
 
         }
