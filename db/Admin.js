@@ -9,10 +9,6 @@ const AdminSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  margin: {
-    type: Number,
-    required: true,
-  },
   role:{
     type:String,
    required:true

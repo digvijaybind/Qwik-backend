@@ -2,10 +2,12 @@ const Admin = require("../db/Admin");
 const bcrypt = require("bcrypt");
 const Role=require("../db/role")
 const generateToken=require("../configs/jwtToken");
+const OperatorService = require("../services/operator-service");
+
 
 
 exports.Register = async (req, res, next) => {
-  const {email, password,   margin} = req.body;
+  const {email, password} = req.body;
   const role=Role.ADMIN
   console.log(req.body);
 
@@ -20,7 +22,6 @@ exports.Register = async (req, res, next) => {
       const newAdmin = new Admin({
         email,
         password: hashedPassword,
-        margin,
         role:role
       });
       res.json(newAdmin);
@@ -67,3 +68,32 @@ res.json({
 })
   }
 };
+
+exports.EditAircraftOperatorWithMargin = async (req, res) => {
+  const { _id } = req.params;
+  const AirOperator = {
+    margin: req?.body?.margin,
+   
+  };
+  console.log(AirOperator);
+
+  const operator = await OperatorService.updateOperator(_id, AirOperator);
+
+  if (!operator) {
+    return res.status(404).json({
+      success: false,
+      message: "Operator not found",
+    });
+  }
+
+  try {
+    await operator.save();
+    res.status(200).json({ success: true, message: "Operator Margin is updated" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating operator with margin",
+    });
+  }
+
+}

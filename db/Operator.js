@@ -41,6 +41,10 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   speed: {
     type: Number,
   },
+  margin:{
+    type:Number,
+    default:0,
+  },
   date: {type: Date, default: Date.now},
 });
 
