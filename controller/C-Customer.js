@@ -286,6 +286,9 @@ exports.calculateFlightTime = async (req, res) => {
         totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
         price: operator.operator.charges_per_hour *
           (operator.aviapagesResponse.time.airway + totalTimeFromToto),
+        totalPriceWithAdminMargin: (operator.operator.charges_per_hour *
+          (operator.aviapagesResponse.time.airway + totalTimeFromToto)) + ((operator.operator.charges_per_hour *
+            (operator.aviapagesResponse.time.airway + totalTimeFromToto)) * ((operator.operator.margin) / 100))
       }));
 
       const responseObj = {
@@ -296,11 +299,8 @@ exports.calculateFlightTime = async (req, res) => {
     }
 
     else {
-
-
       // for getting at least max techstop during the journey 
       let selectedTechStops = []
-      let getMoreTechstop;
       let finalLegAverageSpeedTime;
       let techStopAirportDetails = [];
       let techStopAirport;
@@ -505,35 +505,41 @@ exports.calculateFlightTime = async (req, res) => {
                 },
                 TotalPriceWithTechStop: (operator.operator.charges_per_hour *
                   (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000,
+                totalPriceWithTechStopAndAdminMargin: (((operator.operator.charges_per_hour *
+                  (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000) + (((operator.operator.charges_per_hour *
+                    (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000) * (operator.operator.margin) / 100))
 
               }));
-              console.log("nearestOperatorWithPriceForTechSTopGreaterThanThree", nearestOperatorWithPriceForTechSTopGreaterThanThree)
-              const nearestOperatorWithPrice=nearestOperator.map((operator) => ({
-                ...operator,
-                totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
-                techStopAirport: {
-                  selectedTechStops: selectedTechStops,
-                  techStopTime: `${0.5}hour / 45minute`,
-                  techStopCost: `${50000}rs`,
-                },
-                TotalPriceWithTechStop: (operator.operator.charges_per_hour *
-                  (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000,
+            console.log("nearestOperatorWithPriceForTechSTopGreaterThanThree", nearestOperatorWithPriceForTechSTopGreaterThanThree)
+            const nearestOperatorWithPrice = nearestOperator.map((operator) => ({
+              ...operator,
+              totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
+              techStopAirport: {
+                selectedTechStops: selectedTechStops,
+                techStopTime: `${0.5}hour / 45minute`,
+                techStopCost: `${50000}rs`,
+              },
+              TotalPriceWithTechStop: (operator.operator.charges_per_hour *
+                (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000,
+              totalPriceWithTechStopAndAdminMargin: (((operator.operator.charges_per_hour *
+                (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000) + (((operator.operator.charges_per_hour *
+                  (operator.aviapagesResponse.time.airway + totalTimeFromToto + selectedTechStops.length * 0.5)) + selectedTechStops.length * 50000) * (operator.operator.margin) / 100))
 
-              }));
-              if(selectedTechStops.length >=3){
-                const responseObj = {
-                  nearestOperatorWithPriceForTechSTopGreaterThanThree,
-                };
-                console.log("nearestOperator", responseObj);
-                return res.json(responseObj);
-              }else{
-                const responseObj = {
-                  nearestOperatorWithPrice,
-                };
-                console.log("nearestOperator", responseObj);
-                return res.json(responseObj);
-              }
-         
+            }));
+            if (selectedTechStops.length >= 3) {
+              const responseObj = {
+                nearestOperatorWithPriceForTechSTopGreaterThanThree,
+              };
+              console.log("nearestOperator", responseObj);
+              return res.json(responseObj);
+            } else {
+              const responseObj = {
+                nearestOperatorWithPrice,
+              };
+              console.log("nearestOperator", responseObj);
+              return res.json(responseObj);
+            }
+
           }
 
         }
