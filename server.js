@@ -13,9 +13,6 @@ const dotenv = require("dotenv");
 require("./database/Database");
 dotenv.config();
 
-
-
-
 app.use(
   cookieSession({
     name: "sample-session",
@@ -39,32 +36,29 @@ app.get("/", (req, res) => {
   res.send("Hello node API");
 });
 
-
-
-
 async function getAllAirports() {
   let allAirports = [];
-  let nextPage = 'https://dir.aviapages.com/api/airports/';
+  let nextPage = "https://dir.aviapages.com/api/airports/";
 
   while (nextPage) {
     try {
       const response = await axios.get(nextPage, {
         headers: {
-          'accept': 'application/json',
-          'Authorization': process.env.AVID_API_TOKEN,
+          accept: "application/json",
+          Authorization: process.env.AVID_API_TOKEN,
         },
       });
 
       if (response.status === 200) {
         const pageData = response.data.results;
-        allAirports  = allAirports.concat(pageData);
+        allAirports = allAirports.concat(pageData);
         nextPage = response.data.next;
       } else {
-        console.error('Failed to fetch aircraft data');
+        console.error("Failed to fetch aircraft data");
         break;
       }
     } catch (error) {
-      console.error('Error fetching aircraft data');
+      console.error("Error fetching aircraft data");
       break;
     }
   }
@@ -72,24 +66,23 @@ async function getAllAirports() {
   return allAirports;
 }
 
-
-
-app.get('/all-airports', async (req, res) => {
+app.get("/all-airports", async (req, res) => {
   try {
     const airport = await getAllAirports();
 
-    res.json(airport.map(airport => ({
-      airport_id: airport.airport_id,
-      country_name: airport.country_name,
-      icao:airport.icao,
-      city_name:airport.city_name
-    })));
+    res.json(
+      airport.map((airport) => ({
+        airport_id: airport.airport_id,
+        country_name: airport.country_name,
+        icao: airport.icao,
+        city_name: airport.city_name,
+      }))
+    );
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error fetching aircraft data' });
+    res.status(500).json({error: "Error fetching aircraft data"});
   }
 });
-
 
 app.get("/blog", (req, res) => {
   res.send("Hello bog is running");
@@ -101,6 +94,6 @@ app.use("/customer", CustomerRouter);
 
 app.use(errorMiddleware);
 
-app.listen(3000, () => {
-  console.log("node API app is running on port 3000");
+app.listen(8000, () => {
+  console.log("node API app is running on port 8000");
 });
