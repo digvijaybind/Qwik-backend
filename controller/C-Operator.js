@@ -9,7 +9,7 @@ const OperatorService = require("../services/operator-service");
 const generateToken = require("../configs/jwtToken");
 
 exports.Register = async (req, res, next) => {
-  const {company_name, email_address, password} = req.body;
+  const {company_name, Contact_No,email_address, password} = req.body;
   console.log(req.body);
 
   try {
@@ -22,6 +22,7 @@ exports.Register = async (req, res, next) => {
       const newUser = new Operator({
         company_name,
         email_address,
+        Contact_No,
         password: hashedPassword,
       });
       // res.json(newUser);
