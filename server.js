@@ -10,6 +10,7 @@ const AdminRouter = require("./routes/Admin-Router");
 const cookieParser = require("cookie-parser");
 const errorMiddleware = require("./middleware/error-middleware");
 const dotenv = require("dotenv");
+const listEndpoints = require("express-list-endpoints");
 require("./database/Database");
 dotenv.config();
 
@@ -93,7 +94,8 @@ app.use("/operator", OperatorRouter);
 app.use("/customer", CustomerRouter);
 
 app.use(errorMiddleware);
-
+const allRegisterRoutes = listEndpoints(app);
+console.log(allRegisterRoutes);
 app.listen(8000, () => {
   console.log("node API app is running on port 8000");
 });
