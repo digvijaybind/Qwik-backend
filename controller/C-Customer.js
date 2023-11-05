@@ -131,12 +131,14 @@ tlsSocket.close();
 
 
 exports.calculateFlightTime = async (req, res) => {
-  const { From, To, Aircraft } = req.body;
+  const { From, To, Aircraft,Pax, Date } = req.body;
   let from = From.toString();
   let to = To.toString();
   let aircraft = Aircraft.toString();
+  let pax= Number(Pax)
+  let departure_datetime=Date.toString()
 
-  let data = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "airway_time": true, "advise_techstops": true}\r\n`;
+  let data = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
 
   async function fetchAirportData(departureAirportCode) {
     const cacheKey = `airportData_${departureAirportCode}`;
@@ -168,8 +170,8 @@ exports.calculateFlightTime = async (req, res) => {
     return responseSearch.data;
   }
 
-  async function calculateFlightCost(departureAirport, operatorIcao, aircraft) {
-    const cacheKey = `flightCost_${departureAirport}_${operatorIcao}_${aircraft}`;
+  async function calculateFlightCost(departureAirport, operatorIcao, aircraft, pax, date) {
+    const cacheKey = `flightCost_${departureAirport}_${operatorIcao}_${aircraft}_${pax}_${date}`;
     const cachedData = myCache.get(cacheKey);
 
     if (cachedData) {
@@ -188,6 +190,8 @@ exports.calculateFlightTime = async (req, res) => {
       departure_airport: departureAirport,
       arrival_airport: operatorIcao,
       aircraft: aircraft,
+      pax:pax,
+      departure_datetime:date,
       airway_time: true,
       great_circle_distance: true,
       advise_techstop: true,
@@ -316,6 +320,8 @@ exports.calculateFlightTime = async (req, res) => {
             "departure_airport": "${from}",
             "arrival_airport": "${to}",
             "aircraft": "${aircraft}",
+            "pax":"${pax}",
+            "departure_datetime":"${departure_datetime}",
             "airway_time": true,
             "advise_techstops": true
           }`;
@@ -335,6 +341,8 @@ exports.calculateFlightTime = async (req, res) => {
                 "departure_airport": "${From}",
                 "arrival_airport": "${techStopAirport}",
                 "aircraft": "${aircraft}",
+                "pax":"${pax}",
+                "departure_datetime":"${departure_datetime}",
                 "airway_time": true,
                 "advise_techstops": true
               }`;
@@ -348,7 +356,7 @@ exports.calculateFlightTime = async (req, res) => {
 
           if (techStopResponse.data.time.airway != null) {
             firstLegTime = techStopResponse.data.time.airway;
-            console.log("firstLeg", firstLegTime);
+            console.log("firstLeg", firstLegTime); 
             finalLegTechStopDepatureOne = techStopResponse.data.airport.arrival_airport;
             if (techStopResponse.data.airport.arrival_airport != to) {
               selectedTechStops.push(techStopResponse.data.airport.arrival_airport);
@@ -369,6 +377,8 @@ exports.calculateFlightTime = async (req, res) => {
       "departure_airport": "${fromAirport}",
       "arrival_airport": "${toAirport}",
       "aircraft": "${aircraft}",
+      "pax":"${pax}",
+      "departure_datetime":"${departure_datetime}",
       "airway_time": true,
       "advise_techstops": true
     }`;
@@ -389,6 +399,8 @@ exports.calculateFlightTime = async (req, res) => {
         "departure_airport": "${finalLegTechStopDepatureOne}",
         "arrival_airport": "${nextTechStop}",
         "aircraft": "${aircraft}",
+        "pax":"${pax}",
+        "departure_datetime":"${departure_datetime}",
         "airway_time": true,
         "advise_techstops": false
       }`;
@@ -423,6 +435,8 @@ exports.calculateFlightTime = async (req, res) => {
           "departure_airport": "${fromAirport}",
           "arrival_airport": "${toAirport}",
           "aircraft": "${aircraft}",
+          "pax":"${pax}",
+          "departure_datetime":"${departure_datetime}",
           "airway_time": true,
           "advise_techstops": true
         }`;
@@ -443,6 +457,8 @@ exports.calculateFlightTime = async (req, res) => {
             "departure_airport": "${finalLegTechStopDepatureOne}",
             "arrival_airport": "${nextTechStop}",
             "aircraft": "${aircraft}",
+            "pax":"${pax}",
+            "departure_datetime":"${departure_datetime}",
             "airway_time": true,
             "advise_techstops": false
           }`;
@@ -480,6 +496,8 @@ exports.calculateFlightTime = async (req, res) => {
         "departure_airport": "${fromAirport}",
         "arrival_airport": "${toAirport}",
         "aircraft": "${aircraft}",
+        "pax":"${pax}",
+        "departure_datetime":"${departure_datetime}",
         "airway_time": true,
         "advise_techstops": true,
         "average_speed_time": true
