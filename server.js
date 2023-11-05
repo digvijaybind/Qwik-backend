@@ -81,7 +81,9 @@ app.get("/all-airports", async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    res.status(500).json({error: "Error fetching aircraft data"});
+
+    res.status(500).json({ error: 'Error fetching aircraft datas' });
+
   }
 });
 
