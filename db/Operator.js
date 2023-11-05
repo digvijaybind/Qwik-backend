@@ -35,7 +35,10 @@ const OperatorSchema = new Mongoose.Schema({
       country_name:String,
       charges_per_hour:Number,
       speed:Number,
-      margin:Number
+      margin:Number,
+      pax:Number,
+      departure_datetime:String,
+      sr_no:Number
 
     }
   ],
@@ -45,9 +48,6 @@ const OperatorSchema = new Mongoose.Schema({
   }
 });
 const AircraftOPeratorSchema = new Mongoose.Schema({
-  contact_number: {
-    type:String,
-  },
   Aircraft_type: {
     type: String,
     enum: ["Challenger 605", "Learjet", "B200", "C90"],
@@ -74,11 +74,15 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
     type:Number,
     default:0,
   },
+  sr_no:{
+    type:Number
+  },
   date: {type: Date, default: Date.now},
   operator: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: 'OperatorSchema'
   },
+  
 });
 
 const Operator = Mongoose.model("Operator", OperatorSchema);
