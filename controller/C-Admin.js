@@ -93,6 +93,7 @@ exports.EditAircraftOperatorWithMargin = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error updating operator with margin",
+
     });
   }
 
