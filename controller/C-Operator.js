@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const NodeCache = require('node-cache');
 const axios = require("axios");
 const { Operator} = require("../db/Operator");
+const Role=require("../db/role")
 
 const ErrorHandler = require("../utils/error-handler");
 const OperatorService = require("../services/operator-service");
@@ -11,7 +12,8 @@ const generateToken = require("../configs/jwtToken");
 
 
 exports.Register = async (req, res, next) => {
-  const { company_name, email_address, password } = req.body;
+  const { company_name, email_address, password,contact_number,country_name} = req.body;
+  const role=Role.OPERATOR
   console.log(req.body);
 
   try {
@@ -24,13 +26,17 @@ exports.Register = async (req, res, next) => {
       const newUser = new Operator({
         company_name,
         email_address,
+        contact_number,
+        country_name,
         password: hashedPassword,
+        role:role
+        
       });
       res.json(newUser);
 
       await newUser.save();
 
-      res.status(201).json({ message: "Operator register suceesful" });
+      res.status(201).json({ message: "Operator register successfully" });
     } else {
       throw new Error("Operator already exist");
     }
@@ -44,6 +50,7 @@ exports.Login = async (req, res) => {
 
   try {
     const user = await Operator.findOne({ email_address });
+    
 
     if (!user) {
       return res.json({ message: "Incorrect email" });
@@ -51,15 +58,17 @@ exports.Login = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(404).json({ message: "inCorrect passord" });
+      return res.status(404).json({ message: "inCorrect password" });
     }
     if (user && passwordMatch) {
+      const aircraftCreatedByOPerator=user.aircraftOperators
       res.json({
         id: user?._id,
         email_address,
         password,
 
         token: generateToken(user?._id),
+        aircraftCreatedByOPerator:aircraftCreatedByOPerator
       });
       return res.status(200).json({ message: "login succes fully done " });
     }
@@ -124,7 +133,29 @@ exports.AddAircrafts = async (req, res, next) => {
 
       // Insert AirOperator into the database or perform other necessary actions
       const operator = await OperatorService.createOperator(AirOperator);
-      await operator.save();
+      
+    
+
+    // Update the Operator's aircraftOperators field with the new AircraftOperator's ID
+    await Operator.findByIdAndUpdate(
+      req.operator._id,
+      { $push: {
+        aircraftOperators: {
+          aircraftOperator:operator._id,
+          Aircraft_type: operator.Aircraft_type,
+        Tail_sign: operator.Tail_sign,
+        location: operator.location,
+        charges_per_hour: operator.charges_per_hour,
+        speed: operator.speed,
+        icao: operator.icao,
+        country_name: operator.country_name,
+        margin:operator.margin
+        }
+      }
+     },
+      { new: true }
+    );
+    await operator.save();
       res.json({ message: "Aircraft created successfully", AirOperator });
     } else {
       // If not cached, make the API call
@@ -185,6 +216,28 @@ exports.AddAircrafts = async (req, res, next) => {
 
         // Insert AirOperator into the database or perform other necessary actions
         const operator = await OperatorService.createOperator(AirOperator);
+          // Get the operator's ID and push it to the aircraftOperators array in Operator
+   
+
+    // Update the Operator's aircraftOperators field with the new AircraftOperator's ID
+    await Operator.findByIdAndUpdate(
+      req.operator._id,
+      { $push: {
+        aircraftOperators: {
+          aircraftOperator:operator._id,
+          Aircraft_type: operator.Aircraft_type,
+        Tail_sign: operator.Tail_sign,
+        location: operator.location,
+        charges_per_hour: operator.charges_per_hour,
+        speed: operator.speed,
+        icao: operator.icao,
+        country_name: operator.country_name,
+        margin:operator.margin
+        }
+      }
+     },
+      { new: true }
+    );
         await operator.save();
         res.json({ message: "Aircraft created successfully", AirOperator });
       } else {
@@ -199,7 +252,7 @@ exports.AddAircrafts = async (req, res, next) => {
   }
 };
 
-exports.getOperatorlists = async (req, res) => {
+exports.getAirCraftOperatorLists = async (req, res) => {
   const operator = await OperatorService.getOperators();
 
   res.json({ succes: true, message: "operator List found", data: operator });
@@ -296,3 +349,10 @@ exports.getSearchFilter = async (req, res) => {
     });
   }
 };
+
+exports.getOperatorsLists= async (req, res) => {
+
+ const operator=await Operator.find();
+ return res.json({ succes: true, message: "operator List found", data: operator });
+
+}

@@ -491,7 +491,7 @@ exports.calculateFlightTime = async (req, res) => {
           console.log("finalLegAverageSpeedTime", finalLegAverageSpeedTime);
 
           if (techStopResponse.data) {
-            const totalTimeFromToto = (finalLegAverageSpeedTime) / 60 + 2;
+            const totalTimeFromToto = (finalLegAverageSpeedTime) / 60;
             console.log(totalTimeFromToto);
 
             const nearestOperatorWithPriceForTechSTopGreaterThanThree = nearestOperator
