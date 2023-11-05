@@ -21,7 +21,7 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   },
   Aircraft_type: {
     type: String,
-    enum: ["Challenger 605", "Learjet", "C90"],
+    enum: ["Challenger 605", "Learjet 45", "C90"],
   },
   Tail_sign: {
     type: String,
@@ -41,11 +41,13 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
   speed: {
     type: Number,
   },
-  margin:{
-    type:Number,
-    default:0,
+  margin: {
+    type: Number,
+    default: 0,
   },
-  date: {type: Date, default: Date.now},
+Date:{
+  type:String,
+}
 });
 
 const Operator = Mongoose.model("Operator", OperatorSchema);
