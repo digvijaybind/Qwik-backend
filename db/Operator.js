@@ -9,7 +9,10 @@ const OperatorSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-
+  Contact_No: {
+    type: Number,
+    required: true,
+  },
   password: {
     type: String,
     required: true,
@@ -45,9 +48,9 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
     type: Number,
     default: 0,
   },
-Date:{
-  type:String,
-}
+  Date: {
+    type: String,
+  },
 });
 
 const Operator = Mongoose.model("Operator", OperatorSchema);
