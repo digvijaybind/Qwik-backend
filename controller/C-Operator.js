@@ -137,6 +137,7 @@ exports.AddAircrafts = async (req, res, next) => {
         speed: req.body.speed,
         icao: icaoCode,
         country_name: country_name,
+        sr_no:req.body.sr_no
       };
 
       // Insert AirOperator into the database or perform other necessary actions
@@ -158,7 +159,8 @@ exports.AddAircrafts = async (req, res, next) => {
         speed: operator.speed,
         icao: operator.icao,
         country_name: operator.country_name,
-        margin:operator.margin
+        margin:operator.margin,
+        sr_no:operator.sr_no
         }
       }
      },
@@ -226,6 +228,7 @@ exports.AddAircrafts = async (req, res, next) => {
           speed: req.body.speed,
           icao: icaoCode,
           country_name: country_name,
+          sr_no:req.body.sr_no
         };
 
         // Insert AirOperator into the database or perform other necessary actions
@@ -246,7 +249,8 @@ exports.AddAircrafts = async (req, res, next) => {
         speed: operator.speed,
         icao: operator.icao,
         country_name: operator.country_name,
-        margin:operator.margin
+        margin:operator.margin,
+        sr_no:operator.sr_no
         }
       }
      },
@@ -280,6 +284,9 @@ exports.EditOperator = async (req, res) => {
     location: req?.body?.location,
     charges_per_hour: req?.body?.charges_per_hour,
     speed: req?.body?.speed,
+    icao:req?.body?.icao,
+    country_name:req?.body?.country_name,
+    sr_no:req?.body?.sr_no
   };
   console.log(AirOperator);
 
