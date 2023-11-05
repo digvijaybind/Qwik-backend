@@ -114,6 +114,7 @@ exports.AddAircrafts = async (req, res, next) => {
         Tail_sign: req.body.Tail_sign,
         location: req.body.location,
         charges_per_hour: req.body.charges_per_hour,
+        date:req.body.date,
         speed: req.body.speed,
         icao: icaoCode,
         country_name: country_name,
