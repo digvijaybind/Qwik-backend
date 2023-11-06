@@ -33,7 +33,7 @@ exports.Register = async (req, res, next) => {
     }
 
   } catch (error) {
-    console.log(error);
+    throw new Error(error)
   }
 };
 
