@@ -41,7 +41,7 @@ exports.Register = async (req, res, next) => {
       throw new Error("Operator already exist");
     }
   } catch (error) {
-    console.log(error);
+    throw new Error(error)
   }
 };
 
