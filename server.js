@@ -82,7 +82,7 @@ app.get("/all-airports", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({ error: 'Error fetching aircraft datas' });
+    res.status(500).json({ error: 'Error fetching aircraft data' });
 
   }
 });
@@ -96,8 +96,9 @@ app.use("/operator", OperatorRouter);
 app.use("/customer", CustomerRouter);
 
 app.use(errorMiddleware);
-const allRegisterRoutes = listEndpoints(app);
-console.log(allRegisterRoutes);
+
+
 app.listen(8000, () => {
-  console.log("node API app is running on port 8000");
+  console.log("node API app is running on port 3000");
+
 });

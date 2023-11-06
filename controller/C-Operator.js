@@ -301,7 +301,9 @@ exports.EditOperator = async (req, res) => {
 
   try {
     await operator.save();
-    res.status(200).json({success: true, message: "Operator is updated"});
+
+    res.status(200).json({ success: true, message: "Operator is updated sucessfully" });
+
   } catch (error) {
     res.status(500).json({
       success: false,
