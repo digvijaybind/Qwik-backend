@@ -11,7 +11,7 @@ const OperatorSchema = new Mongoose.Schema({
   },
   Contact_No: {
     type: Number,
-    required: true,
+    required: false,
   },
   password: {
     type: String,
