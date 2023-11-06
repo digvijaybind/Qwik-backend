@@ -1,19 +1,21 @@
 const bcrypt = require("bcrypt");
-const NodeCache = require('node-cache');
+const NodeCache = require("node-cache");
 const axios = require("axios");
+
 const { Operator} = require("../db/Operator");
 const Role=require("../db/role")
+
 
 const ErrorHandler = require("../utils/error-handler");
 const OperatorService = require("../services/operator-service");
 
-
 const generateToken = require("../configs/jwtToken");
 
-
 exports.Register = async (req, res, next) => {
+
   const { company_name, email_address, password,contact_number,country_name} = req.body;
   const role=Role.OPERATOR
+
   console.log(req.body);
 
   try {
@@ -28,15 +30,18 @@ exports.Register = async (req, res, next) => {
         email_address,
         contact_number,
         country_name,
+
         password: hashedPassword,
         role:role
         
       });
-      res.json(newUser);
+      // res.json(newUser);
 
       await newUser.save();
 
+
       res.status(201).json({ message: "Operator register successfully" });
+
     } else {
       throw new Error("Operator already exist");
     }
@@ -46,19 +51,23 @@ exports.Register = async (req, res, next) => {
 };
 
 exports.Login = async (req, res) => {
-  const { email_address, password } = req.body;
+  const {email_address, password} = req.body;
 
   try {
+
     const user = await Operator.findOne({ email_address });
     
 
+
     if (!user) {
-      return res.json({ message: "Incorrect email" });
+      return res.json({message: "Incorrect email"});
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
+
       return res.status(404).json({ message: "inCorrect password" });
+
     }
     if (user && passwordMatch) {
       const aircraftCreatedByOPerator=user.aircraftOperators
@@ -70,17 +79,16 @@ exports.Login = async (req, res) => {
         token: generateToken(user?._id),
         aircraftCreatedByOPerator:aircraftCreatedByOPerator
       });
-      return res.status(200).json({ message: "login succes fully done " });
+      return res.status(200).json({message: "login succes fully done "});
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 // Initialize a cache with a longer TTL (30 days)
-const cache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 }); // Cache data for 30 days
+const cache = new NodeCache({stdTTL: 30 * 24 * 60 * 60}); // Cache data for 30 days
 
-const EventEmitter = require('events');
-const TLSSocket = require('tls').TLSSocket;
+const EventEmitter = require("events");
+const TLSSocket = require("tls").TLSSocket;
 
 class MyTLSSocket extends TLSSocket {
   constructor() {
@@ -105,12 +113,11 @@ class MyTLSSocket extends TLSSocket {
     super.end();
 
     // Emit the 'close' event on the EventEmitter object
-    this.emitter.emit('close');
+    this.emitter.emit("close");
   }
 }
 
-// 
-
+//
 
 exports.AddAircrafts = async (req, res, next) => {
   try {
@@ -120,12 +127,13 @@ exports.AddAircrafts = async (req, res, next) => {
     const cachedData = cache.get(searchCity);
     if (cachedData) {
       // If cached data exists, use it instead of making an API call
-      const { icaoCode, country_name } = cachedData;
+      const {icaoCode, country_name} = cachedData;
       const AirOperator = {
         Aircraft_type: req.body.Aircraft_type,
         Tail_sign: req.body.Tail_sign,
         location: req.body.location,
         charges_per_hour: req.body.charges_per_hour,
+        date:req.body.date,
         speed: req.body.speed,
         icao: icaoCode,
         country_name: country_name,
@@ -134,6 +142,7 @@ exports.AddAircrafts = async (req, res, next) => {
 
       // Insert AirOperator into the database or perform other necessary actions
       const operator = await OperatorService.createOperator(AirOperator);
+
       
     
 
@@ -159,39 +168,44 @@ exports.AddAircrafts = async (req, res, next) => {
     );
     await operator.save();
       res.json({ message: "Aircraft created successfully", AirOperator });
+
     } else {
       // If not cached, make the API call
-    
-       const tlsSocket = new MyTLSSocket();
 
-       tlsSocket.on('close', () => {
-         // Remove the listener to avoid memory leaks
-         tlsSocket.emitter.removeListener('close', () => {
-           // ...
-         });
-       });
- 
+      const tlsSocket = new MyTLSSocket();
+
+      tlsSocket.on("close", () => {
+        // Remove the listener to avoid memory leaks
+        tlsSocket.emitter.removeListener("close", () => {
+          // ...
+        });
+      });
+
       const response = await axios.get(
         "https://dir.aviapages.com/api/airports/",
         {
           headers: {
-            "accept": "application/json",
-            "Authorization": process.env.AVID_API_TOKEN,
+            accept: "application/json",
+            Authorization: process.env.AVID_API_TOKEN,
           },
           params: {
             search_city: searchCity, // Include the search_city query parameter in the request
           },
-          socket: tlsSocket
+          socket: tlsSocket,
         }
       );
 
-      let icaoCode = '';
-      let country_name = '';
+      let icaoCode = "";
+      let country_name = "";
 
       if (response.status === 200) {
         if (response.data.results.length === 1) {
-          icaoCode = response.data.results[0] ? response.data.results[0].icao : null;
-          country_name = response.data.results[0] ? response.data.results[0].country_name : null;
+          icaoCode = response.data.results[0]
+            ? response.data.results[0].icao
+            : null;
+          country_name = response.data.results[0]
+            ? response.data.results[0].country_name
+            : null;
         } else if (response.data.results.length > 1) {
           const results = response.data.results;
           for (const result of results) {
@@ -204,7 +218,7 @@ exports.AddAircrafts = async (req, res, next) => {
         }
 
         // Cache the data for a month (30 days) for future use
-        cache.set(searchCity, { icaoCode, country_name });
+        cache.set(searchCity, {icaoCode, country_name});
 
         const AirOperator = {
           Aircraft_type: req.body.Aircraft_type,
@@ -243,7 +257,7 @@ exports.AddAircrafts = async (req, res, next) => {
       { new: true }
     );
         await operator.save();
-        res.json({ message: "Aircraft created successfully", AirOperator });
+        res.json({message: "Aircraft created successfully", AirOperator});
       } else {
         res.status(response.status).json({
           error: "Failed to fetch airport data",
@@ -259,10 +273,10 @@ exports.AddAircrafts = async (req, res, next) => {
 exports.getAirCraftOperatorLists = async (req, res) => {
   const operator = await OperatorService.getOperators();
 
-  res.json({ succes: true, message: "operator List found", data: operator });
+  res.json({succes: true, message: "operator List found", data: operator});
 };
 exports.EditOperator = async (req, res) => {
-  const { _id } = req.params;
+  const {_id} = req.params;
 
   const AirOperator = {
     Aircraft_type: req?.body?.Aircraft_type,
@@ -287,7 +301,9 @@ exports.EditOperator = async (req, res) => {
 
   try {
     await operator.save();
+
     res.status(200).json({ success: true, message: "Operator is updated sucessfully" });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -296,7 +312,7 @@ exports.EditOperator = async (req, res) => {
   }
 };
 exports.DeleteOperator = async (req, res) => {
-  const { _id } = req.params;
+  const {_id} = req.params;
   try {
     const deleteOperator = await OperatorService.deleteOperator(_id);
     res.json({
@@ -314,10 +330,10 @@ exports.DeleteOperator = async (req, res) => {
 exports.GetAllLocation = async (req, res) => {
   const operator = await OperatorService.getAllOperatorsLocation();
 
-  res.json({ succes: true, message: "operator List found", data: operator });
+  res.json({succes: true, message: "operator List found", data: operator});
 };
 exports.getSingleOperator = async (req, res) => {
-  const { _id } = req.params;
+  const {_id} = req.params;
 
   try {
     const operator = await OperatorService.getOperator(_id);
@@ -341,7 +357,7 @@ exports.getSingleOperator = async (req, res) => {
 };
 
 exports.getSearchFilter = async (req, res) => {
-  const { filter } = req.query;
+  const {filter} = req.query;
 
   try {
     const result = await OperatorService.getOpeartorsSearchFilter(filter);
