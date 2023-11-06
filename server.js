@@ -101,6 +101,6 @@ app.use("/customer", CustomerRouter);
 
 app.use(errorMiddleware);
 
-app.listen(3000, () => {
+app.listen(8000, () => {
   console.log("node API app is running on port 3000");
 });
