@@ -9,10 +9,6 @@ const OperatorSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  Contact_No: {
-    type: Number,
-    required: false,
-  },
   password: {
     type: String,
     required: true,
