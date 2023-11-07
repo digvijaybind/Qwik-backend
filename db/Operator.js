@@ -35,8 +35,6 @@ const OperatorSchema = new Mongoose.Schema({
       charges_per_hour:Number,
       speed:Number,
       margin:Number,
-      pax:Number,
-      departure_datetime:String,
       sr_no:Number
 
     }
