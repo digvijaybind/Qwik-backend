@@ -21,14 +21,17 @@ app.use(
     httpOnly: true,
   })
 );
-const corsOption = {
-  credentials: true,
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:8080",
-    "http://localhost:8000",
-  ],
-};
+// const corsOption = {
+//   credentials: true,
+//   origin: [
+//     "http://localhost:3000",
+//     "http://localhost:8080",
+//     "http://localhost:8000",
+    
+//   ],
+// };
+const corsOptions = {origin: process.env.ALLOW_ORIGIN};
+app.use(cors(corsOptions));
 app.use(cors());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
