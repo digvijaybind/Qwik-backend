@@ -1,5 +1,4 @@
 require("dotenv").config();
-const NodeCache = require('node-cache');
 const { Customer } = require("../db/Customer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -82,54 +81,6 @@ exports.Login = async (req, res) => {
   }
 };
 
-
-// Initialize a cache with a longer TTL (30 days)
-const myCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60, checkperiod: 120 });
-
-const EventEmitter = require('events');
-const TLSSocket = require('tls').TLSSocket;
-
-class MyTLSSocket extends TLSSocket {
-  constructor() {
-    super();
-
-    // Create an EventEmitter object to manage the listeners
-    this.emitter = new EventEmitter();
-  }
-
-  on(event, listener) {
-    // Add the listener to the EventEmitter object
-    this.emitter?.on(event, listener);
-  }
-
-  removeListener(event, listener) {
-    // Remove the listener from the EventEmitter object
-    this.emitter.removeListener(event, listener);
-  }
-
-  close() {
-    // Call the close() method on the TLSSocket object
-    super.end();
-
-    // Emit the 'close' event on the EventEmitter object
-    this.emitter.emit('close');
-  }
-}
-
-// Initialize the TLSSocket object by creating an instance of MyTLSSocket
-const tlsSocket = new MyTLSSocket();
-
-// Add a listener to the 'close' event on the EventEmitter object
-tlsSocket.on('close', () => {
-  console.log('Socket closed');
-});
-
-// Simulate a close event
-tlsSocket.close();
-
-
-
-
 exports.calculateFlightTime = async (req, res) => {
   const { From, To, Aircraft,Pax, Date } = req.body;
   let from = From.toString();
@@ -141,20 +92,6 @@ exports.calculateFlightTime = async (req, res) => {
   let data = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${aircraft}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
 
   async function fetchAirportData(departureAirportCode) {
-    const cacheKey = `airportData_${departureAirportCode}`;
-    const cachedData = myCache.get(cacheKey);
-
-    if (cachedData) {
-      return cachedData;
-    }
-    const tlsSocket = new MyTLSSocket();
-
-    tlsSocket.on('close', () => {
-      // Remove the listener to avoid memory leaks
-      tlsSocket.emitter.removeListener('close', () => {
-        // ...
-      });
-    });
     const responseSearch = await axios.get("https://dir.aviapages.com/api/airports/", {
       headers: {
         "accept": "application/json",
@@ -163,29 +100,15 @@ exports.calculateFlightTime = async (req, res) => {
       params: {
         search: departureAirportCode,
       },
-      socket: tlsSocket
+     
     });
 
-    myCache.set(cacheKey, responseSearch.data, 30 * 24 * 60 * 60); // Cache the response for 30 days
+  
     return responseSearch.data;
   }
 
   async function calculateFlightCost(departureAirport, operatorIcao, aircraft, pax, date) {
-    const cacheKey = `flightCost_${departureAirport}_${operatorIcao}_${aircraft}_${pax}_${date}`;
-    const cachedData = myCache.get(cacheKey);
 
-    if (cachedData) {
-      return cachedData;
-    }
-
-    const tlsSocket = new MyTLSSocket();
-
-    tlsSocket.on('close', () => {
-      // Remove the listener to avoid memory leaks
-      tlsSocket.emitter.removeListener('close', () => {
-        // ...
-      });
-    });
     const requestData = {
       departure_airport: departureAirport,
       arrival_airport: operatorIcao,
@@ -204,14 +127,12 @@ exports.calculateFlightTime = async (req, res) => {
         "Content-Type": "application/json",
         Authorization: process.env.AVID_API_TOKEN,
       },
-      data: requestData,
-      socket: tlsSocket
+      data: requestData
     };
 
     const response = await axios(aviapagesApiConfig);
 
     response.data.time.airway = response.data.time.airway / 60;
-    myCache.set(cacheKey, response.data, 30 * 24 * 60 * 60); // Cache the response for 30 days
     return response.data;
   }
 
@@ -297,6 +218,8 @@ exports.calculateFlightTime = async (req, res) => {
 
       const responseObj = {
         nearestOperatorWithPrice,
+        from:from,
+        to:to
       };
 
       return res.json(responseObj);
@@ -470,7 +393,6 @@ exports.calculateFlightTime = async (req, res) => {
               // Update the finalLegTechStopDepature
               finalLegTechStopDepatureOne = nextTechStop;
               if (airwayTimeResponse.data.time.airway != null) {
-
                 console.log("firstLeg", firstLegTime);
                 finalLegTechStopDepatureOne = airwayTimeResponse.data.airport.arrival_airport;
                 if (airwayTimeResponse.data.airport.arrival_airport != to) {
@@ -547,12 +469,16 @@ exports.calculateFlightTime = async (req, res) => {
             if (selectedTechStops.length >= 3) {
               const responseObj = {
                 nearestOperatorWithPriceForTechSTopGreaterThanThree,
+                from:from,
+                to:to
               };
               console.log("nearestOperator", responseObj);
               return res.json(responseObj);
             } else {
               const responseObj = {
                 nearestOperatorWithPrice,
+                from:from,
+                to:to
               };
               console.log("nearestOperator", responseObj);
               return res.json(responseObj);
