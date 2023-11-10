@@ -81,7 +81,9 @@ exports.Login = async (req, res) => {
       });
       return res.status(200).json({message: "login succes fully done "});
     }
-  } catch (error) {}
+  } catch (error) {
+    throw new Error(error)
+  }
 };
 
 // Initialize a cache with a longer TTL (30 days)
@@ -379,3 +381,23 @@ exports.getOperatorsLists= async (req, res) => {
  return res.json({ succes: true, message: "operator List found", data: operator });
 
 }
+
+exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
+  try {
+    const userOperator = req.operator;
+    if (!userOperator) {
+      return res.json({ message: "UserOperator Does Not Exist" });
+    }
+
+    const aircraftCreatedByOperator = userOperator.aircraftOperators;
+
+    res.status(200).json({
+      id: userOperator._id,
+      aircraftCreatedByOperator: aircraftCreatedByOperator,
+      message: "AirCraftOperator List Refreshed successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
