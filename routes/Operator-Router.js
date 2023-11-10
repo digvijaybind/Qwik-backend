@@ -31,6 +31,7 @@ router.delete(
 asyncMiddleware(OperatorController.DeleteOperator)
 );
 router.get("/getSingleOperator/:id", authMiddleware, asyncMiddleware(OperatorController.getSingleOperator));
+router.get("/operatorListsOfAircraftOPerators", authMiddleware, asyncMiddleware(OperatorController.getIndividualAirCraftOPeratorsLists))
 router.get("/searchOperator", authMiddleware, asyncMiddleware(OperatorController.getSearchFilter))
 router.get("/allLocation", asyncMiddleware(OperatorController.GetAllLocation))
 module.exports = router;
