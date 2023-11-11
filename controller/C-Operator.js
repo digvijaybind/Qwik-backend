@@ -70,14 +70,13 @@ exports.Login = async (req, res) => {
 
     }
     if (user && passwordMatch) {
-      const aircraftCreatedByOPerator=user.aircraftOperators
       res.json({
         id: user?._id,
         email_address,
         password,
 
         token: generateToken(user?._id),
-        aircraftCreatedByOPerator:aircraftCreatedByOPerator
+      
       });
       return res.status(200).json({message: "login succes fully done "});
     }
@@ -303,6 +302,14 @@ exports.EditOperator = async (req, res) => {
 
   try {
     await operator.save();
+      // Fetch the updated operator details with nested population
+      const updatedOperator = await Operator.findById(_id).populate({
+        path: 'aircraftOperators.aircraftOperator',
+        select: 'Aircraft_type Tail_sign location icao country_name charges_per_hour speed margin sr_no'
+      });
+  
+      // Update req.operator with the most recent changes
+      req.operator = updatedOperator;
 
     res.status(200).json({ success: true, message: "Operator is updated sucessfully" });
 
@@ -392,13 +399,20 @@ exports.getOperatorsLists= async (req, res) => {
 
 exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
   try {
-    const userOperator = req.operator;
+    // Fetch the userOperator details including the list of aircraft operators
+    const userOperator = await Operator.findById(req.operator._id).populate({
+      path: 'aircraftOperators.aircraftOperator',
+      select: 'Aircraft_type Tail_sign location icao country_name charges_per_hour speed margin sr_no',
+      model: 'AircraftOPerator'
+    });
+
     if (!userOperator) {
       return res.json({ message: "UserOperator Does Not Exist" });
     }
 
-    const aircraftCreatedByOperator = userOperator.aircraftOperators;
-
+    // Extract the list of aircraft operators from the populated userOperator
+     // Extract the list of aircraft operators from the populated userOperator
+     const aircraftCreatedByOperator = userOperator.aircraftOperators.map(operator => operator.aircraftOperator);
     res.status(200).json({
       id: userOperator._id,
       aircraftCreatedByOperator: aircraftCreatedByOperator,
@@ -409,3 +423,4 @@ exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
