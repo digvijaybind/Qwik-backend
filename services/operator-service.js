@@ -36,8 +36,8 @@ class OperatorService {
   return operator
   };
 
-  deleteOperator = async (_id) => {
-    return await AircraftOPerator.findOneAndDelete(_id);
+  deleteOperator = async (id) => {
+    return await AircraftOPerator.findByIdAndDelete(id);
 
   };
   createOperator = async (operator) => {
