@@ -317,15 +317,15 @@ exports.EditOperator = async (req, res) => {
   }
 };
 exports.DeleteOperator = async (req, res) => {
-  const {_id} = req.params;
+  const {id} = req.params;
   try {
 
     
-    const deleteOperator = await OperatorService.deleteOperator(_id);
+    const deleteOperator = await OperatorService.deleteOperator(id);
       // Remove all records of the deleted operator from aircraftOperators array
       await Operator.updateMany(
-        { 'aircraftOperators.aircraftOperator': deleteOperator._id },
-        { $pull: { aircraftOperators: { aircraftOperator: deleteOperator._id } } }
+        { 'aircraftOperators.aircraftOperator': deleteOperator.id },
+        { $pull: { aircraftOperators: { aircraftOperator: deleteOperator.id } } }
       );
   
     res.json({
