@@ -31,13 +31,13 @@ class OperatorService {
   getOperator = async (_id) => {
     return await AircraftOPerator.findOne(_id);
   };
-  updateOperator = async (_id, data) => {
-    const operator = await AircraftOPerator.findOneAndUpdate(_id, data, {new:true});
+  updateOperator = async (id, data) => {
+    const operator = await AircraftOPerator.findByIdAndUpdate(id, data, {new:true});
   return operator
   };
 
-  deleteOperator = async (_id) => {
-    return await AircraftOPerator.findOneAndDelete(_id);
+  deleteOperator = async (id) => {
+    return await AircraftOPerator.findByIdAndDelete(id);
 
   };
   createOperator = async (operator) => {

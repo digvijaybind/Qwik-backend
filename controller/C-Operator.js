@@ -70,13 +70,14 @@ exports.Login = async (req, res) => {
 
     }
     if (user && passwordMatch) {
+      const aircraftCreatedByOPerator=user.aircraftOperators
       res.json({
         id: user?._id,
         email_address,
         password,
 
         token: generateToken(user?._id),
-      
+        aircraftCreatedByOPerator:aircraftCreatedByOPerator
       });
       return res.status(200).json({message: "login succes fully done "});
     }
@@ -277,7 +278,7 @@ exports.getAirCraftOperatorLists = async (req, res) => {
   res.json({succes: true, message: "operator List found", data: operator});
 };
 exports.EditOperator = async (req, res) => {
-  const {_id} = req.params;
+  const {id} = req.params;
 
   const AirOperator = {
     Aircraft_type: req?.body?.Aircraft_type,
@@ -291,7 +292,7 @@ exports.EditOperator = async (req, res) => {
   };
   console.log(AirOperator);
 
-  const operator = await OperatorService.updateOperator(_id, AirOperator);
+  const operator = await OperatorService.updateOperator(id, AirOperator);
 
   if (!operator) {
     return res.status(404).json({
@@ -302,14 +303,9 @@ exports.EditOperator = async (req, res) => {
 
   try {
     await operator.save();
-      // Fetch the updated operator details with nested population
-      const updatedOperator = await Operator.findById(_id).populate({
-        path: 'aircraftOperators.aircraftOperator',
-        select: 'Aircraft_type Tail_sign location icao country_name charges_per_hour speed margin sr_no'
-      });
-  
-      // Update req.operator with the most recent changes
-      req.operator = updatedOperator;
+
+    
+
 
     res.status(200).json({ success: true, message: "Operator is updated sucessfully" });
 
@@ -321,15 +317,15 @@ exports.EditOperator = async (req, res) => {
   }
 };
 exports.DeleteOperator = async (req, res) => {
-  const {_id} = req.params;
+  const {id} = req.params;
   try {
 
     
-    const deleteOperator = await OperatorService.deleteOperator(_id);
+    const deleteOperator = await OperatorService.deleteOperator(id);
       // Remove all records of the deleted operator from aircraftOperators array
       await Operator.updateMany(
-        { 'aircraftOperators.aircraftOperator': deleteOperator._id },
-        { $pull: { aircraftOperators: { aircraftOperator: deleteOperator._id } } }
+        { 'aircraftOperators.aircraftOperator': deleteOperator.id },
+        { $pull: { aircraftOperators: { aircraftOperator: deleteOperator.id } } }
       );
   
     res.json({
@@ -390,32 +386,32 @@ exports.getSearchFilter = async (req, res) => {
   }
 };
 
-exports.getOperatorsLists= async (req, res) => {
-
- const operator=await Operator.find();
- return res.json({ succes: true, message: "operator List found", data: operator });
-
-}
 
 exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
   try {
-    // Fetch the userOperator details including the list of aircraft operators
-    const userOperator = await Operator.findById(req.operator._id).populate({
-      path: 'aircraftOperators.aircraftOperator',
-      select: 'Aircraft_type Tail_sign location icao country_name charges_per_hour speed margin sr_no',
-      model: 'AircraftOPerator'
-    });
+    const operatorId = req.operator._id;
 
-    if (!userOperator) {
-      return res.json({ message: "UserOperator Does Not Exist" });
+    // Fetch the operator and populate the latest data
+    const operator = await Operator.findById(operatorId)
+      .populate({
+        path: 'aircraftOperators.aircraftOperator',
+        model: 'AircraftOPerator',
+        select: 'Aircraft_type Tail_sign location icao country_name charges_per_hour speed margin sr_no',
+      });
+
+    if (!operator) {
+      return res.status(404).json({ message: "UserOperator Does Not Exist" });
     }
 
-    // Extract the list of aircraft operators from the populated userOperator
-     // Extract the list of aircraft operators from the populated userOperator
-     const aircraftCreatedByOperator = userOperator.aircraftOperators.map(operator => operator.aircraftOperator);
+    // Convert the operator to a plain JavaScript object
+    const operatorObject = operator.toObject();
+
+    // Extract only the aircraftOperator information
+    const aircraftOperators = operatorObject.aircraftOperators.map((entry) => entry.aircraftOperator);
+
     res.status(200).json({
-      id: userOperator._id,
-      aircraftCreatedByOperator: aircraftCreatedByOperator,
+      id: operatorObject._id,
+      aircraftCreatedByOperator: aircraftOperators,
       message: "AirCraftOperator List Refreshed successfully",
     });
   } catch (error) {
@@ -424,3 +420,10 @@ exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
   }
 };
 
+
+exports.getOperatorsLists= async (req, res) => {
+
+  const operator=await Operator.find();
+  return res.json({ succes: true, message: "operator List found", data: operator });
+ 
+ }

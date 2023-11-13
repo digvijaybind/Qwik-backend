@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
 const app = express();
@@ -13,6 +14,8 @@ const dotenv = require("dotenv");
 const listEndpoints = require("express-list-endpoints");
 require("./database/Database");
 dotenv.config();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}))
 
 app.use(
   cookieSession({
