@@ -15,7 +15,7 @@ const listEndpoints = require("express-list-endpoints");
 require("./database/Database");
 dotenv.config();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(
   cookieSession({
@@ -30,7 +30,7 @@ app.use(
 //     "http://localhost:3000",
 //     "http://localhost:8080",
 //     "http://localhost:8000",
-    
+
 //   ],
 // };
 const corsOptions = {origin: process.env.ALLOW_ORIGIN};
@@ -43,9 +43,10 @@ app.get("/", (req, res) => {
   res.send("Hello node API");
 });
 
-async function getAllAirports() {
+async function getAllAirports(req) {
   let allAirports = [];
-  let nextPage = "https://dir.aviapages.com/api/airports/";
+  console.log(req.query.q);
+  let nextPage = `https://dir.aviapages.com/api/airports?search=${req.query.q}`;
 
   while (nextPage) {
     try {
@@ -58,6 +59,7 @@ async function getAllAirports() {
 
       if (response.status === 200) {
         const pageData = response.data.results;
+        console.log("resultairports", pageData);
         allAirports = allAirports.concat(pageData);
         nextPage = response.data.next;
       } else {
@@ -75,21 +77,21 @@ async function getAllAirports() {
 
 app.get("/all-airports", async (req, res) => {
   try {
-    const airport = await getAllAirports();
-
+    const airport = await getAllAirports(req);
+    console.log("airport", airport);
     res.json(
-      airport.map((airport) => ({
-        airport_id: airport.airport_id,
-        country_name: airport.country_name,
-        icao: airport.icao,
-        city_name: airport.city_name,
-      }))
+      // airport.map((airport) => ({
+      //   // airport_id: airport.airport_id,
+      //   // country_name: airport.country_name,
+      //   // icao: airport.icao,
+      //   // city_name: airport.city_name,
+      // }))
+      airport
     );
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({ error: 'Error fetching aircraft data' });
-
+    res.status(500).json({error: "Error fetching aircraft data"});
   }
 });
 
@@ -103,8 +105,6 @@ app.use("/customer", CustomerRouter);
 
 app.use(errorMiddleware);
 
-
 app.listen(8000, () => {
   console.log("node API app is running on port 3000");
-
 });

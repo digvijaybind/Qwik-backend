@@ -22,16 +22,36 @@ router.get(
   authMiddleware,
   asyncMiddleware(OperatorController.getAirCraftOperatorLists)
 );
-router.get("/getOperatorLists", authMiddleware, asyncMiddleware(OperatorController.getOperatorsLists))
+router.get(
+  "/getOperatorLists",
+  authMiddleware,
+  asyncMiddleware(OperatorController.getOperatorsLists)
+);
 // router.get("/getOperator", authMiddleware, OperatorController.getOperatorlist);
-router.put("/editAircraft/:id", authMiddleware, asyncMiddleware(OperatorController.EditOperator));
+router.put(
+  "/editAircraft/:id",
+  authMiddleware,
+  asyncMiddleware(OperatorController.EditOperator)
+);
 router.delete(
   "/deleteAircraft/:id",
   authMiddleware,
-asyncMiddleware(OperatorController.DeleteOperator)
+  asyncMiddleware(OperatorController.DeleteOperator)
 );
-router.get("/getSingleOperator/:id", authMiddleware, asyncMiddleware(OperatorController.getSingleOperator));
-router.get("/operatorListsOfAircraftOPerators", authMiddleware, asyncMiddleware(OperatorController.getIndividualAirCraftOPeratorsLists))
-router.get("/searchOperator", authMiddleware, asyncMiddleware(OperatorController.getSearchFilter))
-router.get("/allLocation", asyncMiddleware(OperatorController.GetAllLocation))
+router.get(
+  "/getSingleOperator/:id",
+  authMiddleware,
+  asyncMiddleware(OperatorController.getSingleOperator)
+);
+router.get(
+  "/operatorListsOfAircraftOPerators",
+  authMiddleware,
+  asyncMiddleware(OperatorController.getIndividualAirCraftOPeratorsLists)
+);
+router.get(
+  "/searchOperator",
+  authMiddleware,
+  asyncMiddleware(OperatorController.getSearchFilter)
+);
+router.get("/allLocation", asyncMiddleware(OperatorController.GetAllLocation));
 module.exports = router;
