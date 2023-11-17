@@ -21,10 +21,11 @@ exports.Register = async (req, res, next) => {
         password: hashedPassword,
         role: role,
       });
-      res.json(newAdmin);
+      // res.json(newAdmin);
 
       await newAdmin.save();
       res.status(201).json({message: "Admin register suceesful"});
+      console.log("newAdmin", newAdmin);
     } else {
       throw new Error("Admin already exist");
     }
@@ -35,7 +36,7 @@ exports.Register = async (req, res, next) => {
 
 exports.Login = async (req, res) => {
   const {email, password} = req.body;
-
+  console.log("email", email);
   try {
     const admin = await Admin.findOne({email});
 
