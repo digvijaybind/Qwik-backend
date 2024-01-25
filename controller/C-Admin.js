@@ -24,7 +24,7 @@ exports.Register = async (req, res, next) => {
       // res.json(newAdmin);
 
       await newAdmin.save();
-      res.status(201).json({message: "Admin register suceesful"});
+      res.status(201).json({message: "Admin register successfully"});
       console.log("newAdmin", newAdmin);
     } else {
       throw new Error("Admin already exist");

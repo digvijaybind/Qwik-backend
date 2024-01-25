@@ -95,6 +95,10 @@ app.get("/all-airports", async (req, res) => {
   }
 });
 
+// app.get("/Customeradmin", (req, res) => {
+//   res.send("Hello this is");
+// });
+
 app.get("/blog", (req, res) => {
   res.send("Hello bog is running");
 });

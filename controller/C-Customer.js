@@ -7,12 +7,14 @@ const axios = require("axios");
 const {buildRequestConfig} = require("../configs/aviapi.config");
 const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
+
 const geocoder = NodeGeocoder({
   provider: "google", // Use the Google Maps Geocoding API
   apiKey: process.env.GOOGLE_API_KEY, // Replace with your actual API key
 });
 
 const path = require("path"); // If you need to read the JSON file
+const {response} = require("express");
 
 // Fresh all AirCraft into use
 const aircraftDataPath = path.join(__dirname, "../database/customaircfat.json");
@@ -612,4 +614,155 @@ exports.AirCraftData = async (req, res) => {
   } catch (error) {
     res.json({success: false, message: error});
   }
+};
+exports.AirlineBlog = async (req, res) => {
+  const apiUrl = "https://sky-scrapper.p.rapidapi.com/api/v1/checkServer";
+  const apiKey = "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483";
+  console.log("hii there");
+  try {
+    const response = await axios.get(apiUrl, {
+      headers: {
+        "X-RapidAPI-Key": "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483",
+        "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
+      },
+    });
+    return response.data;
+
+    if (response.data) {
+    }
+  } catch (error) {
+    throw new Error(`Error making API request: ${error.message}`);
+  }
+};
+
+exports.AirlineAmedeusAPi = async (req, res) => {
+  const apiKey = "s2qG72Mk2FuqLBEV6Vt3A2FHS6RfcZF4";
+  const apiSecret = "ub152w3bupvLylV4";
+
+  const apiEndpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+
+  // Replace this with any request parameters required by the API
+  const requestData = {
+    originLocationCode: "BOM",
+    destinationLocationCode: "DXB",
+    departureDate: "2024-01-26",
+    adults: "1",
+    max: "5",
+  };
+
+  // Make a POST request to the API with API key and API secret in the headers
+  axios
+    .post(apiEndpoint, requestData, {
+      headers: {
+        "Content-Type": "application/json",
+        "Api-Key": apiKey,
+        "Api-Secret": apiSecret,
+      },
+    })
+    .then((response) => {
+      // Handle the API response here
+      console.log(response.data);
+    })
+    .catch((error) => {
+      // Handle errors
+      console.error("Error:", error.message);
+    });
+};
+
+exports.AmedeusAPitoken = async (req, res) => {
+  const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+  const accessToken = "YdA14Es0fi0xgWfIiLu635biVy7B";
+  const AllAircraft = [];
+  const SortedAircraftByPrice = [];
+  const requestData = {
+    originLocationCode: "BOM",
+    destinationLocationCode: "ROM",
+    departureDate: "2024-01-29",
+    adults: 1,
+    max: 20,
+  };
+
+  const data = await axios
+    .get(apiUrl, {
+      params: requestData,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      console.log("response.data", response.data);
+
+      const sortedItemDataByPrice = response.data.data.sort(
+        (a, b) => a.price.grandTotal - b.price.grandTotal
+      );
+      console.log("sortedItemDataByPrice", sortedItemDataByPrice);
+      response.data.data.map((itemData) => {
+        // ...itemData,
+
+        console.log("itemData grand Total Price", itemData.price.grandTotal);
+        console.log("price", itemData.price.total);
+
+        const EachSegments = itemData.itineraries.map((data) => {
+          console.log("data.segments", data.segments);
+          data.segments.map((item) => {
+            console.log("item", item.carrierCode);
+          });
+ 
+
+          if (data.segments.length <= 2) {
+            AllAircraft.push(itemData.itineraries);
+          }
+
+          console.log(" AllAircraft", AllAircraft);
+
+          const filterByEqualCarrierCodes = (array) => {
+            return array.filter((innerArray) => {
+              const segments = innerArray[0].segments;
+              // Check if carrierCode of segment[0] is equal to carrierCode of segment[1]
+              return (
+                segments.length === 2 &&
+                segments[0].carrierCode === segments[1].carrierCode
+              );
+            });
+          };
+
+          const result = filterByEqualCarrierCodes(AllAircraft);
+          result.map((data) => {
+            console.log("innerData", data);
+            data.map((Data) => {
+              console.log("Single Data", Data);
+              Data.segments.map((data) => {
+                console.log("Inner Data part", data);
+              });
+            });
+          });
+          console.log("result", result);
+
+        
+
+          return AllAircraft;
+          console.log("AllAirportCode", AllAirportCode);
+
+          console.log("data.segments[1]", data.segments[1].carrierCode);
+          // data.
+
+          // data.segments.map((item) => {
+          //   console.log("itemSegments", item);
+          // });
+          // console.log("UpperItem All Aircrafts", AllAircraft);
+          // data.segments.map((item)=>{
+          //   item.carriercode==
+          // })
+        });
+        AllAircraft.map((aircraft) => {
+          // console.log(aircraft.segments[0]);
+        });
+        console.log("Each segment", AllAircraft[0].segments);
+        return AllAircraft;
+      });
+    })
+    .catch((error) => {
+      console.log("error", error.message);
+    });
 };
