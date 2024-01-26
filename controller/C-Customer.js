@@ -644,7 +644,7 @@ exports.AirlineAmedeusAPi = async (req, res) => {
   // Replace this with any request parameters required by the API
   const requestData = {
     originLocationCode: "BOM",
-    destinationLocationCode: "DXB",
+    destinationLocationCode: "ROM",
     departureDate: "2024-01-26",
     adults: "1",
     max: "5",
@@ -671,12 +671,12 @@ exports.AirlineAmedeusAPi = async (req, res) => {
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "YdA14Es0fi0xgWfIiLu635biVy7B";
+  const accessToken = "t9wxmc40cIryCJTxY7D0EAf2B9L4";
   const AllAircraft = [];
   const SortedAircraftByPrice = [];
   const requestData = {
     originLocationCode: "BOM",
-    destinationLocationCode: "ROM",
+    destinationLocationCode: "EWR",
     departureDate: "2024-01-29",
     adults: 1,
     max: 20,
@@ -697,9 +697,10 @@ exports.AmedeusAPitoken = async (req, res) => {
         (a, b) => a.price.grandTotal - b.price.grandTotal
       );
       console.log("sortedItemDataByPrice", sortedItemDataByPrice);
-      response.data.data.map((itemData) => {
+      sortedItemDataByPrice.map((itemData) => {
         // ...itemData,
 
+        console.log("itemData", itemData);
         console.log("itemData grand Total Price", itemData.price.grandTotal);
         console.log("price", itemData.price.total);
 
@@ -708,7 +709,6 @@ exports.AmedeusAPitoken = async (req, res) => {
           data.segments.map((item) => {
             console.log("item", item.carrierCode);
           });
- 
 
           if (data.segments.length <= 2) {
             AllAircraft.push(itemData.itineraries);
@@ -721,8 +721,9 @@ exports.AmedeusAPitoken = async (req, res) => {
               const segments = innerArray[0].segments;
               // Check if carrierCode of segment[0] is equal to carrierCode of segment[1]
               return (
-                segments.length === 2 &&
-                segments[0].carrierCode === segments[1].carrierCode
+                (segments.length == 1 ||
+                segments.length == 2 &&
+                  segments[0].carrierCode === segments[1].carrierCode)
               );
             });
           };
@@ -737,23 +738,24 @@ exports.AmedeusAPitoken = async (req, res) => {
               });
             });
           });
-          console.log("result", result);
 
-        
+          result.map((data) => {
+            console.log("data Own", data);
+            data.map((data) => {
+              console.log("Most inner loop", data);
+              data.segments.map((item) => {
+                console.log("ItemData", item);
+                // item.map((Data) => {
+                //   console.log("Data_Item", Data.itineraries);
+                // });
+              });
+            });
+          });
 
           return AllAircraft;
           console.log("AllAirportCode", AllAirportCode);
 
           console.log("data.segments[1]", data.segments[1].carrierCode);
-          // data.
-
-          // data.segments.map((item) => {
-          //   console.log("itemSegments", item);
-          // });
-          // console.log("UpperItem All Aircrafts", AllAircraft);
-          // data.segments.map((item)=>{
-          //   item.carriercode==
-          // })
         });
         AllAircraft.map((aircraft) => {
           // console.log(aircraft.segments[0]);
