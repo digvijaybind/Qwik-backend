@@ -644,7 +644,7 @@ exports.AirlineAmedeusAPi = async (req, res) => {
   // Replace this with any request parameters required by the API
   const requestData = {
     originLocationCode: "BOM",
-    destinationLocationCode: "ROM",
+    destinationLocationCode: "DXB",
     departureDate: "2024-01-26",
     adults: "1",
     max: "5",
@@ -671,12 +671,12 @@ exports.AirlineAmedeusAPi = async (req, res) => {
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "t9wxmc40cIryCJTxY7D0EAf2B9L4";
+  const accessToken = "pS2VhezE0aMmzWqqZsyMdyk6Cpge";
   const AllAircraft = [];
-  const SortedAircraftByPrice = [];
+  const Price = [];
   const requestData = {
     originLocationCode: "BOM",
-    destinationLocationCode: "EWR",
+    destinationLocationCode: "DXB",
     departureDate: "2024-01-29",
     adults: 1,
     max: 20,
@@ -700,11 +700,11 @@ exports.AmedeusAPitoken = async (req, res) => {
       sortedItemDataByPrice.map((itemData) => {
         // ...itemData,
 
-        console.log("itemData", itemData);
+        console.log("itemData 703", itemData);
         console.log("itemData grand Total Price", itemData.price.grandTotal);
-        console.log("price", itemData.price.total);
+        console.log("price 705", itemData.price.total);
 
-        const EachSegments = itemData.itineraries.map((data) => {
+        itemData.itineraries.map((data) => {
           console.log("data.segments", data.segments);
           data.segments.map((item) => {
             console.log("item", item.carrierCode);
@@ -712,51 +712,152 @@ exports.AmedeusAPitoken = async (req, res) => {
 
           if (data.segments.length <= 2) {
             AllAircraft.push(itemData.itineraries);
+            Price.push(itemData.price);
           }
-
-          console.log(" AllAircraft", AllAircraft);
-
-          const filterByEqualCarrierCodes = (array) => {
-            return array.filter((innerArray) => {
-              const segments = innerArray[0].segments;
-              // Check if carrierCode of segment[0] is equal to carrierCode of segment[1]
-              return (
-                (segments.length == 1 ||
-                segments.length == 2 &&
-                  segments[0].carrierCode === segments[1].carrierCode)
-              );
-            });
-          };
-
-          const result = filterByEqualCarrierCodes(AllAircraft);
-          result.map((data) => {
-            console.log("innerData", data);
-            data.map((Data) => {
-              console.log("Single Data", Data);
-              Data.segments.map((data) => {
-                console.log("Inner Data part", data);
-              });
-            });
-          });
-
-          result.map((data) => {
-            console.log("data Own", data);
-            data.map((data) => {
-              console.log("Most inner loop", data);
-              data.segments.map((item) => {
-                console.log("ItemData", item);
-                // item.map((Data) => {
-                //   console.log("Data_Item", Data.itineraries);
-                // });
-              });
-            });
-          });
-
-          return AllAircraft;
-          console.log("AllAirportCode", AllAirportCode);
-
-          console.log("data.segments[1]", data.segments[1].carrierCode);
         });
+
+        console.log(" AllAircraft line 717", AllAircraft);
+        console.log("AllAircraft line 720 ", Price);
+
+        //   //Sample data
+        //   // this is internal segments
+
+        //   // AllAircraft.map((Data) => {
+        //   //   console.log("Inner Data ", Data);
+        //   //   Data.map((item) => {
+        //   //     console.log("Inner Item segments", item.segments);
+        //   //   });
+        //   // });
+
+        //   // starting from here from filteration and price checking
+        const finaldata = {aircraft: AllAircraft, price: Price};
+        console.log("finaldata line 734 aircrafts", finaldata.aircraft.length);
+        console.log("finaldata line 734 price", finaldata.price.length);
+
+        // const filterByEqualCarrierCodes = (array) => {
+        //   return {
+        //     aircraft: array.aircraft.filter((innerArray) => {
+        //       innerArray.map((InternalArray) => {
+        //         console.log(InternalArray);
+        //       });
+        //       const segments = innerArray[0].segments;
+
+        //       return (
+        //         segments.length == 1 ||
+        //         (segments.length == 2 &&
+        //           segments[0].carrierCode === segments[1].carrierCode)
+        //       );
+        //     }),
+        //     price: array.price.filter((innerArray) => {
+        //       innerArray.map((InternalArray) => {
+        //         console.log(InternalArray);
+        //       });
+        //       const segments = innerArray[0].segments;
+        //       console.log("segments line 744", segments);
+        //       return (
+        //         segments.length == 1 ||
+        //         (segments.length == 2 &&
+        //           segments[0].carrierCode === segments[1].carrierCode)
+        //       );
+        //     }),
+        //   };
+        //   // return array.aircraft.filter((innerArray) => {
+        //   //   // console.log("innerArray", innerArray);
+        //   //   // innerArray.map((internalArray) => {
+        //   //   //   console.log("internalArray", internalArray.segments);
+        //   //   // });
+        //   //   // const segments = innerArray[0].segments;
+        //   //   // // Check if carrierCode of segment[0] is equal to carrierCode of segment[1]
+        //   //   // console.log("segments 739", segments);
+        //   //   // return (
+        //   //   //   segments.length == 1 ||
+        //   //   //   (segments.length == 2 &&
+        //   //   //     segments[0].carrierCode === segments[1].carrierCode)
+        //   //   // );
+
+        //   // });
+        // };
+
+        // const filterByEqualCarrierCodes = (array) => {
+        //   const filteredAircraft = array.aircraft.filter((innerArray) => {
+        //     // Log information for debugging
+        //     innerArray.map((InternalArray) => {
+        //       console.log(InternalArray);
+        //     });
+
+        //     // Get segments from the first item in innerArray
+        //     const segments = innerArray[0].segments;
+
+        //     // Check the condition for filtering
+        //     return (
+        //       segments.length === 1 ||
+        //       (segments.length === 2 &&
+        //         segments[0].carrierCode === segments[1].carrierCode)
+        //     );
+        //   });
+
+        //   // Now use the filtered aircraft to filter the price array
+        //   const filteredPrice = array.price.filter((innerArray) => {
+        //     // Log information for debugging
+        //     innerArray.map((InternalArray) => {
+        //       console.log(InternalArray);
+        //     });
+
+        //     // Get segments from the first item in innerArray
+        //     const segments = innerArray[0].segments;
+
+        //     // Check the condition for filtering based on the filteredAircraft condition
+        //     return (
+        //       filteredAircraft.some(
+        //         (aircraft) => aircraft[0].segments === segments
+        //       ) ||
+        //       segments.length === 1 ||
+        //       (segments.length === 2 &&
+        //         segments[0].carrierCode === segments[1].carrierCode)
+        //     );
+        //   });
+
+        //   return {
+        //     aircraft: filteredAircraft,
+        //     price: filteredPrice,
+        //   };
+        // };
+
+        // Example usage:
+
+        const result = filterByEqualCarrierCodes(finaldata);
+        console.log("result", result);
+
+        //   // result.map((data) => {
+        //   //   console.log("innerData", data);
+        //   //   data.map((Data) => {
+        //   //     console.log("Single Data", Data);
+        //   //     Data.segments.map((data) => {
+        //   //       console.log("Inner Data part", data);
+        //   //     });
+        //   //   });
+        //   // });
+
+        //   // console.log("Final Result", result);
+
+        //   // result.map((data) => {
+        //   //   console.log("data Own", data);
+        //   //   data.map((data) => {
+        //   //     console.log("Most inner loop", data);
+        //   //     data.segments.map((item) => {
+        //   //       console.log("ItemData 765", item);
+        //   //       // item.map((Data) => {
+        //   //       //   console.log("Data_Item", Data.itineraries);
+        //   //       // });
+        //   //     });
+        //   //   });
+        //   // });
+
+        //   return AllAircraft;
+        //   console.log("AllAirportCode", AllAirportCode);
+
+        //   console.log("data.segments[1]", data.segments[1].carrierCode);
+        // });
         AllAircraft.map((aircraft) => {
           // console.log(aircraft.segments[0]);
         });
