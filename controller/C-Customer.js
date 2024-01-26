@@ -671,12 +671,14 @@ exports.AirlineAmedeusAPi = async (req, res) => {
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "pS2VhezE0aMmzWqqZsyMdyk6Cpge";
-  const AllAircraft = [];
+  const accessToken = "4OSfvRk3qpHjXd8YW56pKIAqJrXu";
+  const SingleAllAircraft = [];
   const Price = [];
+  const SecondPrice = [];
+  const AllAircraft = [];
   const requestData = {
     originLocationCode: "BOM",
-    destinationLocationCode: "DXB",
+    destinationLocationCode: "ROM",
     departureDate: "2024-01-29",
     adults: 1,
     max: 20,
@@ -703,20 +705,25 @@ exports.AmedeusAPitoken = async (req, res) => {
         console.log("itemData 703", itemData);
         console.log("itemData grand Total Price", itemData.price.grandTotal);
         console.log("price 705", itemData.price.total);
-
+        console.log(" itemData.itineraries", itemData.itineraries);
         itemData.itineraries.map((data) => {
           console.log("data.segments", data.segments);
+
           data.segments.map((item) => {
             console.log("item", item.carrierCode);
+            if (data.segments.length <= 1) {
+              SingleAllAircraft.push(itemData.itineraries);
+              co;
+              Price.push(itemData.price);
+              console.log("SingleAllAircraft", SingleAllAircraft);
+            } else if (data.segments.length >= 2) {
+              AllAircraft.push(itemData.itineraries);
+              SecondPrice.push(itemData.price);
+            }
           });
-
-          if (data.segments.length <= 2) {
-            AllAircraft.push(itemData.itineraries);
-            Price.push(itemData.price);
-          }
         });
 
-        console.log(" AllAircraft line 717", AllAircraft);
+        console.log(" Single  AllAircraft line 717", SingleAllAircraft);
         console.log("AllAircraft line 720 ", Price);
 
         //   //Sample data
@@ -734,6 +741,9 @@ exports.AmedeusAPitoken = async (req, res) => {
         console.log("finaldata line 734 aircrafts", finaldata.aircraft.length);
         console.log("finaldata line 734 price", finaldata.price.length);
 
+        finaldata.aircraft.segments.map((data) => {
+          console.log("DataItem line 737", data);
+        });
         // const filterByEqualCarrierCodes = (array) => {
         //   return {
         //     aircraft: array.aircraft.filter((innerArray) => {
@@ -748,7 +758,7 @@ exports.AmedeusAPitoken = async (req, res) => {
         //           segments[0].carrierCode === segments[1].carrierCode)
         //       );
         //     }),
-        //     price: array.price.filter((innerArray) => {
+        //     price: array.prices.filter((innerArray) => {
         //       innerArray.map((InternalArray) => {
         //         console.log(InternalArray);
         //       });
@@ -778,56 +788,46 @@ exports.AmedeusAPitoken = async (req, res) => {
         //   // });
         // };
 
-        // const filterByEqualCarrierCodes = (array) => {
-        //   const filteredAircraft = array.aircraft.filter((innerArray) => {
-        //     // Log information for debugging
-        //     innerArray.map((InternalArray) => {
-        //       console.log(InternalArray);
-        //     });
+        const filterByEqualCarrierCodes = (array) => {
+          return {
+            aircraft: array.aircraft.filter((innerArray, index) => {
+              const segments = innerArray[0].segments;
 
-        //     // Get segments from the first item in innerArray
-        //     const segments = innerArray[0].segments;
+              const shouldInclude =
+                segments.length === 1 ||
+                (segments.length === 2 &&
+                  segments[0].carrierCode === segments[1].carrierCode);
 
-        //     // Check the condition for filtering
-        //     return (
-        //       segments.length === 1 ||
-        //       (segments.length === 2 &&
-        //         segments[0].carrierCode === segments[1].carrierCode)
-        //     );
-        //   });
+              return shouldInclude;
+            }),
+            price: array.price.filter((_, index) => {
+              const segments = array.aircraft[index][0].segments;
 
-        //   // Now use the filtered aircraft to filter the price array
-        //   const filteredPrice = array.price.filter((innerArray) => {
-        //     // Log information for debugging
-        //     innerArray.map((InternalArray) => {
-        //       console.log(InternalArray);
-        //     });
+              const shouldInclude =
+                segments.length === 1 ||
+                (segments.length === 2 &&
+                  segments[0].carrierCode === segments[1].carrierCode);
 
-        //     // Get segments from the first item in innerArray
-        //     const segments = innerArray[0].segments;
-
-        //     // Check the condition for filtering based on the filteredAircraft condition
-        //     return (
-        //       filteredAircraft.some(
-        //         (aircraft) => aircraft[0].segments === segments
-        //       ) ||
-        //       segments.length === 1 ||
-        //       (segments.length === 2 &&
-        //         segments[0].carrierCode === segments[1].carrierCode)
-        //     );
-        //   });
-
-        //   return {
-        //     aircraft: filteredAircraft,
-        //     price: filteredPrice,
-        //   };
-        // };
-
-        // Example usage:
+              return shouldInclude;
+            }),
+          };
+        };
 
         const result = filterByEqualCarrierCodes(finaldata);
-        console.log("result", result);
-
+        console.log("result aircrafts", result.aircraft.length);
+        console.log("result price", result.price.length);
+        result.aircraft.map((data) => {
+          console.log("data", data);
+          data.map((items) => {
+            console.log("Inner Item", items);
+            items.segments.map((itemseg) => {
+              console.log("itemseg", itemseg);
+            });
+          });
+        });
+        result.price.map((data) => {
+          console.log("data Price", data);
+        });
         //   // result.map((data) => {
         //   //   console.log("innerData", data);
         //   //   data.map((Data) => {
