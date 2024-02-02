@@ -615,74 +615,203 @@ exports.AirCraftData = async (req, res) => {
     res.json({success: false, message: error});
   }
 };
-exports.AirlineBlog = async (req, res) => {
-  const apiUrl = "https://sky-scrapper.p.rapidapi.com/api/v1/checkServer";
-  const apiKey = "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483";
-  console.log("hii there");
-  try {
-    const response = await axios.get(apiUrl, {
-      headers: {
-        "X-RapidAPI-Key": "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483",
-        "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
-      },
-    });
-    return response.data;
+// exports.AirlineBlog = async (req, res) => {
+//   const apiUrl = "https://sky-scrapper.p.rapidapi.com/api/v1/checkServer";
+//   const apiKey = "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483";
+//   console.log("hii there");
+//   try {
+//     const response = await axios.get(apiUrl, {
+//       headers: {
+//         "X-RapidAPI-Key": "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483",
+//         "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
+//       },
+//     });
+//     return response.data;
 
-    if (response.data) {
-    }
-  } catch (error) {
-    throw new Error(`Error making API request: ${error.message}`);
-  }
-};
+//     if (response.data) {
+//     }
+//   } catch (error) {
+//     throw new Error(`Error making API request: ${error.message}`);
+//   }
+// };
 
-exports.AirlineAmedeusAPi = async (req, res) => {
-  const apiKey = "s2qG72Mk2FuqLBEV6Vt3A2FHS6RfcZF4";
-  const apiSecret = "uJihMhM2w1AQ7MPCct247lyAOsiM";
+// exports.AirlineAmedeusAPi = async (req, res) => {
+//   const apiKey = "s2qG72Mk2FuqLBEV6Vt3A2FHS6RfcZF4";
+//   const apiSecret = "";
 
-  const apiEndpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+//   const apiEndpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers";
 
-  // Replace this with any request parameters required by the API
-  const requestData = {
-    originLocationCode: "BOM",
-    destinationLocationCode: "DXB",
-    departureDate: "2024-01-26",
-    adults: "1",
-    max: "5",
-  };
+//   // Replace this with any request parameters required by the API
+//   const requestData = {
+//     originLocationCode: "BOM",
+//     destinationLocationCode: "DXB",
+//     departureDate: "2024-01-29",
+//     adults: "1",
+//     max: "10",
+//   };
 
-  // Make a POST request to the API with API key and API secret in the headers
-  axios
-    .post(apiEndpoint, requestData, {
-      headers: {
-        "Content-Type": "application/json",
-        "Api-Key": apiKey,
-        "Api-Secret": apiSecret,
-      },
-    })
-    .then((response) => {
-      // Handle the API response here
-      console.log(response.data);
-    })
-    .catch((error) => {
-      // Handle errors
-      console.error("Error:", error.message);
-    });
-};
+//   // Make a POST request to the API with API key and API secret in the headers
+//   axios
+//     .post(apiEndpoint, requestData, {
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Api-Key": apiKey,
+//         "Api-Secret": apiSecret,
+//       },
+//     })
+//     .then((response) => {
+//       // Handle the API response here
+//       console.log(response.data);
+//     })
+//     .catch((error) => {
+//       // Handle errors
+//       console.error("Error:", error.message);
+//     });
+// };
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "aAdYSNtAIwJD0CpAj5KBCzv9n368";
+  const accessToken = "RxSBKkV9Ge44Aa4IANe3eatW2IqC";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
-  const ResponseData = {};
-  const requestData = {
-    originLocationCode: "BOM",
-    destinationLocationCode: "DXB",
-    departureDate: "2024-01-29",
-    adults: 1,
-    max: 20,
-  };
+  let ResponseData = {};
+  const FinalResponse = [];
+  let Finaldata;
 
+  const {originLocationCode, destinationLocationCode, departureDate, pax, max} =
+    req.body;
+
+  let OriginLocationCode = originLocationCode.toString();
+  let DestinationLocationCode = destinationLocationCode.toString();
+  let DepartureDate = departureDate.toString();
+  let Pax = Number(pax);
+  let Max = Number(max);
+
+  // function addDays(dateString, days) {
+  //   // Extract year, month, and day from the input date string
+  //   const [year, month, day] = dateString.split("-").map(Number);
+
+  //   // Check if the extracted components are valid
+  //   if (isNaN(year) || isNaN(month) || isNaN(day)) {
+  //     return "Invalid date format";
+  //   }
+
+  //   // Create a new Date object using the extracted components
+  //   const inputDate = new Date(year, month - 1, day);
+
+  //   // Check if the created date is valid
+  //   if (isNaN(inputDate.getTime())) {
+  //     return "Invalid date";
+  //   }
+
+  //   // Calculate the new date by adding the specified number of days
+  //   const resultDate = new Date(inputDate);
+  //   resultDate.setDate(inputDate.getDate() + days);
+
+  //   // Format the result as a string in the desired format (yyyy-mm-dd)
+  //   const newYear = resultDate.getFullYear();
+  //   const newMonth = (resultDate.getMonth() + 1).toString().padStart(2, "0");
+  //   const newDay = resultDate.getDate().toString().padStart(2, "0");
+
+  //   return `${newYear}-${newMonth}-${newDay}`;
+  // }
+
+  // function processDateExtension(dateString) {
+  //   // Assuming dateString is in the format 'yyyy-mm-dd'
+  //   const [year, month, day] = dateString.split("-").map(Number);
+
+  //   // Check if the extracted components are valid
+  //   if (isNaN(year) || isNaN(month) || isNaN(day)) {
+  //     return "Invalid date format";
+  //   }
+
+  //   // Create a new Date object using the extracted components
+  //   const inputDate = new Date(year, month - 1, day);
+  //   const currentDate = new Date();
+
+  //   // Check if the created date is valid
+  //   if (isNaN(inputDate.getTime())) {
+  //     return "Invalid date";
+  //   }
+
+  //   // Check if Input date is after the current date
+  //   if (inputDate.getTime() > currentDate.getTime()) {
+  //     return dateString; // Return the original date
+  //   }
+
+  //   // Check if the difference between the Input date and current date is less than 6 days
+  //   if (currentDate.getTime() - inputDate.getTime() < 6 * 24 * 60 * 60 * 1000) {
+  //     // Take 6 days extension
+  //     const resultDate = new Date(inputDate);
+  //     resultDate.setDate(inputDate.getDate() + 6);
+
+  //     // Format the result as a string in the desired format (yyyy-mm-dd)
+  //     const newYear = resultDate.getFullYear();
+  //     const newMonth = (resultDate.getMonth() + 1).toString().padStart(2, "0");
+  //     const newDay = resultDate.getDate().toString().padStart(2, "0");
+
+  //     return `${newYear}-${newMonth}-${newDay}`;
+  //   } else {
+  //     return dateString; // Return the original date
+  //   }
+  // }
+
+  function processDateExtension(dateString) {
+    // Assuming dateString is in the format 'yyyy-mm-dd'
+    const [year, month, day] = dateString.split("-").map(Number);
+
+    // Check if the extracted components are valid
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      return "Invalid date format";
+    }
+
+    // Create a new Date object using the extracted components
+    const inputDate = new Date(year, month - 1, day);
+    const currentDate = new Date();
+
+    // Check if the created date is valid
+    if (isNaN(inputDate.getTime())) {
+      return "Invalid date";
+    }
+
+    // Calculate the difference in milliseconds between the Input date and current date
+    const dateDifference = inputDate.getTime() - currentDate.getTime();
+
+    // Check if the user input date is less than current date or within the next 6 days
+    if (dateDifference < 6 * 24 * 60 * 60 * 1000) {
+      // Take 6 days extension
+      const resultDate = new Date(inputDate);
+      resultDate.setDate(inputDate.getDate() + 6);
+
+      // Format the result as a string in the desired format (yyyy-mm-dd)
+      const newYear = resultDate.getFullYear();
+      const newMonth = (resultDate.getMonth() + 1).toString().padStart(2, "0");
+      const newDay = resultDate.getDate().toString().padStart(2, "0");
+
+      return `${newYear}-${newMonth}-${newDay}`;
+    } else {
+      return dateString; // Return the original date without extension
+    }
+  }
+
+  // Example usage:
+  const userInput = "2024-01-31";
+  const daysToAdd = 6;
+  const backendProcessedDate = processDateExtension(DepartureDate);
+  // Process user input date on the backend
+  // const backendProcessedDate = addDays(, daysToAdd);
+
+  // console.log("User input date:", userInput);
+  // console.log("Backend processed date (6 days later):", backendProcessedDate);
+
+  const requestData = {
+    originLocationCode: OriginLocationCode,
+    destinationLocationCode: DestinationLocationCode,
+    departureDate: backendProcessedDate,
+    adults: Pax,
+    max: Max,
+  };
+  console.log("requestData", requestData);
   const data = await axios
     .get(apiUrl, {
       params: requestData,
@@ -691,6 +820,7 @@ exports.AmedeusAPitoken = async (req, res) => {
         "Content-Type": "application/json",
       },
     })
+
     // .then((response) => {
     //   console.log("response.data", response.data);
 
@@ -872,7 +1002,10 @@ exports.AmedeusAPitoken = async (req, res) => {
               }
             );
             console.log("sortedAircraftByPrice", sortedAircraftByPrice);
+            // FinalResponse.push(sortedAircraftByPrice);
+            // console.log("FinalResponse line 877 ", FinalResponse);
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
+            // FinalResponse.push(sortedAircraftByPrice);
             console.log("Final Price without tech halt line 876", ResponseData);
           } else if (itinerarie.segments.length >= 2) {
             TechStopAircraft.push({
@@ -903,9 +1036,296 @@ exports.AmedeusAPitoken = async (req, res) => {
             );
 
             console.log("Filtered Aircraft", filteredAircraft);
+
+            // FinalResponse.push(filteredAircraft);
+            // console.log(
+            //   "final Response both the object line 911",
+            //   FinalResponse
+            // );
             ResponseData.AirCraftDatawithtechStop = filteredAircraft;
             console.log("FInal data line 907", ResponseData);
           }
+
+          console.log("ResponseData", ResponseData);
+          // ResponseData = (item) => {
+          //   item.price.forEach((priceItem) => {
+          //     priceItem.pricewithmargin = priceItem.grandTotal * 2;
+          //     (priceItem.ActualPrice = priceItem.total * 9),
+          //       (priceItem.ActualPrice = priceItem.total * 9);
+          //     console.log(
+          //       "priceItem.ActualPrice line 923",
+          //       priceItem.ActualPrice
+          //     );
+          //   });
+          // };
+
+          // finaldata.datawithnotechstop.forEach(transformfinaldata);
+          // finaldata.datawithtechstop.forEach(transformfinaldata);
+
+          // console.log(finaldata);
+          console.log("Final Response Data line 937", ResponseData);
+
+          // const transformfinaldata = (item) => {
+          //   item.price.forEach((priceItem) => {
+          //     priceItem.pricewithmargin = priceItem.grandTotal * 2;
+          //     (priceItem.ActualPrice = priceItem.total * 9),
+          //       (priceItem.ActualPrice = priceItem.total * 9);
+          //   });
+          // };
+
+          // ResponseData.AirCraftDatawithNotechStop.price.forEach(
+          //   transformfinaldata
+          // );
+          // ResponseData.AirCraftDatawithtechStop.price.forEach(
+          //   transformfinaldata
+          // );
+
+          console.log("ResponseData", ResponseData);
+
+          // this is code actual code
+
+          if (
+            ResponseData &&
+            ResponseData.AirCraftDatawithNotechStop &&
+            ResponseData.AirCraftDatawithNotechStop.length !== undefined &&
+            ResponseData.AirCraftDatawithNotechStop.length !== 0
+          ) {
+            Finaldata = ResponseData.AirCraftDatawithNotechStop;
+            console.log("data line 958 Direct flight", Finaldata);
+
+            Finaldata = ResponseData.AirCraftDatawithNotechStop;
+            console.log("data line 958 One tech halt flight", Finaldata);
+            Finaldata.map((data) => {
+              console.log("FInal prices line 968", data.price.grandTotal);
+
+              // Calculate Actual_Price and Total_Price outside the inner loops
+              const Actual_Price = data.price.grandTotal * 0.07;
+              const Total_Price = Actual_Price * 9 + 0.1;
+              console.log("Total_Price_1 line 1104", Total_Price);
+
+              data.aircraft.map((innerData) => {
+                console.log("Inner array data", innerData);
+                innerData.segments.flat().map((item) => {
+                  console.log("Item data line 973", item);
+                  // Perform calculations using Actual_Price and Total_Price here if needed
+                });
+              });
+            });
+            console.log("length of aircraft for line 981", Finaldata.length);
+            Finaldata.map((data) => {
+              console.log("FInal prices line 968 ", data.price.grandTotal);
+              const price = parseFloat(data.price.grandTotal);
+              console.log("price12", price);
+              const a = 7;
+              const b = 20;
+              const totalPrice =
+                (price + (price * a) / 100) * 9 +
+                ((price + (price * a) / 100) * 9 * b) / 100;
+
+              console.log("Total Price: line 993", totalPrice);
+
+              // let abc = (price * 7) / 100;
+              // let bcd = abc + 100;
+              // const totalPrice =
+              //   price +
+              //   ((price * 7) / 100) * 9 +
+              //   ((price + ((price * 7) / 100) * 9) * 20) / 100;
+
+              // console.log("Actual_price line 991", bcd);
+              data.aircraft.map((innerData) => {
+                console.log("Inner array data", innerData);
+                innerData.segments.flat().map((item) => {
+                  console.log("Item data line 973", item);
+                  // Perform calculations using Actual_Price and Total_Price here if needed
+                });
+              });
+            });
+          } else if (
+            ResponseData &&
+            ResponseData.AirCraftDatawithtechStop &&
+            ResponseData.AirCraftDatawithtechStop.length !== undefined &&
+            ResponseData.AirCraftDatawithtechStop.length !== 0
+          ) {
+            Finaldata = ResponseData.AirCraftDatawithtechStop;
+            console.log("finaldata line 1059", Finaldata);
+            // Finaldata.aircraft.map((Innerdata) => {
+            //   console.log("Innerdata line 1061", Innerdata);
+            // });
+
+            Finaldata.map((data) => {
+              console.log("Data line 1062", data);
+              const price = parseFloat(data.price.grandTotal);
+              data.aircraft.map((item) => {
+                console.log("inner Item line 1068", item);
+                item.segments.map((Data) => {
+                  console.log("Inner data line 1070", Data);
+                });
+              });
+
+              const a = 7;
+              const b = 20;
+              const totalPrice =
+                (price + (price * a) / 100) * 9 +
+                ((price + (price * a) / 100) * 9 * b) / 100;
+
+              console.log("Total Price: line 1066", totalPrice);
+              console.log(
+                "Finaldata.price.grandTotal line 1068",
+                Finaldata.map((data) => {
+                  console.log("FInal prices line 1070", data.price.grandTotal);
+
+                  const Actual_Price = data.price.grandTotal * 0.07;
+                  const Total_Price = Actual_Price * 9 + 0.1;
+                  console.log("Total_Price_2 line number 1088", Total_Price);
+                })
+              );
+            });
+          }
+
+          // this is code structure
+          console.log("Final data line 962", Finaldata);
+
+          // ResponseData.AirCraftDatawithNotechStop.map((Data) => {
+          //   console.log("Data line 937", Data);
+          // });
+
+          // ResponseData.AirCraftDatawithNotechStop.map((data) => {
+          //   console.log("data line 944", data);
+          // });
+
+          // ResponseData.AirCraftDatawithtechStop.map((data) => {
+          //   console.log(
+          //     "data line 948 with total price",
+          //     data.price.grandTotal
+          //   );
+
+          //   const Actual_Price =
+          //     data.price.grandTotal + (20 / data.price.grandTotal) * 100;
+
+          //   console.log("Actual_Price for single flight", Actual_Price);
+
+          //   const Price_with_margin = Actual_Price * 9;
+
+          //   // console.log("Price_with_margin", Price_with_margin);
+          //   data.aircraft.map((item) => {
+          //     console.log("item data segments", item.segments);
+          //   });
+          // });
+
+          // ResponseData.AirCraftDatawithtechStop.map((data) => {
+          //   console.log("Data line 941", data);
+          // });
+
+          // ResponseData.AirCraftDatawithtechStop.map((data) => {
+          //   console.log("Data line 946", data);
+          //   console.log("line number 946 price", data.price);
+          // });
+
+          // ResponseData.AirCraftDatawithNotechStop.map((Data) => {
+          //   console.log("Data", Data);
+          //   console.log(
+          //     "ResponseData.AirCraftDatawithNotechStop.price",
+          //     Data.price
+          //   );
+          //   const Actual_Price = NOdata.price.grandTotal * (20 / 100) * 100;
+          //   const Final_Price = Actual_Price * 9 + (25 / 100) * 100;
+          // });
+          // console.log("Our Final Price", Final_Price);
+
+          // console.log("FInal Response", ResponseData);
+          // FinalResponse.map((data) => {
+          //   console.log("data line 920", data);
+          //   data.map;
+          // });
+
+          // ResponseData.AirCraftDatawithNotechStop.map((data) => {
+          //   console.log("Line number 925", data);
+          //   data.price.map((item) => {
+          //     console.log("item", item);
+          //   });
+          // });
+
+          // function mapPrices(data) {
+          //   const data1 = data.map((item) => item?.price);
+          //   return data1;
+          // }
+          // const pricesNoTechstop = mapPrices(
+          //   ResponseData.AirCraftDatawithNotechStop
+          // );
+          // console.log("pricesNoTechstop line 931", pricesNoTechstop);
+
+          // const pricesTechStop = mapPrices(
+          //   ResponseData.AirCraftDatawithtechStop
+          // );
+
+          // console.log("pricesTechStop line 937", pricesTechStop);
+
+          // console.log("Prices for AirCraftDatawithNotechStop:");
+          // ResponseData.AirCraftDatawithNotechStop.forEach((item) => {
+          //   const price = item.price;
+          //   console.log(price);
+          // });
+
+          // Mapping and logging prices for AirCraftDatawithtechStop
+
+          // console.log("\nPrices for AirCraftDatawithtechStop:");
+          // ResponseData.AirCraftDatawithtechStop.forEach((item) => {
+          //   const price = item.price;
+          //   console.log(price);
+          // });
+
+          // ResponseData.AirCraftDatawithNotechStop.map((NOdata) => {
+          //   console.log("No data", NOdata);
+          //   console.log("NOdata.aircraft", NOdata.aircraft);
+          //   NOdata.aircraft.map((data) => {
+          //     console.log("data.segments", data.segments);
+          //   });
+          // const Actual_Price = NOdata.price.grandTotal * (20 / 100) * 100;
+          // const Final_Price = Actual_Price * 9 + (25 / 100) * 100;
+          //   console.log("Our Final Price", Final_Price);
+          // });
+          // ResponseData.AirCraftDatawithtechStop.map((Data) => {
+          //   console.log("Data line 921", Data);
+          //   // Data.aircraft.map((itemdata) => {
+          //   //   console.log("itemdata", itemdata);
+          //   // });
+          // });
+
+          // const updatedData = {
+          //   AirCraftDatawithNotechStop:
+          //     ResponseData.AirCraftDatawithNotechStop.map((item) => {
+          //       const Actual_Price = item.price.grandTotal * (20 / 100) * 100;
+          //       const Final_Price = Actual_Price * 9 + (25 / 100) * 100;
+
+          //       console.log(
+          //         `Original Price: ${item.price.grandTotal}, Updated Price: ${Final_Price}`
+          //       );
+
+          //       return {
+          //         aircraft: item.aircraft,
+          //         price: {
+          //           grandTotal: Final_Price,
+          //         },
+          //       };
+          //     }),
+          //   AirCraftDatawithtechStop: ResponseData.AirCraftDatawithtechStop.map(
+          //     (item) => {
+          //       const Actual_Price = item.price.grandTotal * (20 / 100) * 100;
+          //       const Final_Price = Actual_Price * 9 + (25 / 100) * 100;
+
+          //       console.log(
+          //         `Original Price: ${item.price.grandTotal}, Updated Price: ${Final_Price}`
+          //       );
+
+          //       return {
+          //         aircraft: item.aircraft,
+          //         price: {
+          //           grandTotal: Final_Price,
+          //         },
+          //       };
+          //     }
+          //   ),
+          // };
         });
       });
     })
