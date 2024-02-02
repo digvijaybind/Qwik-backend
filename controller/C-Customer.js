@@ -671,7 +671,7 @@ exports.AirCraftData = async (req, res) => {
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "RxSBKkV9Ge44Aa4IANe3eatW2IqC";
+  const accessToken = "D8FuCoGIbnj2pAnebfKUgc52kuQ6";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -684,6 +684,7 @@ exports.AmedeusAPitoken = async (req, res) => {
   let OriginLocationCode = originLocationCode.toString();
   let DestinationLocationCode = destinationLocationCode.toString();
   let DepartureDate = departureDate.toString();
+  // let CurrencyCode = currencyCode.toString();
   let Pax = Number(pax);
   let Max = Number(max);
 
@@ -809,6 +810,7 @@ exports.AmedeusAPitoken = async (req, res) => {
     destinationLocationCode: DestinationLocationCode,
     departureDate: backendProcessedDate,
     adults: Pax,
+    // currencyCode: CurrencyCode,
     max: Max,
   };
   console.log("requestData", requestData);
