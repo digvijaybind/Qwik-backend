@@ -671,7 +671,7 @@ exports.AirCraftData = async (req, res) => {
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "rTeKcz0od40P1VsudIRC8uhxx9Qo";
+  const accessToken = "h5fyEAaHDTgeFZV7ha82y9JAWlWP";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -908,13 +908,15 @@ exports.AmedeusAPitoken = async (req, res) => {
               const totalPrice =
                 (price + (price * a) / 100) * 9 +
                 ((price + (price * a) / 100) * 9 * b) / 100;
-              console.log("totalPrice", totalPrice);
+              console.log("totalPrice ????? ", totalPrice);
 
               const aircraftData = [];
 
               flight.aircraft.forEach((aircraft) => {
                 const segmentsData = [];
-
+                aircraft.segments.map((data) => {
+                  console.log("segment line 920", data);
+                });
                 aircraft.segments.forEach((segment) => {
                   segmentsData.push(segment);
                 });
@@ -928,10 +930,16 @@ exports.AmedeusAPitoken = async (req, res) => {
                 totalPrice,
                 aircraft: aircraftData,
               };
+              console.log("result line 931", result);
+
+              // result.map((Innerdata) => {
+              //   console.log("InnerData line 934", Innerdata);
+              // });
 
               results.push(result);
             });
             console.log("results", results);
+
             return results;
           }
         });
