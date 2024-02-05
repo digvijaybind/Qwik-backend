@@ -671,7 +671,7 @@ exports.AirCraftData = async (req, res) => {
 
 exports.AmedeusAPitoken = async (req, res) => {
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "2UHzWd0STov0ulJEqd8ExSMdI2yG";
+  const accessToken = "rTeKcz0od40P1VsudIRC8uhxx9Qo";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -932,7 +932,7 @@ exports.AmedeusAPitoken = async (req, res) => {
               results.push(result);
             });
             console.log("results", results);
-            res.json(results);
+            return results;
           }
         });
       });
@@ -947,5 +947,3 @@ exports.AmedeusAPitoken = async (req, res) => {
       });
     });
 };
-
-exports.TraveloProAPi = async (req, res) => {};
