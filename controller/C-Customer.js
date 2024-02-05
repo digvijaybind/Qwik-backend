@@ -670,8 +670,12 @@ exports.AirCraftData = async (req, res) => {
 // };
 
 exports.AmedeusAPitoken = async (req, res) => {
+
+  
+ try {
+  
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "h5fyEAaHDTgeFZV7ha82y9JAWlWP";
+  const accessToken = "vlxfjB0O7x1mspFy5bdB5nDBzmHD";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -814,74 +818,7 @@ exports.AmedeusAPitoken = async (req, res) => {
 
           console.log("ResponseData", ResponseData);
 
-          // if (
-          //   ResponseData &&
-          //   ResponseData.AirCraftDatawithNotechStop &&
-          //   ResponseData.AirCraftDatawithNotechStop.length !== undefined &&
-          //   ResponseData.AirCraftDatawithNotechStop.length !== 0
-          // ) {
-          //   Finaldata = ResponseData.AirCraftDatawithNotechStop;
-          //   console.log("data line 958 Direct flight", Finaldata);
-
-          //   console.log("length of aircraft for line 981", Finaldata.length);
-          //   // Finaldata.map((data) => {
-          //   //   console.log("FInal prices line 968 ", data.price.grandTotal);
-          //   //   const price = parseFloat(data.price.grandTotal);
-          //   //   console.log("price12", price);
-          //   //   const a = 7;
-          //   //   const b = 20;
-          //   //   const totalPrice =
-          //   //     (price + (price * a) / 100) * 9 +
-          //   //     ((price + (price * a) / 100) * 9 * b) / 100;
-
-          //   //   console.log("Total Price: line 993", totalPrice);
-
-          //   //   data.aircraft.map((innerData) => {
-          //   //     console.log("Inner array data", innerData);
-          //   //     innerData.segments.flat().map((item) => {
-          //   //       console.log("Item data line 973", item);
-          //   //     });
-          //   //   });
-          //   //   return res.status(200).json(responseData);
-          //   // });
-          // } else if (
-          //   ResponseData &&
-          //   ResponseData.AirCraftDatawithtechStop &&
-          //   ResponseData.AirCraftDatawithtechStop.length !== undefined &&
-          //   ResponseData.AirCraftDatawithtechStop.length !== 0
-          // ) {
-          //   Finaldata = ResponseData.AirCraftDatawithtechStop;
-          //   console.log("finaldata line 1059", Finaldata);
-
-          //   Finaldata.map((data) => {
-          //     console.log("Data line 1062", data);
-          //     const price = parseFloat(data.price.grandTotal);
-          //     data.aircraft.map((item) => {
-          //       console.log("inner Item line 1068", item);
-          //       item.segments.map((Data) => {
-          //         console.log("Inner data line 1070", Data);
-          //       });
-          //     });
-
-          //     const a = 7;
-          //     const b = 20;
-          //     const totalPrice =
-          //       (price + (price * a) / 100) * 9 +
-          //       ((price + (price * a) / 100) * 9 * b) / 100;
-
-          //     console.log("Total Price: line 1066", totalPrice);
-          //     console.log(
-          //       "Finaldata.price.grandTotal line 1068",
-          //       Finaldata.map((data) => {
-          //         console.log("FInal prices line 1070", data.price.grandTotal);
-
-          //         const Actual_Price = data.price.grandTotal * 0.07;
-          //         const Total_Price = Actual_Price * 9 + 0.1;
-          //         console.log("Total_Price_2 line number 1088", Total_Price);
-          //       })
-          //     );
-          //   });
-          // }
+      
           let Finaldata = [];
 
           if (ResponseData) {
@@ -939,19 +876,18 @@ exports.AmedeusAPitoken = async (req, res) => {
               results.push(result);
             });
             console.log("results", results);
-
-            return results;
+            return res.json(results)
           }
         });
       });
     })
-    .catch((error) => {
-      console.error("error", error.message);
-      return res.status(500).json({
-        success: false,
-        message: "Internal Server Error",
-        finaldata: null,
-        totalPrice: null,
-      });
+ } catch (error) {
+ 
+    console.error("error", error.message);
+    res.json({
+      msg: error,
     });
+
+ }
+   
 };
