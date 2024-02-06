@@ -675,7 +675,7 @@ exports.AmedeusAPitoken = async (req, res) => {
  try {
   
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "vlxfjB0O7x1mspFy5bdB5nDBzmHD";
+  const accessToken = "DruDdDM3cz3jr5r3hvMzWWYLNU5Q";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -755,124 +755,190 @@ exports.AmedeusAPitoken = async (req, res) => {
 
     .then((response) => {
       console.log("response Data data line 989", response.data.data);
-      response.data.data.map((itemData) => {
-        console.log("itemdata", itemData);
-        console.log("itemdata price", itemData.price.grandTotal);
-        itemData.itineraries.map((itinerarie) => {
-          console.log("data.itineraries", itinerarie.segments.length);
-          if (itinerarie.segments.length == 1) {
-            SingleAllAircraft.push({
-              aircraft: itemData.itineraries,
-              price: itemData.price,
-            });
-            console.log("SingleAllAircraft", SingleAllAircraft.length);
+      // responseArray.forEach((itemData) => {
+      //   itemData.itineraries.forEach((itinerarie) => {
+      //     console.log("data.itineraries", itinerarie.segments.length);
+      //     if (itinerarie.segments.length === 1) {
+      //       SingleAllAircraft.push({
+      //         aircraft: itinerarie,
+      //         price: itemData.price,
+      //       });
+      //     }
+      //   });
+      // });
 
-            const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
-              (a, b) => {
-                a.price.grandTotal - b.price.grandTotal;
-              }
-            );
-            console.log("sortedAircraftByPrice", sortedAircraftByPrice);
-            // FinalResponse.push(sortedAircraftByPrice);
-            // console.log("FinalResponse line 877 ", FinalResponse);
-            ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
-            // FinalResponse.push(sortedAircraftByPrice);
-            console.log("Final Price without tech halt line 876", ResponseData);
-          } else if (itinerarie.segments.length >= 2) {
-            TechStopAircraft.push({
-              aircraft: itemData.itineraries,
-              price: itemData.price,
-            });
-            console.log("TechStopAllAircraft length", TechStopAircraft.length);
-            const sortedTechSTopAircraftByPrice = TechStopAircraft.slice().sort(
-              (a, b) => {
-                a.price.grandTotal - b.price.grandTotal;
-              }
-            );
-            console.log(
-              "sortedTechSTopAircraftByPrice",
-              sortedTechSTopAircraftByPrice
-            );
 
-            const filteredAircraft = sortedTechSTopAircraftByPrice.filter(
-              (aircraftData) => {
-                return aircraftData.aircraft.some((Data) => {
-                  return (
-                    Data.segments.length >= 2 &&
-                    Data.segments[0].carrierCode ===
-                      Data.segments[1].carrierCode
-                  );
-                });
-              }
-            );
 
-            console.log("Filtered Aircraft", filteredAircraft);
-
-            ResponseData.AirCraftDatawithtechStop = filteredAircraft;
-            console.log("FInal data line 907", ResponseData);
-          }
-
-          console.log("ResponseData", ResponseData);
-
-          console.log("Final Response Data line 937", ResponseData);
-
-          console.log("ResponseData", ResponseData);
-
-      
-          let Finaldata = [];
-
-          if (ResponseData) {
-            const directFlightData = ResponseData.AirCraftDatawithNotechStop;
-            const techStopFlightData = ResponseData.AirCraftDatawithtechStop;
-
-            if (directFlightData && directFlightData.length) {
-              Finaldata = directFlightData;
-              processFlightData("Direct flight", Finaldata);
-            } else if (techStopFlightData && techStopFlightData.length) {
-              Finaldata = techStopFlightData;
-              processFlightData("Tech stop", Finaldata);
-            }
-          }
-
-          function processFlightData(type, data) {
-            const results = [];
-
-            data.forEach((flight) => {
-              const price = parseFloat(flight.price.grandTotal);
-              const a = 7;
+      response.data.data.forEach((itemData) => {
+        const a = 7;
               const b = 20;
 
-              const totalPrice =
-                (price + (price * a) / 100) * 9 +
-                ((price + (price * a) / 100) * 9 * b) / 100;
-              console.log("totalPrice", totalPrice);
-
-              const aircraftData = [];
-
-              flight.aircraft.forEach((aircraft) => {
-                const segmentsData = [];
-
-                aircraft.segments.forEach((segment) => {
-                  segmentsData.push(segment);
-                });
-
-                aircraftData.push({
-                  aircraftInfo: aircraft,
-                  segments: segmentsData,
-                });
-              });
-              const result = {
-                totalPrice,
-                aircraft: aircraftData,
-              };
-
-              results.push(result);
-            });
-            console.log("results", results);
-            return res.json(results)
-          }
+        const qualifyingItinerariesForNoTechStop = itemData.itineraries.filter((itinerarie) => {
+          return itinerarie.segments.length ===1;
         });
+      
+        if (qualifyingItinerariesForNoTechStop.length > 0) {
+          SingleAllAircraft.push({
+            aircraft: itemData,
+            price:{... itemData.price,totalPrice:parseFloat(itemData.price.grandTotal)+ (parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 +
+            ((parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 * b) / 100}
+          });
+          const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
+            (a, b) => {
+              a.price.grandTotal - b.price.grandTotal;
+            }
+          );
+          console.log("sortedAircraftByPrice IS this now::",sortedAircraftByPrice);
+          ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
+          console.log("ResponseData is now :::",ResponseData);
+        }
+
+
+        // No Techstop Part
+        const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
+          return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
+          itinerarie.segments[1].carrierCode);
+        });
+
+        if (qualifyingItinerariesForTechStop.length > 0) {
+      
+          TechStopAircraft.push({
+            aircraft: itemData,
+            price:{... itemData.price,totalPrice:parseFloat(itemData.price.grandTotal)+ (parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 +
+            ((parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 * b) / 100}
+          });
+          const sortedAircraftByPrice = TechStopAircraft.slice().sort(
+            (a, b) => {
+              a.price.grandTotal - b.price.grandTotal;
+            }
+          );
+          console.log("sortedAircraftByPrice IS this now::",sortedAircraftByPrice);
+          ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
+          console.log("ResponseData is now :::",ResponseData);
+        }
       });
+      console.log("SingleAllAircraft is now this:::",SingleAllAircraft);
+      console.log(" TechStopAircraft is now this:::",TechStopAircraft)
+      // response.data.data.map((itemData) => {
+      //   console.log("itemdata", itemData);
+      //   console.log("itemdata price", itemData.price.grandTotal);
+      //   itemData.itineraries.map((itinerarie) => {
+      //     console.log("data.itineraries", itinerarie.segments.length);
+      //     if (itinerarie.segments.length == 1) {
+      //       SingleAllAircraft.push({
+      //         aircraft: itemData.itineraries,
+      //         price: itemData.price,
+      //       });
+      //       console.log("SingleAllAircraft", SingleAllAircraft);
+
+      //       const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
+      //         (a, b) => {
+      //           a.price.grandTotal - b.price.grandTotal;
+      //         }
+      //       );
+      //       console.log("sortedAircraftByPrice", sortedAircraftByPrice);
+      //       // FinalResponse.push(sortedAircraftByPrice);
+      //       // console.log("FinalResponse line 877 ", FinalResponse);
+      //       ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
+      //       // FinalResponse.push(sortedAircraftByPrice);
+      //       console.log("Final Price without tech halt line 876", ResponseData);
+      //     } 
+      //     else if (itinerarie.segments.length >= 2) {
+      //       TechStopAircraft.push({
+      //         aircraft: itemData.itineraries,
+      //         price: itemData.price,
+      //       });
+      //       console.log("TechStopAllAircraft length", TechStopAircraft.length);
+      //       const sortedTechSTopAircraftByPrice = TechStopAircraft.slice().sort(
+      //         (a, b) => {
+      //           a.price.grandTotal - b.price.grandTotal;
+      //         }
+      //       );
+      //       console.log(
+      //         "sortedTechSTopAircraftByPrice",
+      //         sortedTechSTopAircraftByPrice
+      //       );
+
+      //       const filteredAircraft = sortedTechSTopAircraftByPrice.filter(
+      //         (aircraftData) => {
+      //           return aircraftData.aircraft.some((Data) => {
+      //             return (
+      //               Data.segments.length >= 2 &&
+      //               Data.segments[0].carrierCode ===
+      //                 Data.segments[1].carrierCode
+      //             );
+      //           });
+      //         }
+      //       );
+
+      //       console.log("Filtered Aircraft", filteredAircraft);
+
+      //       ResponseData.AirCraftDatawithtechStop = filteredAircraft;
+      //       console.log("FInal data line 907", ResponseData);
+      //     }
+
+      //     console.log("ResponseData", ResponseData);
+
+      //     console.log("Final Response Data line 937", ResponseData);
+
+      //     console.log("ResponseData", ResponseData);
+
+      
+      //     let Finaldata = [];
+
+      //     if (ResponseData) {
+      //       const directFlightData = ResponseData.AirCraftDatawithNotechStop;
+      //       const techStopFlightData = ResponseData.AirCraftDatawithtechStop;
+
+      //       if (directFlightData && directFlightData.length) {
+      //         Finaldata = directFlightData;
+      //         processFlightData("Direct flight", Finaldata);
+      //       } else if (techStopFlightData && techStopFlightData.length) {
+      //         Finaldata = techStopFlightData;
+      //         processFlightData("Tech stop", Finaldata);
+      //       }
+      //     }
+
+      //     function processFlightData(type, data) {
+      //       const results = [];
+
+      //       data.forEach((flight) => {
+      //         const price = parseFloat(flight.price.grandTotal);
+      //         const a = 7;
+      //         const b = 20;
+
+      //         const totalPrice =
+      //           (price + (price * a) / 100) * 9 +
+      //           ((price + (price * a) / 100) * 9 * b) / 100;
+      //         console.log("totalPrice", totalPrice);
+
+      //         const aircraftData = [];
+
+      //         flight.aircraft.forEach((aircraft) => {
+      //           const segmentsData = [];
+
+      //           aircraft.segments.forEach((segment) => {
+      //             segmentsData.push(segment);
+      //           });
+
+      //           aircraftData.push({
+      //             aircraftInfo: aircraft,
+      //             segments: segmentsData,
+      //           });
+      //         });
+      //         const result = {
+      //           totalPrice,
+      //           aircraft: aircraftData,
+      //         };
+
+      //         results.push(result);
+      //       });
+      //       console.log("results", results);
+      //       return res.json(results)
+      //     }
+      //   });
+      // });
+      res.json(ResponseData)
     })
  } catch (error) {
  
