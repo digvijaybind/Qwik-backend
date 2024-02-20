@@ -759,7 +759,7 @@ exports.AmedeusAPitoken = async (req, res) => {
       originLocationCode: OriginLocationCode,
       destinationLocationCode: DestinationLocationCode,
       departureDate: DepartureDate,
-      Pax: Pax,
+      pax: Pax,
       // currencyCode: CurrencyCode,
       max: Max,
     };
