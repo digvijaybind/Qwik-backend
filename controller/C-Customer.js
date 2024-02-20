@@ -675,7 +675,7 @@ exports.AmedeusAPitoken = async (req, res) => {
  try {
   
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "rTn1u1T9SRWldOpLTXWs2RIGv966";
+  const accessToken = "hWcHLwnmMsQfGMzpkoOvdIo6arLk";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -722,8 +722,7 @@ exports.AmedeusAPitoken = async (req, res) => {
         if (qualifyingItinerariesForNoTechStop.length > 0) {
           SingleAllAircraft.push({
             aircraft: itemData,
-            price:{... itemData.price,totalPrice:parseFloat(itemData.price.grandTotal)+ (parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 +
-            ((parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 * b) / 100}
+            price:{... itemData.price,totalPrice:parseFloat(((itemData.price.grandTotal)+((itemData.price.grandTotal)*((a/10)*9))+((itemData.price.grandTotal)+((itemData.price.grandTotal*((a/100)*9))*(b/100)))))}
           });
           const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
             (a, b) => {
@@ -735,8 +734,7 @@ exports.AmedeusAPitoken = async (req, res) => {
           console.log("ResponseData is now :::",ResponseData);
         }
 
-
-        // No Techstop Part
+        
         const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
           return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
           itinerarie.segments[1].carrierCode);
@@ -746,8 +744,7 @@ exports.AmedeusAPitoken = async (req, res) => {
       
           TechStopAircraft.push({
             aircraft: itemData,
-            price:{... itemData.price,totalPrice:parseFloat(itemData.price.grandTotal)+ (parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 +
-            ((parseFloat(itemData.price.grandTotal) + (parseFloat(itemData.price.grandTotal) * a) / 100) * 9 * b) / 100}
+            price:{... itemData.price,totalPrice:parseFloat(((itemData.price.grandTotal)+((itemData.price.grandTotal)*((a/10)*9))+((itemData.price.grandTotal)+((itemData.price.grandTotal*((a/100)*9))*(b/100)))))}
           });
           const sortedAircraftByPrice = TechStopAircraft.slice().sort(
             (a, b) => {
