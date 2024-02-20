@@ -670,104 +670,132 @@ exports.AirCraftData = async (req, res) => {
 // };
 
 exports.AmedeusAPitoken = async (req, res) => {
+  try {
+    const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+    const accessToken = "xjyAfuKy2aprPoADguMpzKCEfpEz";
+    const SingleAllAircraft = [];
+    const TechStopAircraft = [];
+    let ResponseData = {};
+    const FinalResponse = [];
 
-  
- try {
-  
-  const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "hWcHLwnmMsQfGMzpkoOvdIo6arLk";
-  const SingleAllAircraft = [];
-  const TechStopAircraft = [];
-  let ResponseData = {};
-  const FinalResponse = [];
+    let Finaldata;
 
-  let Finaldata;
+    const {
+      originLocationCode,
+      destinationLocationCode,
+      departureDate,
+      adults,
+      max,
+      mobile,
+      currencyCode,
+    } = req.body;
 
-  const {originLocationCode, destinationLocationCode, departureDate, adults, max,mobile,currencyCode} =
-    req.body;
+    console.log("req.body", req.body);
 
+    const requestData = {
+      originLocationCode,
+      destinationLocationCode,
+      departureDate,
+      adults,
+      max,
+    };
+    console.log("requestData", requestData);
+    const data = await axios
+      .get(apiUrl, {
+        params: requestData,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      })
 
-  const requestData = {
-    originLocationCode,
-    destinationLocationCode,
-    departureDate,
-    adults,
-    max,
-  };
-  console.log("requestData", requestData);
-  const data = await axios
-    .get(apiUrl, {
-      params: requestData,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-  
-    })
+      .then((response) => {
+        console.log("response Data data line 989", response.data.data);
 
-    .then((response) => {
-      console.log("response Data data line 989", response.data.data);
-  
+        response.data.data.forEach((itemData) => {
+          const a = 7;
+          const b = 20;
 
+          const qualifyingItinerariesForNoTechStop =
+            itemData.itineraries.filter((itinerarie) => {
+              return itinerarie.segments.length === 1;
+            });
 
+          if (qualifyingItinerariesForNoTechStop.length > 0) {
+            SingleAllAircraft.push({
+              aircraft: itemData,
+              price: {
+                ...itemData.price,
+                totalPrice: parseFloat(
+                  Number(itemData.price.grandTotal) +
+                    Number(itemData.price.grandTotal) * (Number(a / 10) * 9) +
+                    (Number(itemData.price.grandTotal) +
+                      Number(itemData.price.grandTotal) *
+                        (Number(a / 100) * 9) *
+                        Number(b / 100))
+                ),
+              },
+            });
+            const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
+              (a, b) => {
+                a.price.grandTotal - b.price.grandTotal;
+              }
+            );
+            console.log(
+              "sortedAircraftByPrice IS this now::",
+              sortedAircraftByPrice
+            );
+            ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
+            console.log("ResponseData is now :::", ResponseData);
+          }
 
-      response.data.data.forEach((itemData) => {
-        const a = 7;
-              const b = 20;
-
-        const qualifyingItinerariesForNoTechStop = itemData.itineraries.filter((itinerarie) => {
-          return itinerarie.segments.length ===1;
-        });
-      
-        if (qualifyingItinerariesForNoTechStop.length > 0) {
-          SingleAllAircraft.push({
-            aircraft: itemData,
-            price:{... itemData.price,totalPrice:parseFloat(((itemData.price.grandTotal)+((itemData.price.grandTotal)*((a/10)*9))+((itemData.price.grandTotal)+((itemData.price.grandTotal*((a/100)*9))*(b/100)))))}
-          });
-          const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
-            (a, b) => {
-              a.price.grandTotal - b.price.grandTotal;
+          const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
+            (itinerarie) => {
+              return (
+                itinerarie.segments.length >= 2 &&
+                itinerarie.segments[0].carrierCode ===
+                  itinerarie.segments[1].carrierCode
+              );
             }
           );
-          console.log("sortedAircraftByPrice IS this now::",sortedAircraftByPrice);
-          ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
-          console.log("ResponseData is now :::",ResponseData);
-        }
 
-        
-        const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
-          return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
-          itinerarie.segments[1].carrierCode);
+          if (qualifyingItinerariesForTechStop.length > 0) {
+            TechStopAircraft.push({
+              aircraft: itemData,
+              price: {
+                ...itemData.price,
+                totalPrice: parseFloat(
+                  Number(itemData.price.grandTotal) +
+                    Number(itemData.price.grandTotal) * (Number(a / 10) * 9) +
+                    (Number(itemData.price.grandTotal) +
+                      Number(itemData.price.grandTotal) *
+                        (Number(a / 100) * 9) *
+                        Number(b / 100))
+                ),
+              },
+            });
+            const sortedAircraftByPrice = TechStopAircraft.slice().sort(
+              (a, b) => {
+                a.price.grandTotal - b.price.grandTotal;
+              }
+            );
+            console.log(
+              "sortedAircraftByPrice IS this now::",
+              sortedAircraftByPrice
+            );
+            ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
+            console.log("ResponseData is now :::", ResponseData);
+          }
         });
+        console.log("SingleAllAircraft is now this:::", SingleAllAircraft);
+        console.log(" TechStopAircraft is now this:::", TechStopAircraft);
 
-        if (qualifyingItinerariesForTechStop.length > 0) {
-      
-          TechStopAircraft.push({
-            aircraft: itemData,
-            price:{... itemData.price,totalPrice:parseFloat(((itemData.price.grandTotal)+((itemData.price.grandTotal)*((a/10)*9))+((itemData.price.grandTotal)+((itemData.price.grandTotal*((a/100)*9))*(b/100)))))}
-          });
-          const sortedAircraftByPrice = TechStopAircraft.slice().sort(
-            (a, b) => {
-              a.price.grandTotal - b.price.grandTotal;
-            }
-          );
-          console.log("sortedAircraftByPrice IS this now::",sortedAircraftByPrice);
-          ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
-          console.log("ResponseData is now :::",ResponseData);
-        }
+        res.json(ResponseData);
       });
-      console.log("SingleAllAircraft is now this:::",SingleAllAircraft);
-      console.log(" TechStopAircraft is now this:::",TechStopAircraft)
-     
-      res.json(ResponseData)
-    })
- } catch (error) {
- 
+  } catch (error) {
     console.error("error", error.message);
     res.json({
       msg: error,
     });
-
- }
-   
+  }
 };
