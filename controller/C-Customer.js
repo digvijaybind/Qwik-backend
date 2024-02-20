@@ -675,7 +675,7 @@ exports.AmedeusAPitoken = async (req, res) => {
  try {
   
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "hWcHLwnmMsQfGMzpkoOvdIo6arLk";
+  const accessToken = "IvDkxoHjHGhmAZIXYPQjVYyJXHNu";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -722,7 +722,7 @@ exports.AmedeusAPitoken = async (req, res) => {
         if (qualifyingItinerariesForNoTechStop.length > 0) {
           SingleAllAircraft.push({
             aircraft: itemData,
-            price:{... itemData.price,totalPrice:parseFloat(((itemData.price.grandTotal)+((itemData.price.grandTotal)*((a/10)*9))+((itemData.price.grandTotal)+((itemData.price.grandTotal*((a/100)*9))*(b/100)))))}
+            price:{... itemData.price,totalPrice:parseFloat(((Number(itemData.price.grandTotal))+((Number(itemData.price.grandTotal))*((a/10)*9))+((Number(itemData.price.grandTotal))+((Number(itemData.price.grandTotal)*((a/100)*9))*(b/100)))))}
           });
           const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
             (a, b) => {
@@ -744,7 +744,7 @@ exports.AmedeusAPitoken = async (req, res) => {
       
           TechStopAircraft.push({
             aircraft: itemData,
-            price:{... itemData.price,totalPrice:parseFloat(((itemData.price.grandTotal)+((itemData.price.grandTotal)*((a/10)*9))+((itemData.price.grandTotal)+((itemData.price.grandTotal*((a/100)*9))*(b/100)))))}
+            price:{... itemData.price,totalPrice:parseFloat(((Number(itemData.price.grandTotal))+((Number(itemData.price.grandTotal))*((a/10)*9))+((Number(itemData.price.grandTotal))+((Number(itemData.price.grandTotal)*((a/100)*9))*(b/100)))))}
           });
           const sortedAircraftByPrice = TechStopAircraft.slice().sort(
             (a, b) => {
