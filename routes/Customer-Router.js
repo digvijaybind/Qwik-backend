@@ -13,7 +13,7 @@ router.post(
 );
 router.get("/aircraftLists", asyncMiddleware(CustomerController.AirCraftData));
 router.get("/airline", asyncMiddleware(CustomerController.AirlineBlog));
-router.get(
+router.post(
   "/Amadeusairline",
   asyncMiddleware(CustomerController.AmedeusAPitoken)
 );
