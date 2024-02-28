@@ -675,7 +675,7 @@ exports.AmedeusAPitoken = async (req, res) => {
  try {
   
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-  const accessToken = "IvDkxoHjHGhmAZIXYPQjVYyJXHNu";
+  const accessToken = "tRAyd5tQlYUPtUJK3uTILB1GAq7O";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -735,9 +735,17 @@ exports.AmedeusAPitoken = async (req, res) => {
         }
 
         
+        // const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
+        //   return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
+        //   itinerarie.segments[1].carrierCode);
+        // });
         const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
-          return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
-          itinerarie.segments[1].carrierCode);
+          const carrierCode = itinerarie.segments[0].carrierCode; // Extract the carrier code
+          return (
+            itinerarie.segments.length >= 2 &&
+            carrierCode === itinerarie.segments[1].carrierCode &&
+            ["AI", "6E", "THY", "WY", "OMA", "EY", "SIA", "ACA", "QTR", "DLH", "BAW", "QFA", "SAA", "ANA", "PAL", "VIR", "MAU"].includes(carrierCode)
+          );
         });
 
         if (qualifyingItinerariesForTechStop.length > 0) {
