@@ -675,7 +675,9 @@ exports.AmedeusAPitoken = async (req, res) => {
  try {
   
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
+
   const accessToken = "tRAyd5tQlYUPtUJK3uTILB1GAq7O";
+
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
@@ -733,6 +735,8 @@ exports.AmedeusAPitoken = async (req, res) => {
           ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
           console.log("ResponseData is now :::",ResponseData);
         }
+
+
 
         
         // const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
