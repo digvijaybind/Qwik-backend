@@ -675,26 +675,45 @@ exports.AmedeusAPitoken = async (req, res) => {
  try {
   
   const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-
-  const accessToken = "tRAyd5tQlYUPtUJK3uTILB1GAq7O";
-
+  const accessToken = "kh4E3h4jNSDXbAsGTHaBGoAEVUGk";
   const SingleAllAircraft = [];
   const TechStopAircraft = [];
   let ResponseData = {};
-  const FinalResponse = [];
+     const {
+       originLocationCode,
+       destinationLocationCode,
+       departureDate,
+       pax,
+       max,
+       mobile,
+       countryCode,
+     } = req.body;
 
-  let Finaldata;
+     const originLocationcode = originLocationCode;
+     const destinationLocationcode = destinationLocationCode;
+     const departuredate = departureDate;
+     const Pax = pax;
+     const Mobile = mobile;
+     const countrycode = countryCode;
+     const Max = 15;
 
-  const {originLocationCode, destinationLocationCode, departureDate, adults, max,mobile,currencyCode} =
-    req.body;
+     const requestPost = {
+       originLocationCode: originLocationcode,
+       destinationLocationCode: destinationLocationcode,
+       departureDate: departuredate,
+       adults: Pax,
+       countryCode: countrycode,
+       mobile: Mobile,
+       max: Max,
+     };
 
-
+     console.log(" requestPost line 711", requestPost);
   const requestData = {
-    originLocationCode,
-    destinationLocationCode,
-    departureDate,
-    adults,
-    max,
+    originLocationCode: originLocationcode,
+    destinationLocationCode: destinationLocationcode,
+    departureDate: departuredate,
+    adults: Pax,
+    max: Max,
   };
   console.log("requestData", requestData);
   const data = await axios
