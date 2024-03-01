@@ -672,7 +672,7 @@ exports.AirCraftData = async (req, res) => {
 exports.AmedeusAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "X5mCm6nhQbtExDcszU59GoZFeTR2";
+    const accessToken = "j1q7PZTceLNXo08dAUmc6KYgXDMy";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -850,7 +850,7 @@ exports.AmedeusAPitoken = async (req, res) => {
             console.log("ResponseData is now :::", ResponseData);
           }
       
-          res.json({ResponseData});
+          res.json(ResponseData);
 
         });
 
