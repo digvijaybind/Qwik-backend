@@ -15,6 +15,6 @@ router.get("/aircraftLists", asyncMiddleware(CustomerController.AirCraftData));
 router.get("/airline", asyncMiddleware(CustomerController.AirlineBlog));
 router.post(
   "/Amadeusairline",
-  asyncMiddleware(CustomerController.AmedeusAPitoken)
+  asyncMiddleware(CustomerController.AmedeusTestAPitoken)
 );
 module.exports = router;
