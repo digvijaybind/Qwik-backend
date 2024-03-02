@@ -935,7 +935,6 @@ async function getFilteredFlightOffers(
         console.log("includedAirlineCodes", filteredOffers);
       }
     });
-    return res.json({filteredOffers: filteredOffers});
 
     console.log(" filteredOffers line 939", filteredOffers);
     return filteredOffers;
@@ -948,7 +947,7 @@ async function getFilteredFlightOffers(
 exports.TestAPitoken = async (err, req, res, next) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "jTc55MJ11aJtH0TTbLyIOyJNUGhV";
+    const accessToken = "1GnuMSCnhN4mKcO52PToQr0rvGtt";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1142,7 +1141,7 @@ exports.TestAPitoken = async (err, req, res, next) => {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "AfIzsGeOx6rk0LDRQrGsmFnQF2Y0";
+    const accessToken = "Lee42flHGl7QArZzeQIgJCYz9ERV";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1162,7 +1161,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     const Pax = pax;
     const Mobile = mobile;
     const countrycode = countryCode;
-    const Max = 50;
+    const Max = 10;
 
     const requestPost = {
       originLocationCode: originLocationcode,
@@ -1235,129 +1234,136 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       })
       .then((response) => {
         console.log("response Data data line 989", response.data.data);
+        res.json({response: response.data.data});
+
+        response.data.data.forEach((itemData) => {
+          console.log("itemdata line 1241", itemData);
+          
+        });
         let listData = [];
         let filteredOffers = [];
-        response.data.data.forEach((itemData) => {
-          const a = 7;
-          const b = 20;
+        // response.data.data.forEach((itemData) => {
+        //   const a = 7;
+        //   const b = 20;
 
-          console.log("itemData its", itemData);
-          listData.push(itemData);
+        //   console.log("itemData its", itemData);
+        //   listData.push(itemData);
 
-          listData.forEach((data) => {
-            console.log("data line 1248", data);
-            // res.json({data:data});
-            if (data.itineraries[0].segments[0].carrierCode.includes("EK")) {
-              filteredOffers.push(data);
-              // includedAirlineCodes.add(offer.itineraries[0].segments[0].carrierCode);
-              console.log("includedAirlineCodes", filteredOffers);
-              return res.json({filteredOffers: filteredOffers});
-            }
-          });
+        //   listData.forEach((data) => {
+        //     console.log("data line 1248", data);
+        //     // res.json({data:data});
 
-          const data = itemData.validatingAirlineCodes[0];
-          // if (containsValidCode === true) {
-          //   FilterData.push(itemData);
-          // }
+        //     if (data.itineraries[0].segments[0].carrierCode.includes("EK")) {
+        //       filteredOffers.push(data);
+        //       // includedAirlineCodes.add(offer.itineraries[0].segments[0].carrierCode);
+        //       console.log("includedAirlineCodes", filteredOffers);
+        //     }
+        //   });
+        //   return res.json({filteredOffers: filteredOffers});
 
-          const qualifyingItinerariesForNoTechStop =
-            itemData.itineraries.filter((itinerarie) => {
-              // carrierCode.filter((item) =>
-              //   carriercode.includes(item)
-              // );
-              // console.log("filter option line 758", carrierCode);
-              // const filteredResponse = carrierCode.filter((item) =>
-              //   carriercode.includes(item)
-              // );
-              // const filteredResponse = carriercode.some(carrierCode);
-              // console.log("filteredResponse line 763", filteredResponse);
+        //   const data = itemData.validatingAirlineCodes[0];
+        //   // if (containsValidCode === true) {
+        //   //   FilterData.push(itemData);
+        //   // }
 
-              // console.log("filteredResponse line 763", filteredResponse);
+        //   const qualifyingItinerariesForNoTechStop =
+        //     itemData.itineraries.filter((itinerarie) => {
+        //       // carrierCode.filter((item) =>
+        //       //   carriercode.includes(item)
+        //       // );
+        //       // console.log("filter option line 758", carrierCode);
+        //       // const filteredResponse = carrierCode.filter((item) =>
+        //       //   carriercode.includes(item)
+        //       // );
+        //       // const filteredResponse = carriercode.some(carrierCode);
+        //       // console.log("filteredResponse line 763", filteredResponse);
 
-              return itinerarie.segments.length === 1;
-            });
+        //       // console.log("filteredResponse line 763", filteredResponse);
 
-          console.log("data is line 772", data);
+        //       return itinerarie.segments.length === 1;
+        //     });
 
-          if (qualifyingItinerariesForNoTechStop.length > 0) {
-            console.log(
-              "qualifyingItinerariesForNoTechStop line 778",
-              qualifyingItinerariesForNoTechStop
-            );
-            SingleAllAircraft.push({
-              aircraft: itemData,
-              price: {
-                ...itemData.price,
-                totalPrice: parseFloat(
-                  Number(itemData.price.grandTotal) +
-                    Number(itemData.price.grandTotal) * ((a / 10) * 9) +
-                    (Number(itemData.price.grandTotal) +
-                      Number(itemData.price.grandTotal) *
-                        ((a / 100) * 9) *
-                        (b / 100))
-                ),
-              },
-            });
-            const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
-              (a, b) => {
-                a.price.grandTotal - b.price.grandTotal;
-              }
-            );
-            console.log(
-              "sortedAircraftByPrice IS this now::",
-              sortedAircraftByPrice
-            );
-            ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
-            console.log("ResponseData is now :::", ResponseData);
-            // res.json({ResponseData: ResponseData});
-          }
+        //   console.log("data is line 772", data);
 
-          // const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
-          //   return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
-          //   itinerarie.segments[1].carrierCode);
-          // });
-          const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
-            (itinerarie) => {
-              return (
-                itinerarie.segments.length >= 2 &&
-                itinerarie.segments[1].carrierCode ===
-                  itinerarie.segments[0].carrierCode
-              );
-            }
-          );
+        //   if (qualifyingItinerariesForNoTechStop.length > 0) {
+        //     console.log(
+        //       "qualifyingItinerariesForNoTechStop line 778",
+        //       qualifyingItinerariesForNoTechStop
+        //     );
+        //     SingleAllAircraft.push({
+        //       aircraft: itemData,
+        //       price: {
+        //         ...itemData.price,
+        //         totalPrice: parseFloat(
+        //           Number(itemData.price.grandTotal) +
+        //             Number(itemData.price.grandTotal) * ((a / 10) * 9) +
+        //             (Number(itemData.price.grandTotal) +
+        //               Number(itemData.price.grandTotal) *
+        //                 ((a / 100) * 9) *
+        //                 (b / 100))
+        //         ),
+        //       },
+        //     });
+        //     const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
+        //       (a, b) => {
+        //         a.price.grandTotal - b.price.grandTotal;
+        //       }
+        //     );
+        //     console.log(
+        //       "sortedAircraftByPrice IS this now::",
+        //       sortedAircraftByPrice
+        //     );
+        //     ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
+        //     console.log("ResponseData is now :::", ResponseData);
+        //     // res.json({ResponseData: ResponseData});
+        //   }
 
-          if (qualifyingItinerariesForTechStop.length > 0) {
-            TechStopAircraft.push({
-              aircraft: itemData,
-              price: {
-                ...itemData.price,
-                totalPrice: parseFloat(
-                  Number(itemData.price.grandTotal) +
-                    Number(itemData.price.grandTotal) * ((a / 10) * 9) +
-                    (Number(itemData.price.grandTotal) +
-                      Number(itemData.price.grandTotal) *
-                        ((a / 100) * 9) *
-                        (b / 100))
-                ),
-              },
-            });
-            const sortedAircraftByPrice = TechStopAircraft.slice().sort(
-              (a, b) => {
-                a.price.grandTotal - b.price.grandTotal;
-              }
-            );
-            console.log(
-              "sortedAircraftByPrice IS this now::",
-              sortedAircraftByPrice
-            );
-            ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
-            console.log("ResponseData is now :::", ResponseData);
-          }
-        });
-        res.json({listData: listData});
-        console.log(" listData line 1314", listData);
-        console.log("SingleAllAircraft is now this:::", SingleAllAircraft);
-        console.log(" TechStopAircraft is now this:::", TechStopAircraft);
+        //   // const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
+        //   //   return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
+        //   //   itinerarie.segments[1].carrierCode);
+        //   // });
+        //   const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
+        //     (itinerarie) => {
+        //       return (
+        //         itinerarie.segments.length >= 2 &&
+        //         itinerarie.segments[1].carrierCode ===
+        //           itinerarie.segments[0].carrierCode
+        //       );
+        //     }
+        //   );
+
+        //   if (qualifyingItinerariesForTechStop.length > 0) {
+        //     TechStopAircraft.push({
+        //       aircraft: itemData,
+        //       price: {
+        //         ...itemData.price,
+        //         totalPrice: parseFloat(
+        //           Number(itemData.price.grandTotal) +
+        //             Number(itemData.price.grandTotal) * ((a / 10) * 9) +
+        //             (Number(itemData.price.grandTotal) +
+        //               Number(itemData.price.grandTotal) *
+        //                 ((a / 100) * 9) *
+        //                 (b / 100))
+        //         ),
+        //       },
+        //     });
+        //     const sortedAircraftByPrice = TechStopAircraft.slice().sort(
+        //       (a, b) => {
+        //         a.price.grandTotal - b.price.grandTotal;
+        //       }
+        //     );
+        //     console.log(
+        //       "sortedAircraftByPrice IS this now::",
+        //       sortedAircraftByPrice
+        //     );
+        //     ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
+        //     console.log("ResponseData is now :::", ResponseData);
+        //   }
+        // });
+
+        // console.log(" listData line 1314", listData);
+        // console.log("SingleAllAircraft is now this:::", SingleAllAircraft);
+        // console.log(" TechStopAircraft is now this:::", TechStopAircraft);
 
         // res.json({ResponseData: ResponseData});
       });
