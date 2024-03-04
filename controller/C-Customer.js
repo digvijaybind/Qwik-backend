@@ -1141,7 +1141,7 @@ exports.TestAPitoken = async (err, req, res, next) => {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "y28A5Hymr5AzLK94j8EJYjAGyw0E";
+    const accessToken = "eSQuhVItnW3ZY5AOUaRYlb7StrPG";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1174,25 +1174,25 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     };
 
     const airlineCodes = [
-      // "LH",
+      "LH",
       "AI",
-      // "6E",
-      // "THY",
-      // "WY",
-      // "EK",
-      // "OMA",
-      // "EY",
-      // "SIA",
-      // "ACA",
-      // "QTR",
-      // "DLH",
-      // "BAW",
-      // "QFA",
-      // "SAA",
-      // "ANA",
-      // "PAL",
-      // "VIR",
-      // "MAU",
+      "6E",
+      "THY",
+      "WY",
+      "EK",
+      "OMA",
+      "EY",
+      "SIA",
+      "ACA",
+      "QTR",
+      "DLH",
+      "BAW",
+      "QFA",
+      "SAA",
+      "ANA",
+      "PAL",
+      "VIR",
+      "MAU",
     ];
     // console.log(" requestPost line 711", requestPost);
     const requestData = {
@@ -1216,7 +1216,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
         // res.json({response: response.data.data});
 
         const filteredData = response.data.data.filter((item) => {
-          let filteraircraft = [];
           const segments = item.itineraries.flatMap(
             (itinerary) => itinerary.segments
           );
@@ -1225,18 +1224,13 @@ exports.AmedeusTestAPitoken = async (req, res) => {
         });
 
         console.log("filteredData", filteredData);
+        return res.json({filteredData: filteredData});
+        // itemData.itineraries.map()
 
-        // return res.json({filteredData: filteredData});
-        filteredData.forEach((itemData) => {
-          console.log("data line 1231", itemData);
+        // return res.json({filteredCarriers: filteredCarriers});
 
-          const qualifyingItinerariesForNoTechStop =
-            itemData.itineraries.filter((itinerarie) => {
-              console.log("itinerarie line 1235", itinerarie);
-
-              return itinerarie.segments.length === 1;
-            });
-        });
+        // response.data.data.forEach((itemData) => {
+        //   console.log("itemdata line 1241", itemData);
       });
 
     let listData = [];
