@@ -1144,7 +1144,7 @@ exports.TestAPitoken = async (err, req, res, next) => {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "iVyBPQcw2pfZvEfHAgXzcErwCHTy";
+    const accessToken = "XEqUw35IBjjwQ04Q8FeZpXjlZ6GA";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1202,10 +1202,10 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       const diffInDays = Math.ceil(
         (givenDate - currentDate) / (1000 * 60 * 60 * 24)
       );
-      if (diffInDays >= 6) {
+      if (diffInDays >= 3) {
         return givenDate.toISOString().split("T")[0];
       }
-      const dayDifference = 6 - diffInDays;
+      const dayDifference = 3 - diffInDays;
       givenDate.setDate(givenDate.getDate() + dayDifference);
       return givenDate.toISOString().split("T")[0];
     };
@@ -1220,6 +1220,8 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       mobile: Mobile,
       max: Max,
     };
+
+    console.log("requestPost line 1224", requestPost);
     const requestData = {
       originLocationCode: originLocationcode,
       destinationLocationCode: destinationLocationcode,
