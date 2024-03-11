@@ -7,7 +7,7 @@ const axios = require("axios");
 const {buildRequestConfig} = require("../configs/aviapi.config");
 const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
-
+const nodemailer = require("nodemailer");
 const geocoder = NodeGeocoder({
   provider: "google", // Use the Google Maps Geocoding API
   apiKey: process.env.GOOGLE_API_KEY, // Replace with your actual API key
@@ -589,7 +589,6 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   // Radius of the Earth in kilometers
   const R = 6371;
 
-  // Convert latitude and longitude from degrees to radians
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
 
@@ -616,62 +615,7 @@ exports.AirCraftData = async (req, res) => {
     res.json({success: false, message: error});
   }
 };
-// exports.AirlineBlog = async (req, res) => {
-//   const apiUrl = "https://sky-scrapper.p.rapidapi.com/api/v1/checkServer";
-//   const apiKey = "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483";
-//   console.log("hii there");
-//   try {
-//     const response = await axios.get(apiUrl, {
-//       headers: {
-//         "X-RapidAPI-Key": "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483",
-//         "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
-//       },
-//     });
-//     return response.data;
-
-//     if (response.data) {
-//     }
-//   } catch (error) {
-//     throw new Error(`Error making API request: ${error.message}`);
-//   }
-// };
-
-// exports.AirlineAmedeusAPi = async (req, res) => {
-//   const apiKey = "s2qG72Mk2FuqLBEV6Vt3A2FHS6RfcZF4";
-//   const apiSecret = "";
-
-//   const apiEndpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-
-//   // Replace this with any request parameters required by the API
-//   const requestData = {
-//     originLocationCode: "BOM",
-//     destinationLocationCode: "DXB",
-//     departureDate: "2024-01-29",
-//     adults: "1",
-//     max: "10",
-//   };
-
-//   // Make a POST request to the API with API key and API secret in the headers
-//   axios
-//     .post(apiEndpoint, requestData, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Api-Key": apiKey,
-//         "Api-Secret": apiSecret,
-//       },
-//     })
-//     .then((response) => {
-//       // Handle the API response here
-//       console.log(response.data);
-//     })
-//     .catch((error) => {
-//       // Handle errors
-//       console.error("Error:", error.message);
-//     });
-// };
-
 async function getFlightOffers(apiUrl, requestData, accessToken) {
-  // Add the carrierCode parameter to the requestData object
   requestData.carrierCode =
     "LH,AI,6E,THY,WY,EK,OMA,EY,SIA,ACA,QTR,DLH,BAW,QFA,SAA,ANA,PAL,VIR,MAU";
 
@@ -690,7 +634,6 @@ async function getFlightOffers(apiUrl, requestData, accessToken) {
     throw error;
   }
 }
-
 exports.AmedeusAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
@@ -715,7 +658,6 @@ exports.AmedeusAPitoken = async (req, res) => {
     const Mobile = mobile;
     const countrycode = countryCode;
     const Max = 5;
-
     const requestPost = {
       originLocationCode: originLocationcode,
       destinationLocationCode: destinationLocationcode,
@@ -725,7 +667,6 @@ exports.AmedeusAPitoken = async (req, res) => {
       mobile: Mobile,
       max: Max,
     };
-
     const carriercodes = [
       "AI",
       "6E",
@@ -796,26 +737,10 @@ exports.AmedeusAPitoken = async (req, res) => {
           FilterData.map((data) => {
             console.log("data line 773", data);
           });
-
-          // if (containsValidCode === true) {
-          //   FilterData.push(itemData);
-          // }
           console.log("FilterData line 761", FilterData);
 
           const qualifyingItinerariesForNoTechStop =
             itemData.itineraries.filter((itinerarie) => {
-              // carrierCode.filter((item) =>
-              //   carriercode.includes(item)
-              // );
-              // console.log("filter option line 758", carrierCode);
-              // const filteredResponse = carrierCode.filter((item) =>
-              //   carriercode.includes(item)
-              // );
-              // const filteredResponse = carriercode.some(carrierCode);
-              // console.log("filteredResponse line 763", filteredResponse);
-
-              // console.log("filteredResponse line 763", filteredResponse);
-
               return itinerarie.segments.length === 1;
             });
 
@@ -853,13 +778,7 @@ exports.AmedeusAPitoken = async (req, res) => {
             );
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             console.log("ResponseData is now :::", ResponseData);
-            // res.json({ResponseData: ResponseData});
           }
-
-          // const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
-          //   return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
-          //   itinerarie.segments[1].carrierCode);
-          // });
           const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
             (itinerarie) => {
               return (
@@ -917,7 +836,6 @@ async function getFilteredFlightOffers(
   accessToken,
   airlineCodes
 ) {
-  // Add the carrierCode parameter to the requestData object
   const filteredOffers = [];
   try {
     const response = await axios.get(apiUrl, {
@@ -928,13 +846,11 @@ async function getFilteredFlightOffers(
       },
     });
     console.log("response", response.data);
-
     response.data.data.forEach((offer) => {
       console.log("offer line 931", offer);
       filteredOffers.push(offer);
       if (offer.itineraries[0].segments[0].carrierCode.includes("EK")) {
         filteredOffers.push(offer);
-        // includedAirlineCodes.add(offer.itineraries[0].segments[0].carrierCode);
         console.log("includedAirlineCodes", filteredOffers);
       }
     });
@@ -1144,7 +1060,7 @@ exports.TestAPitoken = async (err, req, res, next) => {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "XEqUw35IBjjwQ04Q8FeZpXjlZ6GA";
+    const accessToken = "2hfpk6zUCk27iscvbmfBiKgzYnwx";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1164,7 +1080,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     const Pax = pax;
     const Mobile = mobile;
     const countrycode = countryCode;
-    const Max = 10;
+    const Max = 60;
     const airlines = [
       "AC",
       "6E",
@@ -1194,6 +1110,9 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       "MAU",
       "MH",
       "SV",
+      "ANA",
+      "WB",
+      "BI",
     ];
 
     const checkDate = (dateStr) => {
@@ -1220,7 +1139,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       mobile: Mobile,
       max: Max,
     };
-
     console.log("requestPost line 1224", requestPost);
     const requestData = {
       originLocationCode: originLocationcode,
