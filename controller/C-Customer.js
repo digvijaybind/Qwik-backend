@@ -7,7 +7,7 @@ const axios = require("axios");
 const {buildRequestConfig} = require("../configs/aviapi.config");
 const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
-
+const {access_token} =require("../configs/cronjob")
 const geocoder = NodeGeocoder({
   provider: "google", // Use the Google Maps Geocoding API
   apiKey: process.env.GOOGLE_API_KEY, // Replace with your actual API key
@@ -950,7 +950,7 @@ async function getFilteredFlightOffers(
 exports.TestAPitoken = async (err, req, res, next) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "1GnuMSCnhN4mKcO52PToQr0rvGtt";
+    const accessToken = access_token;
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
