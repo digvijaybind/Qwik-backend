@@ -634,7 +634,7 @@ async function getFlightOffers(apiUrl, requestData, accessToken) {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "BGClFVQjVv3FP5AMtmgT7co35dUf";
+    const accessToken = "ixbY53WfELIe7KWx5WlAQ8BKXils";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -814,14 +814,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 a.price.grandTotal - b.price.grandTotal;
               }
             );
-            let aircraftdetails = [];
-            const aircraftData = sortedAircraftByPrice.map(
-              ({aircraft, price}) => {
-                aircraftdetails.push({aircraft, price});
-              }
-            );
-            // Aircraft.insertMany(aircraftdetails);
-            console.log("Aircraft line 1223", Aircraft);
+
             console.log(
               "sortedAircraftByPrice IS this now::",
               sortedAircraftByPrice
@@ -829,7 +822,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
             console.log("ResponseData is now :::", ResponseData);
-            Aircraft.insertMany(ResponseData);
           }
           const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
             (itinerarie) => {
@@ -870,8 +862,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 price,
               })
             );
-            Aircraft.insertMany(aircraftData);
-            console.log("Aircraft line 1223", Aircraft);
+
             console.log(
               "sortedAircraftByPrice IS this now::",
               sortedAircraftByPrice
