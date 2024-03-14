@@ -28,11 +28,11 @@ async function getProcessedApiData() {
     console.error('Error fetching or processing API data:', error);
    access_token=null
   }
+
 }
 
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('*/2 * * * *', async () => {
   const rawApiData = await getProcessedApiData();
-
 });
 
 
