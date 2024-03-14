@@ -8,21 +8,16 @@ const {buildRequestConfig} = require("../configs/aviapi.config");
 const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
 const {access_token} =require("../configs/cronjob")
+const Aircraft = require("../db/AircraftOffer");
+const AmadeusData = require("../db/Amadeusdata");
 const geocoder = NodeGeocoder({
-  provider: "google", // Use the Google Maps Geocoding API
-  apiKey: process.env.GOOGLE_API_KEY, // Replace with your actual API key
+  provider: "google",
+  apiKey: process.env.GOOGLE_API_KEY,
 });
-
-const path = require("path"); // If you need to read the JSON file
-const {response} = require("express");
-const {Console} = require("console");
-
-// Fresh all AirCraft into use
+const path = require("path");
 const aircraftDataPath = path.join(__dirname, "../database/customaircfat.json");
 const AirCraftDataArray = require(aircraftDataPath);
 console.log(AirCraftDataArray);
-
-// Registration controller
 exports.Register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -589,7 +584,6 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   // Radius of the Earth in kilometers
   const R = 6371;
 
-  // Convert latitude and longitude from degrees to radians
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
 
@@ -616,62 +610,7 @@ exports.AirCraftData = async (req, res) => {
     res.json({success: false, message: error});
   }
 };
-// exports.AirlineBlog = async (req, res) => {
-//   const apiUrl = "https://sky-scrapper.p.rapidapi.com/api/v1/checkServer";
-//   const apiKey = "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483";
-//   console.log("hii there");
-//   try {
-//     const response = await axios.get(apiUrl, {
-//       headers: {
-//         "X-RapidAPI-Key": "7cf9e2b316mshe5a6a8deaeff260p139fb3jsna3f845eb7483",
-//         "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
-//       },
-//     });
-//     return response.data;
-
-//     if (response.data) {
-//     }
-//   } catch (error) {
-//     throw new Error(`Error making API request: ${error.message}`);
-//   }
-// };
-
-// exports.AirlineAmedeusAPi = async (req, res) => {
-//   const apiKey = "s2qG72Mk2FuqLBEV6Vt3A2FHS6RfcZF4";
-//   const apiSecret = "";
-
-//   const apiEndpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-
-//   // Replace this with any request parameters required by the API
-//   const requestData = {
-//     originLocationCode: "BOM",
-//     destinationLocationCode: "DXB",
-//     departureDate: "2024-01-29",
-//     adults: "1",
-//     max: "10",
-//   };
-
-//   // Make a POST request to the API with API key and API secret in the headers
-//   axios
-//     .post(apiEndpoint, requestData, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Api-Key": apiKey,
-//         "Api-Secret": apiSecret,
-//       },
-//     })
-//     .then((response) => {
-//       // Handle the API response here
-//       console.log(response.data);
-//     })
-//     .catch((error) => {
-//       // Handle errors
-//       console.error("Error:", error.message);
-//     });
-// };
-
 async function getFlightOffers(apiUrl, requestData, accessToken) {
-  // Add the carrierCode parameter to the requestData object
   requestData.carrierCode =
     "LH,AI,6E,THY,WY,EK,OMA,EY,SIA,ACA,QTR,DLH,BAW,QFA,SAA,ANA,PAL,VIR,MAU";
 
@@ -1170,6 +1109,9 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       "MAU",
       "MH",
       "SV",
+      "ANA",
+      "WB",
+      "BI",
     ];
 
     const checkDate = (dateStr) => {
@@ -1196,7 +1138,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       mobile: Mobile,
       max: Max,
     };
-
     console.log("requestPost line 1224", requestPost);
     const requestData = {
       originLocationCode: originLocationcode,
@@ -1216,7 +1157,44 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       })
       .then((response) => {
         console.log("response Data data line 989", response.data.data);
+        const data = response.data.data.map(
+          ({
+            type,
+            id,
+            source,
+            instantTicketingRequired,
+            nonHomogeneous,
+            oneWay,
+            lastTicketingDate,
+            lastTicketingDateTime,
+            numberOfBookableSeats,
+            itineraries,
+            price,
+            pricingOptions,
+            validatingAirlineCodes,
+            travelerPricings,
+          }) => ({
+            type,
+            id,
+            source,
+            instantTicketingRequired,
+            nonHomogeneous,
+            oneWay,
+            lastTicketingDate,
+            lastTicketingDateTime,
+            numberOfBookableSeats,
+            itineraries,
+            price,
+            pricingOptions,
+            validatingAirlineCodes,
+            travelerPricings,
+          })
+        );
+
+        AmadeusData.insertMany(data);
+
         const filteredData = response.data.data.filter((item) => {
+          console.log("item line 1164", item);
           const segments = item.itineraries.flatMap(
             (itinerary) => itinerary.segments
           );
@@ -1261,6 +1239,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 a.price.grandTotal - b.price.grandTotal;
               }
             );
+
             console.log(
               "sortedAircraftByPrice IS this now::",
               sortedAircraftByPrice
@@ -1268,7 +1247,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
             console.log("ResponseData is now :::", ResponseData);
-            // res.json({ResponseData: ResponseData});
           }
           const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
             (itinerarie) => {
@@ -1297,6 +1275,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 ),
               },
             });
+
             const sortedAircraftByPrice = TechStopAircraft.slice().sort(
               (a, b) => {
                 a.price.grandTotal - b.price.grandTotal;
@@ -1311,6 +1290,10 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             console.log("ResponseData is now :::", ResponseData);
           }
         });
+        const ResultData = new Aircraft({
+          Response: ResponseData,
+        });
+        ResultData.save();
         return res.json({ResponseData});
       });
   } catch (error) {
@@ -1321,4 +1304,23 @@ exports.AmedeusTestAPitoken = async (req, res) => {
   }
 };
 
-
+exports.SingleAircraftdata = async (req, res, next) => {
+const {_id} = req.params;
+  const {Child_id} = req.body;
+  console.log("id", _id);
+  const aircraftData = await Aircraft.findOne(_id);
+  if (!aircraftData) {
+    return res.status(404).send({message: "Aircraft not found"});
+  } else if (aircraftData) {
+    const specificAircraft = aircraftData.AirCraftDatawithNotechStop.find(
+      (item) => item.aircraft.id === String(Child_id)
+    );
+    console.log("specificAircraft", specificAircraft);
+  }
+  res.json({response});
+  if (!aircraft) {
+    console.log("aircraft details is not finding");
+  }
+  console.log("aircraft", aircraft);
+  return res.json({aircraft});
+};
