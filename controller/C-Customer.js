@@ -1119,7 +1119,7 @@ exports.TestAPitoken = async (err, req, res, next) => {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "t2XuuE17irAjrnwQ1v5iw3cew5Zt";
+    const accessToken = access_token;
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1133,6 +1133,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       countryCode,
     } = req.body;
 
+    console.log("access_token", access_token);
     const originLocationcode = originLocationCode;
     const destinationLocationcode = destinationLocationCode;
     const departuredate = departureDate;
