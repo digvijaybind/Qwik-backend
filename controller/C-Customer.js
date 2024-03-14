@@ -878,25 +878,20 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 };
 
 exports.SingleAircraftdata = async (req, res, next) => {
-const {_id} = req.params;
+  const {id} = req.params;
   const {Child_id} = req.body;
 
-  console.log("id", _id);
-  const aircraftData = await Aircraft.findOne(_id);
+  console.log("id", id);
+  const aircraftData = await Aircraft.findById(id);
+  console.log("aircraftData", aircraftData);
   if (!aircraftData) {
     return res.status(404).send({message: "Aircraft not found"});
   } else if (aircraftData) {
-    const specificAircraft = aircraftData.AirCraftDatawithNotechStop.find(
-      (item) => item.aircraft.id === String(Child_id)
-    );
+    const specificAircraft =
+      aircraftData.Response.AirCraftDatawithNotechStop.find(
+        (item) => item.aircraft.id === Child_id
+      );
     console.log("specificAircraft", specificAircraft);
+    res.json({specificAircraft});
   }
-
-  res.json({response});
-
-  if (!aircraft) {
-    console.log("aircraft details is not finding");
-  }
-  console.log("aircraft", aircraft);
-  return res.json({aircraft});
 };
