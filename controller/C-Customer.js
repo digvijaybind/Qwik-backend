@@ -765,15 +765,12 @@ exports.AmedeusAPitoken = async (req, res) => {
           "Content-Type": "application/json",
         },
       })
-
       .then((response) => {
         console.log("response Data data line 989", response.data.data);
-
         response.data.data.forEach((itemData) => {
           const a = 7;
           const b = 20;
           let FilterData = [];
-
           console.log("itemData its", itemData);
           const data = itemData.validatingAirlineCodes[0];
           const data1 = itemData.validatingAirlineCodes[1];
@@ -796,26 +793,10 @@ exports.AmedeusAPitoken = async (req, res) => {
           FilterData.map((data) => {
             console.log("data line 773", data);
           });
-
-          // if (containsValidCode === true) {
-          //   FilterData.push(itemData);
-          // }
           console.log("FilterData line 761", FilterData);
 
           const qualifyingItinerariesForNoTechStop =
             itemData.itineraries.filter((itinerarie) => {
-              // carrierCode.filter((item) =>
-              //   carriercode.includes(item)
-              // );
-              // console.log("filter option line 758", carrierCode);
-              // const filteredResponse = carrierCode.filter((item) =>
-              //   carriercode.includes(item)
-              // );
-              // const filteredResponse = carriercode.some(carrierCode);
-              // console.log("filteredResponse line 763", filteredResponse);
-
-              // console.log("filteredResponse line 763", filteredResponse);
-
               return itinerarie.segments.length === 1;
             });
 
@@ -853,13 +834,7 @@ exports.AmedeusAPitoken = async (req, res) => {
             );
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             console.log("ResponseData is now :::", ResponseData);
-            // res.json({ResponseData: ResponseData});
           }
-
-          // const qualifyingItinerariesForTechStop = itemData.itineraries.filter((itinerarie) => {
-          //   return (itinerarie.segments.length >=2 && itinerarie.segments[0].carrierCode ===
-          //   itinerarie.segments[1].carrierCode);
-          // });
           const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
             (itinerarie) => {
               return (
