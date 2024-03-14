@@ -9,12 +9,10 @@ const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
 const Aircraft = require("../db/AircraftOffer");
 const AmadeusData = require("../db/Amadeusdata");
-
 const geocoder = NodeGeocoder({
   provider: "google",
   apiKey: process.env.GOOGLE_API_KEY,
 });
-
 const path = require("path");
 const aircraftDataPath = path.join(__dirname, "../database/customaircfat.json");
 const AirCraftDataArray = require(aircraftDataPath);
@@ -634,7 +632,7 @@ async function getFlightOffers(apiUrl, requestData, accessToken) {
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "ixbY53WfELIe7KWx5WlAQ8BKXils";
+    const accessToken = "XjZpVNoXhRvKDv5kNyc92YCngrIW";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -856,13 +854,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 a.price.grandTotal - b.price.grandTotal;
               }
             );
-            const aircraftData = sortedAircraftByPrice.map(
-              ({aircraft, price}) => ({
-                aircraft,
-                price,
-              })
-            );
-
             console.log(
               "sortedAircraftByPrice IS this now::",
               sortedAircraftByPrice
@@ -872,6 +863,10 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             console.log("ResponseData is now :::", ResponseData);
           }
         });
+        const ResultData = new Aircraft({
+          Response: ResponseData,
+        });
+        ResultData.save();
         return res.json({ResponseData});
       });
   } catch (error) {
@@ -880,4 +875,28 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       msg: error,
     });
   }
+};
+
+exports.SingleAircraftdata = async (req, res, next) => {
+const {_id} = req.params;
+  const {Child_id} = req.body;
+
+  console.log("id", _id);
+  const aircraftData = await Aircraft.findOne(_id);
+  if (!aircraftData) {
+    return res.status(404).send({message: "Aircraft not found"});
+  } else if (aircraftData) {
+    const specificAircraft = aircraftData.AirCraftDatawithNotechStop.find(
+      (item) => item.aircraft.id === String(Child_id)
+    );
+    console.log("specificAircraft", specificAircraft);
+  }
+
+  res.json({response});
+
+  if (!aircraft) {
+    console.log("aircraft details is not finding");
+  }
+  console.log("aircraft", aircraft);
+  return res.json({aircraft});
 };
