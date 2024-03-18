@@ -7,7 +7,7 @@ const axios = require("axios");
 const {buildRequestConfig} = require("../configs/aviapi.config");
 const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
-const {access_token} =require("../configs/cronjob")
+const {access_token} = require("../configs/cronjob");
 const Aircraft = require("../db/AircraftOffer");
 const AmadeusData = require("../db/Amadeusdata");
 const geocoder = NodeGeocoder({
@@ -926,15 +926,6 @@ exports.TestAPitoken = async (err, req, res, next) => {
       max: Max,
     };
     console.log("requestData", requestData);
-    // const data = await axios
-    //   .get(apiUrl, {
-    //     params: requestData,
-    //     headers: {
-    //       Authorization: `Bearer ${accessToken}`,
-    //       "Content-Type": "application/json",
-    //     },
-    //   })
-
     const data = await getFilteredFlightOffers(
       apiUrl,
       requestData,
@@ -1052,6 +1043,18 @@ exports.TestAPitoken = async (err, req, res, next) => {
     res.json({
       msg: error,
     });
+  }
+};
+
+const SingleCillectionData = async (Id, res) => {
+  console.log("Id line 1050", Id);
+  const AllaircraftData = await Aircraft.findById(Id);
+  if (!AllaircraftData) {
+    console.log("No Aircraft data is exist");
+    return res.status(404).json({error: "No aircraft data exists"});
+  } else {
+    console.log("AllaircraftData line 1293", AllaircraftData);
+    return res.json({AllaircraftData});
   }
 };
 
@@ -1291,10 +1294,13 @@ exports.AmedeusTestAPitoken = async (req, res) => {
           }
         });
         const ResultData = new Aircraft({
-          Response: ResponseData,
+          ResponseData,
         });
         ResultData.save();
-        return res.json({ResponseData});
+        let aircraftId = ResultData._id;
+        console.log("aircraftId line 1305", aircraftId);
+        aircraftId = aircraftId.toString();
+        SingleCillectionData(aircraftId, res);
       });
   } catch (error) {
     console.error("error", error.message);
@@ -1306,7 +1312,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 
 exports.SingleAircraftdata = async (req, res, next) => {
   const {id} = req.params;
-  const {Child_id} = req.body;
+  const {Child_id} = req.params;
 
   console.log("id", id);
   const aircraftData = await Aircraft.findById(id);
@@ -1314,11 +1320,20 @@ exports.SingleAircraftdata = async (req, res, next) => {
   if (!aircraftData) {
     return res.status(404).send({message: "Aircraft not found"});
   } else if (aircraftData) {
-    const specificAircraft =
-      aircraftData.Response.AirCraftDatawithNotechStop.find(
-        (item) => item.aircraft.id === Child_id
-      );
-    console.log("specificAircraft", specificAircraft);
-    res.json({specificAircraft});
+    if (aircraftData.Response.AirCraftDatawithNotechStop) {
+      const specificAircraft =
+        aircraftData.Response.AirCraftDatawithNotechStop.find(
+          (item) => item.aircraft.id === Child_id
+        );
+      console.log("specificAircraft", specificAircraft);
+      res.json({specificAircraft});
+    } else if (aircraftData.Response.AirCraftDatawithtechStop) {
+      const specificAircraft =
+        aircraftData.Response.AirCraftDatawithtechStop.find(
+          (item) => item.aircraft.id === Child_id
+        );
+      console.log("specificAircraft", specificAircraft);
+      res.json({specificAircraft});
+    }
   }
 };
