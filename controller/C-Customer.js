@@ -1046,17 +1046,17 @@ exports.TestAPitoken = async (err, req, res, next) => {
   }
 };
 
-const SingleCillectionData = async (Id, res) => {
-  console.log("Id line 1050", Id);
-  const AllaircraftData = await Aircraft.findById(Id);
-  if (!AllaircraftData) {
-    console.log("No Aircraft data is exist");
-    return res.status(404).json({error: "No aircraft data exists"});
-  } else {
-    console.log("AllaircraftData line 1293", AllaircraftData);
-    return res.json({AllaircraftData});
-  }
-};
+// const SingleCillectionData = async (Id, res) => {
+//   console.log("Id line 1050", Id);
+//   const AllaircraftData = await Aircraft.findById(Id);
+//   if (!AllaircraftData) {
+//     console.log("No Aircraft data is exist");
+//     return res.status(404).json({error: "No aircraft data exists"});
+//   } else {
+//     console.log("AllaircraftData line 1293", AllaircraftData);
+//     return res.json({AllaircraftData});
+//   }
+// };
 
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
@@ -1299,8 +1299,10 @@ exports.AmedeusTestAPitoken = async (req, res) => {
         ResultData.save();
         let aircraftId = ResultData._id;
         console.log("aircraftId line 1305", aircraftId);
-        aircraftId = aircraftId.toString();
-        SingleCillectionData(aircraftId, res);
+        return res.json({aircraftId, ResponseData});
+        // aircraftId = aircraftId.toString();
+
+        // SingleCillectionData(aircraftId, res);
       });
   } catch (error) {
     console.error("error", error.message);
@@ -1311,25 +1313,24 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 };
 
 exports.SingleAircraftdata = async (req, res, next) => {
-  const {id} = req.params;
-  const {Child_id} = req.params;
-
-  console.log("id", id);
+   const {concatenatedParam} = req.params;
+   const [id, Child_id] = concatenatedParam.split("-");
+  console.log("concatenatedParam", concatenatedParam);
   const aircraftData = await Aircraft.findById(id);
   console.log("aircraftData", aircraftData);
   if (!aircraftData) {
     return res.status(404).send({message: "Aircraft not found"});
   } else if (aircraftData) {
-    if (aircraftData.Response.AirCraftDatawithNotechStop) {
+    if (aircraftData?.Response?.AirCraftDatawithNotechStop) {
       const specificAircraft =
-        aircraftData.Response.AirCraftDatawithNotechStop.find(
+        aircraftData?.Response?.AirCraftDatawithNotechStop.find(
           (item) => item.aircraft.id === Child_id
         );
       console.log("specificAircraft", specificAircraft);
       res.json({specificAircraft});
-    } else if (aircraftData.Response.AirCraftDatawithtechStop) {
+    } else if (aircraftData.Response?.AirCraftDatawithtechStop) {
       const specificAircraft =
-        aircraftData.Response.AirCraftDatawithtechStop.find(
+        aircraftData.Response?.AirCraftDatawithtechStop.find(
           (item) => item.aircraft.id === Child_id
         );
       console.log("specificAircraft", specificAircraft);
