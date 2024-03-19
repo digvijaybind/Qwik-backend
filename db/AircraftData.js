@@ -7,5 +7,4 @@ const aircraftSchema = new mongoose.Schema({
 });
 const Aircraft = mongoose.model("AircraftData", aircraftSchema);
 
-module.exports = Aircraft
-
+module.exports = Aircraft;

@@ -8,7 +8,7 @@ const {buildRequestConfig} = require("../configs/aviapi.config");
 const {AircraftOPerator} = require("../db/Operator");
 const NodeGeocoder = require("node-geocoder");
 const {access_token} = require("../configs/cronjob");
-const Aircraft = require("../db/AircraftOffer");
+const Aircraft = require("../db/AircraftData");
 const AmadeusData = require("../db/Amadeusdata");
 const geocoder = NodeGeocoder({
   provider: "google",
@@ -633,7 +633,7 @@ async function getFlightOffers(apiUrl, requestData, accessToken) {
 exports.AmedeusAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-    const accessToken = "SeezCxea1FYSUqiBjGtfNs8L0gT7";
+    const accessToken = "zumLunu60AQAZfUdkfq0EOSgb0gK";
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -1293,10 +1293,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             console.log("ResponseData is now :::", ResponseData);
           }
         });
+        console.log("ResponseData line ", ResponseData);
         const ResultData = new Aircraft({
-          ResponseData,
+          Response: ResponseData,
         });
         ResultData.save();
+        console.log("ResultData", ResultData);
         let aircraftId = ResultData._id;
         console.log("aircraftId line 1305", aircraftId);
         return res.json({aircraftId, ResponseData});
@@ -1313,9 +1315,10 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 };
 
 exports.SingleAircraftdata = async (req, res, next) => {
-   const {concatenatedParam} = req.params;
-   const [id, Child_id] = concatenatedParam.split("-");
+  const {concatenatedParam} = req.params;
+  const [id, Child_id] = concatenatedParam.split("-");
   console.log("concatenatedParam", concatenatedParam);
+  console.log("id line 1320", id);
   const aircraftData = await Aircraft.findById(id);
   console.log("aircraftData", aircraftData);
   if (!aircraftData) {
