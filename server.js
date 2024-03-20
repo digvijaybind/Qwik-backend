@@ -7,6 +7,7 @@ const app = express();
 const axios = require("axios");
 const OperatorRouter = require("./routes/Operator-Router");
 const CustomerRouter = require("./routes/Customer-Router");
+const EquiryRouter = require("./routes/ConfirmEquiry-Router");
 const AdminRouter = require("./routes/Admin-Router");
 const cookieParser = require("cookie-parser");
 const errorMiddleware = require("./middleware/error-middleware");
@@ -106,6 +107,7 @@ app.get("/blog", (req, res) => {
 app.use("/admin", AdminRouter);
 app.use("/operator", OperatorRouter);
 app.use("/customer", CustomerRouter);
+app.use("/equiry", EquiryRouter);
 
 app.use(errorMiddleware);
 
