@@ -10,7 +10,7 @@ const NodeGeocoder = require("node-geocoder");
 const {access_token} = require("../configs/cronjob");
 const Aircraft = require("../db/AircraftData");
 const AmadeusData = require("../db/Amadeusdata");
-const crends = require("../secret-key.json");
+const crends = require("../data-key.json");
 const geocoder = NodeGeocoder({
   provider: "google",
   apiKey: process.env.GOOGLE_API_KEY,
