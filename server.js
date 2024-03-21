@@ -9,6 +9,7 @@ const OperatorRouter = require("./routes/Operator-Router");
 const CustomerRouter = require("./routes/Customer-Router");
 const EquiryRouter = require("./routes/ConfirmEquiry-Router");
 const AdminRouter = require("./routes/Admin-Router");
+const PaymentRouter = require("./routes/payment-Router.js");
 const cookieParser = require("cookie-parser");
 const errorMiddleware = require("./middleware/error-middleware");
 const dotenv = require("dotenv");
@@ -108,6 +109,7 @@ app.use("/admin", AdminRouter);
 app.use("/operator", OperatorRouter);
 app.use("/customer", CustomerRouter);
 app.use("/equiry", EquiryRouter);
+app.use("/payment", PaymentRouter);
 
 app.use(errorMiddleware);
 

@@ -422,7 +422,6 @@ exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
 
 
 exports.getOperatorsLists= async (req, res) => {
-
   const operator=await Operator.find();
   return res.json({ succes: true, message: "operator List found", data: operator });
  
