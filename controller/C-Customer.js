@@ -10,6 +10,7 @@ const NodeGeocoder = require("node-geocoder");
 const {access_token} = require("../configs/cronjob");
 const Aircraft = require("../db/AircraftData");
 const AmadeusData = require("../db/Amadeusdata");
+const crends = require("../secret-key.json");
 const geocoder = NodeGeocoder({
   provider: "google",
   apiKey: process.env.GOOGLE_API_KEY,
@@ -17,6 +18,8 @@ const geocoder = NodeGeocoder({
 const path = require("path");
 const aircraftDataPath = path.join(__dirname, "../database/customaircfat.json");
 const AirCraftDataArray = require(aircraftDataPath);
+const {GoogleSpreadsheet} = require("google-spreadsheet");
+const {JWT} = require("google-auth-library");
 console.log(AirCraftDataArray);
 exports.Register = async (req, res) => {
   const errors = validationResult(req);
@@ -1058,6 +1061,172 @@ exports.TestAPitoken = async (err, req, res, next) => {
 //   }
 // };
 
+// const Storing = async (data) => {
+//   console.log("data line 1065", data);
+//   const creds = {
+//     type: "service_account",
+//     project_id: "qwiklif-enquiry",
+//     private_key_id: "5984649f457445034714aa04d8bd133709cb5e87",
+//     private_key:
+//       "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjs1PpSy3o3NfA\nSvXJ5yoRJFMmWAJrA+wag4ilqJFERkBLiAq2uo7DEIR3f69uxkQPRKaeVihMvok7\n5w4++6N/f8BM2kce1U0qsquZi/DZs1BPG3sSw5qMpVBP7yVx/DYYwoVS7vESCEAk\nww6cnSUiaxAKfJtvM5lY18TVD4OWNEtewVypPMW65gbuU5NQat7Q3uR+uu2u3Xnh\n6WMAk7t4CMwgQC0NXdDo3yQ9R0gYJbwuLfovbgZMRY/RkFJI2L+ztsUqYgZDshZ1\nDFcOGun9/ovnFnbNyHFtS+DsWIlW0ljIGWgc7fJy+tjbGrJeRymBoSuZMNf3AKwt\nUl4QyogpAgMBAAECggEACB2OzmUEvKOeKpFMyBqmsjzbxm3ciNOj89iLgLLvqLPW\n4ie3aEGtbCw4dPgmiVZY72zW2ciprMxRX1/gC+1LuLlrniPAHN40OiarbSxL328N\nTy6slkyOL+TOK3hOoez//ZA/LdJcrykrjOcCpW8A9UjbfbmZtxSWyJnBz1I6ksqm\ngXGsLYJSA4m6ut7JB+gsmqKbD1UoFUa9VN6debM+g6LwfxLj0vy2GFnpt8vXjnw0\nQbf3C5R6YxIHsXe8SepaY1Qf44NuGCZpdwBBEjmW3eAcE5SEz5ftxue4ty7M/3wt\nW7qeCNYwCR9NP4RwwLcgBzGWWFGKS497jrlwEwZhkQKBgQDheo+J7seFmz4O1gx3\nHhjDr0e6/iAAwIrz7Noj+gu0NugTMF/6v+hvbeYmvUgM4ka32+lWjrbfelzC7Erb\npe1Zkt5C8RMz21zhTRyXvPvGleDrZgOFQPA9VjVMjKyHEjBRzmkz5RQyaYVx/kmY\nN3BQNXVIGbpytBq8a6Ry3nFDbQKBgQC52/xuVMZyAtaD08QBblheg8Aoo/dlc2sj\nQoSK4PgORsPkqpX7KCWiozxGP9Ci9KYl+OYbCSeDhEPTUUNvGYgsjiuyjYNUStL+\nC/yp7RSmzC9wJkHLe+ypHJCAwv1jZd61530qGMnYC2bf51IlA1Ah11nckk2caKhj\nuWgLdy2mLQKBgGnRoC3Gr0LH0b8au6znpg2oZEyg2RohQtUpclLyFa4VGqNuz4yZ\nphcth5bkvDy3sSK2hXLG9ZI6FfCw/ozI+XRRVhgqla1/pL5j9yhLXAod6vnu3XYb\nPOQ8YjUzzAB0C9NIwNzHBMyH80XFZnqWghJSlGErGfKdDfMhvYLfXF6dAoGBALly\ntz2feSLpkgGXm0uSPrqP23yxnnir4YsdJAMu1lPoaC4Rx/UC6gqNteaiZhsy4VWi\nNHdlevfPUZ3Yx+BjKWzLru5KJXBF+KFkdIdY9/I2al8MzTmsPUfAKK9R4GL9kmsOv+TxNvVK6yseNOiZlasupYtgr/AQvXRD230VPYdBAoGAJLRqbYhVPKLJ28gYWuK9hNjpS1YICckkIB7w+5zvoG2hV/IAqliMHrpz4Zv4PTfU19w9RbJPE9uTxluSaIre4zS27wDW+C+LfegIZpZ4z9Yxf9tSjTRPw8sMxX2iYiwH1XkW96qboFch5kWW48xPSLde+8YqkW5S5MM+kOl8Am4=\n-----END PRIVATE KEY-----\n",
+//     client_email: "qwiklif-enquiry@qwiklif-enquiry.iam.gserviceaccount.com",
+//     client_id: "107302574858087326407",
+//     auth_uri: "https://accounts.google.com/o/oauth2/auth",
+//     token_uri: "https://oauth2.googleapis.com/token",
+//     auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+//     client_x509_cert_url:
+//       "https://www.googleapis.com/robot/v1/metadata/x509/qwiklif-enquiry%40qwiklif-enquiry.iam.gserviceaccount.com",
+//     universe_domain: "googleapis.com",
+//   };
+
+//   const doc = new GoogleSpreadsheet(
+//     "1dr2jUBIZSSn5lRsSRcgPsap2H3S3u5TNSrUwKa3VxcU"
+//   );
+//   await doc.useServiceAccountAuth({
+//     client_email: creds.client_email,
+//     private_key: creds.private_key,
+//   });
+
+//   const sheet = doc.sheetsByIndex[0]; // assume we're using the first sheet
+
+//   // Clear existing content in the sheet
+//   await sheet.clear();
+
+//   // Add headers
+//   await sheet.setHeaderRow(Object.keys(data[0]));
+
+//   // Append the data to the sheet
+//   await sheet.addRows(data);
+//   await doc.loadInfo();
+// };
+const DataStore = async (data) => {
+  const doc = new GoogleSpreadsheet(
+    "1dr2jUBIZSSn5lRsSRcgPsap2H3S3u5TNSrUwKa3VxcU"
+  );
+  await doc.useServiceAccountAuth(crends);
+  await doc.loadInfo();
+  await doc.updateProperties({title: "Enquiry leads"});
+  const sheet = doc.sheetsByIndex[0];
+
+  const HEADERS = [
+    "id",
+    "From",
+    "To",
+    "date",
+    "Passengers",
+    "countryCode",
+    " mobile",
+  ];
+  await sheet.setHeaderRow(HEADERS);
+  await sheet.addRows(data);
+  console.log(sheet.title);
+  console.log(sheet.rowCount);
+};
+// const DataStoring = async (data) => {
+//   console.log("data line 1088", data);
+//   const serviceAccountAuth = new JWT({
+//     email: "qwiklif-enquiry@qwiklif-enquiry.iam.gserviceaccount.com",
+//     key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjs1PpSy3o3NfA\nSvXJ5yoRJFMmWAJrA+wag4ilqJFERkBLiAq2uo7DEIR3f69uxkQPRKaeVihMvok7\n5w4++6N/f8BM2kce1U0qsquZi/DZs1BPG3sSw5qMpVBP7yVx/DYYwoVS7vESCEAk\nww6cnSUiaxAKfJtvM5lY18TVD4OWNEtewVypPMW65gbuU5NQat7Q3uR+uu2u3Xnh\n6WMAk7t4CMwgQC0NXdDo3yQ9R0gYJbwuLfovbgZMRY/RkFJI2L+ztsUqYgZDshZ1\nDFcOGun9/ovnFnbNyHFtS+DsWIlW0ljIGWgc7fJy+tjbGrJeRymBoSuZMNf3AKwt\nUl4QyogpAgMBAAECggEACB2OzmUEvKOeKpFMyBqmsjzbxm3ciNOj89iLgLLvqLPW\n4ie3aEGtbCw4dPgmiVZY72zW2ciprMxRX1/gC+1LuLlrniPAHN40OiarbSxL328N\nTy6slkyOL+TOK3hOoez//ZA/LdJcrykrjOcCpW8A9UjbfbmZtxSWyJnBz1I6ksqm\ngXGsLYJSA4m6ut7JB+gsmqKbD1UoFUa9VN6debM+g6LwfxLj0vy2GFnpt8vXjnw0\nQbf3C5R6YxIHsXe8SepaY1Qf44NuGCZpdwBBEjmW3eAcE5SEz5ftxue4ty7M/3wt\nW7qeCNYwCR9NP4RwwLcgBzGWWFGKS497jrlwEwZhkQKBgQDheo+J7seFmz4O1gx3\nHhjDr0e6/iAAwIrz7Noj+gu0NugTMF/6v+hvbeYmvUgM4ka32+lWjrbfelzC7Erb\npe1Zkt5C8RMz21zhTRyXvPvGleDrZgOFQPA9VjVMjKyHEjBRzmkz5RQyaYVx/kmY\nN3BQNXVIGbpytBq8a6Ry3nFDbQKBgQC52/xuVMZyAtaD08QBblheg8Aoo/dlc2sj\nQoSK4PgORsPkqpX7KCWiozxGP9Ci9KYl+OYbCSeDhEPTUUNvGYgsjiuyjYNUStL+\nC/yp7RSmzC9wJkHLe+ypHJCAwv1jZd61530qGMnYC2bf51IlA1Ah11nckk2caKhj\nuWgLdy2mLQKBgGnRoC3Gr0LH0b8au6znpg2oZEyg2RohQtUpclLyFa4VGqNuz4yZ\nphcth5bkvDy3sSK2hXLG9ZI6FfCw/ozI+XRRVhgqla1/pL5j9yhLXAod6vnu3XYb\nPOQ8YjUzzAB0C9NIwNzHBMyH80XFZnqWghJSlGErGfKdDfMhvYLfXF6dAoGBALly\ntz2feSLpkgGXm0uSPrqP23yxnnir4YsdJAMu1lPoaC4Rx/UC6gqNteaiZhsy4VWi\nNHdlevfPUZ3Yx+BjKWzLru5KJXBF+KFkdIdY9/I2al8MzTmsPUfAKK9R4GL9kmsO\nv+TxNvVK6yseNOiZlasupYtgr/AQvXRD230VPYdBAoGAJLRqbYhVPKLJ28gYWuK9\nhNjpS1YICckkIB7w+5zvoG2hV/IAqliMHrpz4Zv4PTfU19w9RbJPE9uTxluSaIre\n4zS27wDW+C+LfegIZpZ4z9Yxf9tSjTRPw8sMxX2iYiwH1XkW96qboFch5kWW48xP\nSLde+8YqkW5S5MM+kOl8Am4=\n-----END PRIVATE KEY-----\n",
+//   });
+
+//   const doc = new GoogleSpreadsheet(
+//     "1W10Zq9crnCosxNrYsvpsuomDJnjEvYW-6gpg7naohQA",
+//     serviceAccountAuth
+//   );
+
+//   await doc.loadInfo();
+//   console.log(doc.title);
+//   await doc.updateProperties({title: "qwiklif Enquiry"});
+
+//   const sheet = doc.sheetsByIndex[0];
+//   const HEADERS = [
+//     "id",
+//     "From",
+//     "To",
+//     "date",
+//     "Passengers",
+//     "countryCode",
+//     " mobile",
+//   ];
+//   await sheet.setHeaderRow(HEADERS);
+//   await sheet.addRows(data);
+//   console.log(sheet.title);
+//   console.log(sheet.rowCount);
+// };
+
+const DataStoring = async (data) => {
+  const creds = {
+    type: "service_account",
+    project_id: "qwiklif-enquiry",
+    private_key_id: "5984649f457445034714aa04d8bd133709cb5e87",
+    private_key:
+      "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjs1PpSy3o3NfA\nSvXJ5yoRJFMmWAJrA+wag4ilqJFERkBLiAq2uo7DEIR3f69uxkQPRKaeVihMvok7\n5w4++6N/f8BM2kce1U0qsquZi/DZs1BPG3sSw5qMpVBP7yVx/DYYwoVS7vESCEAk\nww6cnSUiaxAKfJtvM5lY18TVD4OWNEtewVypPMW65gbuU5NQat7Q3uR+uu2u3Xnh\n6WMAk7t4CMwgQC0NXdDo3yQ9R0gYJbwuLfovbgZMRY/RkFJI2L+ztsUqYgZDshZ1\nDFcOGun9/ovnFnbNyHFtS+DsWIlW0ljIGWgc7fJy+tjbGrJeRymBoSuZMNf3AKwt\nUl4QyogpAgMBAAECggEACB2OzmUEvKOeKpFMyBqmsjzbxm3ciNOj89iLgLLvqLPW\n4ie3aEGtbCw4dPgmiVZY72zW2ciprMxRX1/gC+1LuLlrniPAHN40OiarbSxL328N\nTy6slkyOL+TOK3hOoez//ZA/LdJcrykrjOcCpW8A9UjbfbmZtxSWyJnBz1I6ksqm\ngXGsLYJSA4m6ut7JB+gsmqKbD1UoFUa9VN6debM+g6LwfxLj0vy2GFnpt8vXjnw0\nQbf3C5R6YxIHsXe8SepaY1Qf44NuGCZpdwBBEjmW3eAcE5SEz5ftxue4ty7M/3wt\nW7qeCNYwCR9NP4RwwLcgBzGWWFGKS497jrlwEwZhkQKBgQDheo+J7seFmz4O1gx3\nHhjDr0e6/iAAwIrz7Noj+gu0NugTMF/6v+hvbeYmvUgM4ka32+lWjrbfelzC7Erb\npe1Zkt5C8RMz21zhTRyXvPvGleDrZgOFQPA9VjVMjKyHEjBRzmkz5RQyaYVx/kmY\nN3BQNXVIGbpytBq8a6Ry3nFDbQKBgQC52/xuVMZyAtaD08QBblheg8Aoo/dlc2sj\nQoSK4PgORsPkqpX7KCWiozxGP9Ci9KYl+OYbCSeDhEPTUUNvGYgsjiuyjYNUStL+\nC/yp7RSmzC9wJkHLe+ypHJCAwv1jZd61530qGMnYC2bf51IlA1Ah11nckk2caKhj\nuWgLdy2mLQKBgGnRoC3Gr0LH0b8au6znpg2oZEyg2RohQtUpclLyFa4VGqNuz4yZ\nphcth5bkvDy3sSK2hXLG9ZI6FfCw/ozI+XRRVhgqla1/pL5j9yhLXAod6vnu3XYb\nPOQ8YjUzzAB0C9NIwNzHBMyH80XFZnqWghJSlGErGfKdDfMhvYLfXF6dAoGBALly\ntz2feSLpkgGXm0uSPrqP23yxnnir4YsdJAMu1lPoaC4Rx/UC6gqNteaiZhsy4VWi\nNHdlevfPUZ3Yx+BjKWzLru5KJXBF+KFkdIdY9/I2al8MzTmsPUfAKK9R4GL9kmsOv+TxNvVK6yseNOiZlasupYtgr/AQvXRD230VPYdBAoGAJLRqbYhVPKLJ28gYWuK9hNjpS1YICckkIB7w+5zvoG2hV/IAqliMHrpz4Zv4PTfU19w9RbJPE9uTxluSaIre4zS27wDW+C+LfegIZpZ4z9Yxf9tSjTRPw8sMxX2iYiwH1XkW96qboFch5kWW48xPSLde+8YqkW5S5MM+kOl8Am4=\n-----END PRIVATE KEY-----\n",
+    client_email: "qwiklif-enquiry@qwiklif-enquiry.iam.gserviceaccount.com",
+    client_id: "107302574858087326407",
+    auth_uri: "https://accounts.google.com/o/oauth2/auth",
+    token_uri: "https://oauth2.googleapis.com/token",
+    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+    client_x509_cert_url:
+      "https://www.googleapis.com/robot/v1/metadata/x509/qwiklif-enquiry%40qwiklif-enquiry.iam.gserviceaccount.com",
+    universe_domain: "googleapis.com",
+  };
+  const serviceAccountAuth = new JWT({
+    email: "qwiklif-enquiry@qwiklif-enquiry.iam.gserviceaccount.com",
+    key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjs1PpSy3o3NfA\nSvXJ5yoRJFMmWAJrA+wag4ilqJFERkBLiAq2uo7DEIR3f69uxkQPRKaeVihMvok7\n5w4++6N/f8BM2kce1U0qsquZi/DZs1BPG3sSw5qMpVBP7yVx/DYYwoVS7vESCEAk\nww6cnSUiaxAKfJtvM5lY18TVD4OWNEtewVypPMW65gbuU5NQat7Q3uR+uu2u3Xnh\n6WMAk7t4CMwgQC0NXdDo3yQ9R0gYJbwuLfovbgZMRY/RkFJI2L+ztsUqYgZDshZ1\nDFcOGun9/ovnFnbNyHFtS+DsWIlW0ljIGWgc7fJy+tjbGrJeRymBoSuZMNf3AKwt\nUl4QyogpAgMBAAECggEACB2OzmUEvKOeKpFMyBqmsjzbxm3ciNOj89iLgLLvqLPW\n4ie3aEGtbCw4dPgmiVZY72zW2ciprMxRX1/gC+1LuLlrniPAHN40OiarbSxL328N\nTy6slkyOL+TOK3hOoez//ZA/LdJcrykrjOcCpW8A9UjbfbmZtxSWyJnBz1I6ksqm\ngXGsLYJSA4m6ut7JB+gsmqKbD1UoFUa9VN6debM+g6LwfxLj0vy2GFnpt8vXjnw0\nQbf3C5R6YxIHsXe8SepaY1Qf44NuGCZpdwBBEjmW3eAcE5SEz5ftxue4ty7M/3wt\nW7qeCNYwCR9NP4RwwLcgBzGWWFGKS497jrlwEwZhkQKBgQDheo+J7seFmz4O1gx3\nHhjDr0e6/iAAwIrz7Noj+gu0NugTMF/6v+hvbeYmvUgM4ka32+lWjrbfelzC7Erb\npe1Zkt5C8RMz21zhTRyXvPvGleDrZgOFQPA9VjVMjKyHEjBRzmkz5RQyaYVx/kmY\nN3BQNXVIGbpytBq8a6Ry3nFDbQKBgQC52/xuVMZyAtaD08QBblheg8Aoo/dlc2sj\nQoSK4PgORsPkqpX7KCWiozxGP9Ci9KYl+OYbCSeDhEPTUUNvGYgsjiuyjYNUStL+\nC/yp7RSmzC9wJkHLe+ypHJCAwv1jZd61530qGMnYC2bf51IlA1Ah11nckk2caKhj\nuWgLdy2mLQKBgGnRoC3Gr0LH0b8au6znpg2oZEyg2RohQtUpclLyFa4VGqNuz4yZ\nphcth5bkvDy3sSK2hXLG9ZI6FfCw/ozI+XRRVhgqla1/pL5j9yhLXAod6vnu3XYb\nPOQ8YjUzzAB0C9NIwNzHBMyH80XFZnqWghJSlGErGfKdDfMhvYLfXF6dAoGBALly\ntz2feSLpkgGXm0uSPrqP23yxnnir4YsdJAMu1lPoaC4Rx/UC6gqNteaiZhsy4VWi\nNHdlevfPUZ3Yx+BjKWzLru5KJXBF+KFkdIdY9/I2al8MzTmsPUfAKK9R4GL9kmsO\nv+TxNvVK6yseNOiZlasupYtgr/AQvXRD230VPYdBAoGAJLRqbYhVPKLJ28gYWuK9\nhNjpS1YICckkIB7w+5zvoG2hV/IAqliMHrpz4Zv4PTfU19w9RbJPE9uTxluSaIre\n4zS27wDW+C+LfegIZpZ4z9Yxf9tSjTRPw8sMxX2iYiwH1XkW96qboFch5kWW48xP\nSLde+8YqkW5S5MM+kOl8Am4=\n-----END PRIVATE KEY-----\n",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(
+    "1W10Zq9crnCosxNrYsvpsuomDJnjEvYW-6gpg7naohQA",
+    serviceAccountAuth
+  );
+  await doc.loadInfo();
+  console.log("doc", doc);
+  // await doc.useServiceAccountAuth(serviceAccountAuth);
+
+  // console.log(doc.title);
+
+  // await doc.updateProperties({title: "qwiklif Enquiry"});
+  const sheet = doc.sheetsByIndex[0];
+  const HEADERS = [
+    "id",
+    "From",
+    "To",
+    "date",
+    "Passengers",
+    "countryCode",
+    "mobile",
+  ];
+  await sheet.setHeaderRow(HEADERS);
+  await sheet.addRows(data);
+  console.log(sheet.title);
+  console.log(sheet.rowCount);
+};
+// const DataStoringBusiness = async (data) => {
+
+// };
+
+// const Storing = async () => {
+//   const spreadsheetId = "";
+//   const clientEmail =
+//     "google-sheet@qwiklif-enquiry-417817.iam.gserviceaccount.com";
+//   const privatekey =
+//     "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCLv/r2ULIFBhph\nS+ORyQPXVX1cSoB7Dw4/1S7S+sdVPkHqjk70auK9pQTCzkyRJESSxHl8GSyCWOXG\nuQ+qZDnb4GDMg9zQBloYbS78ojTCizWlQ82n+gx+N7aHJiN/8jnPoSkUd2ougDVo\nrIt7r/WAXHGOEWxleJEhGt8ucde1sXEWlFzM9rAOgwJRvfVfK16Nb9ZYagsQLx6o\namLk0jhB/MC999TANcPiDTwUcG9Yjk4ctQL+EevEwiueXV0ffJE7n3XdBxPQpMca\nIkqiI+dRIXlNPoDp3XaGILdhSuw2FdRHpOuvWYVxZ6TgHn2VG+aVvjh2FspgcTMD\nctXeYnOJAgMBAAECggEABnVdHwiMLZzCV9hGwFxKm+dEx6DezrEbrroGs7Poxej+\naV1hyzxsVajcbzdTBQsoyyKe3awZKT38AoLXdT+0B9QXDSST7h45CDN1jjHd39bI\nqCZZyQdOj/+5pQXPcrCKWOzhBePd6Z+9uCRvPsxbO28qRU9LU+YuSNoh0dbriedD\nr4rlexbUSAAt/tQqKENqi7lEN+ndh9viQrlRH+Ud5rvhD0ACinf6M7Q4mSkBLLgk\n2qPI1Hsios1np1DiG8onTn3vZf5JPOh/K+tbE1D5bY5YqCD9ZyR5t/tJvzSYpGyu\n8LfFaYGX9fllIFCbGxu/P3t74KWX7LDjbXh7pgbvYQKBgQC/aLW01tQVQb7MPT8h\n+guop591vmfBbCgudb/MTZW1ByrseVtQBTaygGL+uI2zEshcd21Mu3ohXvHqADm8\nF5lZWbV7I2OX7t/8pvRXsQlFMHRQCGXCMmQfhy17ZaJ7ecR/K8tOFibn513HodHF\n7k/EpKt7Zi0HVvtBu36vTO9+WQKBgQC66JXbwRzjoY6lGckk4a8UBhNTIERjvU6K\nYWa1K5i+qYrpEiqOc9OAucQUCXzmF7ksuX2ZHpFbYbCFg3gNlh4/68hkAUcUk/df\nDIt0DsnklN9vQZ9UcEX7hi/W32CGHkYaLunP3cm0H1GjHadwUR/So7GR1qwTLuuc\nLZGg75nYsQKBgE1NmLUkXhsHpmsOAUVTmwnOSNRgxb6UU9YPsBpu6xtlfaxrhrlW\nobSNrW16U6AS4eCWSwpGXRjFI6aB2M9iKIixdl34+OwPiV6cfuo7kabj3tXDznUT\nrOQez/uaHHkJwJYrtbwfri7Sfkl1zSbHDGg6qRb5OQ5Rzr/JXWynAcJhAoGBAKz1\nqiePTpJ+4Cd78xzEE2WuMZfM1jyN4+4+L/MbAt/8uGTxwJvOJzyJqx73oLKz5VGz\n3LwjA1PS1KzYefHoptlz8R5J6GLsgg9c5ndhcAaslQ65ZR2YP8p/5Cks0H+L6Ec2\nfnsyvAKIsN0HBfjzuUUM4bcZNmcSFkmSCZ8p2e4hAoGAQ8Oe5vZ7iYaFRQtdpUK8\n2JhCehzXdvRFmGzZMMYON5PsKcOeQ+H/yu/d2peqykrS7Tj7Z9cRZR2XcyxVrigs\nYkAlEiN2yjhLFuD624codK+JDlIQk1viSxsy2ubViDM4wG8NRrgRJoFXIXDQDPD/\nOnO3R6uHl1XC48y+9iSRGtQ=\n-----END PRIVATE KEY-----\n";
+
+//   async function accessGoogleSheet() {
+//     const auth = new GoogleSpreadsheet.auth.GoogleAuth({
+//       credentials: {
+//         client_email: clientEmail,
+//         private_key: privatekey,
+//       },
+//       scopes:["https://www.googleapis.com/auth/spreadsheets"]
+//     });
+//     const client=await auth.getClient();
+//     const sheets=google.sheets({version:"v4",auth});
+
+//   }
+// };
+
 exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = "https://test.api.amadeus.com/v2/shopping/flight-offers";
@@ -1083,6 +1252,45 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     const Mobile = mobile;
     const countrycode = countryCode;
     const Max = 10;
+    const payload = [
+      originLocationCode,
+      destinationLocationCode,
+      departureDate,
+      pax,
+      mobile,
+      countryCode,
+    ];
+    console.log("payload line 1156", payload);
+    // DataStoringBusiness(payload);
+    const SCOPES = [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file",
+    ];
+
+    const jwt = new JWT({
+      email: crends.client_email,
+      key: crends.private_key,
+      scopes: SCOPES,
+    });
+    const doc = new GoogleSpreadsheet(
+      "1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU",
+      jwt
+    );
+    await doc.loadInfo();
+    console.log(doc.title);
+    const sheet = doc.sheetsByIndex[0];
+    await sheet.addRow(payload);
+    const HEADERS = [
+      "From",
+      "To",
+      "Date",
+      "Passengers",
+      " mobile",
+      "countryCode",
+    ];
+    await sheet.setHeaderRow(HEADERS);
+    await doc.updateProperties({title: "qwiklif Enquiry"});
+
     const airlines = [
       "AC",
       "6E",
@@ -1229,11 +1437,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                   (Number(itemData.price.grandTotal) +
                     (Number(itemData.price.grandTotal) * a) / 100) *
                     9 +
-                    ((Number(itemData.price.grandTotal) +
-                      (Number(itemData.price.grandTotal) * 7) / 100) *
-                      9 *
-                      b) /
-                      100
+                    Number(1111.11)
                 ),
               },
             });
@@ -1270,11 +1474,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                   (Number(itemData.price.grandTotal) +
                     (Number(itemData.price.grandTotal) * a) / 100) *
                     9 +
-                    ((Number(itemData.price.grandTotal) +
-                      (Number(itemData.price.grandTotal) * 7) / 100) *
-                      9 *
-                      b) /
-                      100
+                    Number(1111.11)
                 ),
               },
             });
