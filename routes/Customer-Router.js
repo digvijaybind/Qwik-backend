@@ -1,25 +1,29 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const CustomerController = require("../controller/C-Customer");
-const asyncMiddleware = require("../middleware/async-middleware");
+const CustomerController = require('../controller/customer/C-Customer');
+const asyncMiddleware = require('../middleware/async-middleware');
 
 router.post(
-  "/customerSearch",
+  '/customerSearch',
   asyncMiddleware(CustomerController.calculateFlightTime)
 );
 router.post(
-  "/customerSearchTechaul",
+  '/customerSearchTechaul',
   asyncMiddleware(CustomerController.calculateFlightTimeForTakeall)
 );
-router.get("/aircraftLists", asyncMiddleware(CustomerController.AirCraftData));
-router.get("/airline", asyncMiddleware(CustomerController.AirlineBlog));
+router.get('/aircraftLists', asyncMiddleware(CustomerController.AirCraftData));
+router.get('/airline', asyncMiddleware(CustomerController.AirlineBlog));
 router.post(
-  "/Amadeusairline",
+  '/Amadeusairline',
   asyncMiddleware(CustomerController.AmedeusTestAPitoken)
 );
-router.get("/aircraftall", asyncMiddleware(CustomerController.AllAircraft));
+router.get('/aircraftall', asyncMiddleware(CustomerController.AllAircraft));
 router.get(
-  "/aircraft/:concatenatedParam",
-  asyncMiddleware(CustomerController.SingleAircraftdata)
+  '/amadeus/aircraft/:concatenatedParam',
+  asyncMiddleware(CustomerController.SingleAmadusAircraftdata)
+);
+router.get(
+  '/avipage/aircraft/:concatenatedParam',
+  asyncMiddleware(CustomerController.SingleAvipageAircraftdata)
 );
 module.exports = router;
