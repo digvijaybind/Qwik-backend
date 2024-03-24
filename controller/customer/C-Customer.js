@@ -331,7 +331,7 @@ exports.calculateFlightTime = async (req, res) => {
     countryCode,
   ];
 
-  console.log('This is Amadeus Response Line 315', amadeusResult);
+
   // Ending Calling of Amadues Aircraft In Avipages to Fresh Response
 
   console.log('this is current aircraft type', Aircraft);
@@ -863,8 +863,7 @@ exports.calculateFlightTime = async (req, res) => {
                 );
               }
               res.json({
-                aviapages: { aircraftId, responseObj },
-                amadeus: amadeusResult,
+                aviapages: { aircraftId, responseObj }
               });
               if (res.statusCode === 200) {
                 currentAircraftIndex =
