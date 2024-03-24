@@ -9,12 +9,15 @@ const OperatorRouter = require("./routes/Operator-Router");
 const CustomerRouter = require("./routes/Customer-Router");
 const EquiryRouter = require("./routes/ConfirmEquiry-Router");
 const AdminRouter = require("./routes/Admin-Router");
+const FormDataRouter=require("./routes/Form-Data")
 const cookieParser = require("cookie-parser");
 const errorMiddleware = require("./middleware/error-middleware");
 const dotenv = require("dotenv");
 const listEndpoints = require("express-list-endpoints");
 const { getAllAirports } = require("./configs/allAirports");
 require("./database/Database");
+const { superBaseConnect } = require('./configs/supabase');
+superBaseConnect();
 dotenv.config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -79,6 +82,7 @@ app.use("/admin", AdminRouter);
 app.use("/operator", OperatorRouter);
 app.use("/customer", CustomerRouter);
 app.use("/equiry", EquiryRouter);
+app.use("/formData",FormDataRouter)
 
 app.use(errorMiddleware);
 
