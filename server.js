@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 async function getAllAirports(req) {
   let allAirports = [];
   console.log(req.query.q);
-  let nextPage = `https://dir.aviapages.com/api/airports?search=${req.query.q}`;
+  let nextPage = `https://dir.aviapages.com/api/airports/?search=${req.query.q}`;
 
   while (nextPage) {
     try {
