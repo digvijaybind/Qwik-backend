@@ -87,14 +87,15 @@ exports.Login = async (req, res) => {
 };
 
 // Amadeus Aircraft Logic
-const AmedeusTestAPitoken = async (
-  originLocationCode,
-  destinationLocationCode,
-  departureDate,
-  pax,
-  mobile,
-  countryCode
-) => {
+exports.AmedeusTestAPitoken = async () => {
+   const {
+     originLocationCode,
+     destinationLocationCode,
+     departureDate,
+     pax,
+     mobile,
+     countryCode,
+   } = req.body;
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
     const accessToken = access_token;
@@ -311,14 +312,14 @@ exports.calculateFlightTime = async (req, res) => {
   } = req.body;
 
   //Beging Calling of Amadues Aircraft In Avipages to Fresh Response
-  let amadeusResult = await AmedeusTestAPitoken(
-    originLocationCode,
-    destinationLocationCode,
-    departureDate,
-    pax,
-    mobile,
-    countryCode
-  );
+  // let amadeusResult = await AmedeusTestAPitoken(
+  //   originLocationCode,
+  //   destinationLocationCode,
+  //   departureDate,
+  //   pax,
+  //   mobile,
+  //   countryCode
+  // );
 
   const payload = [
     originLocationCode,
@@ -375,6 +376,8 @@ exports.calculateFlightTime = async (req, res) => {
       advise_techstop: true,
     };
 
+    // const CityDepature = await  getAllAirports(departureAirport);
+    // const CityArrival = await getAllAirports(operatorIcao);
     const aviapagesApiConfig = {
       method: 'post',
       url: 'https://frc.aviapages.com/flight_calculator/',
@@ -511,8 +514,7 @@ exports.calculateFlightTime = async (req, res) => {
         );
       }
       res.json({
-        aviapages: { aircraftId, responseObj },
-        amadeus: amadeusResult,
+        aviapages: { aircraftId, responseObj }
       });
 
       if (res.statusCode === 200) {
