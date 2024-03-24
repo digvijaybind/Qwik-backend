@@ -87,7 +87,7 @@ exports.Login = async (req, res) => {
 };
 
 // Amadeus Aircraft Logic
-exports.AmedeusTestAPitoken = async () => {
+exports.AmedeusTestAPitoken = async (req,res) => {
    const {
      originLocationCode,
      destinationLocationCode,
@@ -279,6 +279,7 @@ exports.AmedeusTestAPitoken = async () => {
           }
         });
         console.log('ResponseData line ', ResponseData);
+        res.json({ ResponseData });
         const ResultData = new AmadusAircraft({
           Response: ResponseData,
         });
