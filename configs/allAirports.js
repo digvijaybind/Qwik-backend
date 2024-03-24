@@ -1,3 +1,4 @@
+const axios = require('axios');
 const getAllAirports = async (req) => {
   let allAirports = [];
   console.log(req.query.q);
