@@ -87,15 +87,15 @@ exports.Login = async (req, res) => {
 };
 
 // Amadeus Aircraft Logic
-exports.AmedeusTestAPitoken = async (req,res) => {
-   const {
-     originLocationCode,
-     destinationLocationCode,
-     departureDate,
-     pax,
-     mobile,
-     countryCode,
-   } = req.body;
+exports.AmedeusTestAPitoken = async (req, res) => {
+  const {
+    originLocationCode,
+    destinationLocationCode,
+    departureDate,
+    pax,
+    mobile,
+    countryCode,
+  } = req.body;
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
     const accessToken = access_token;
@@ -331,7 +331,6 @@ exports.calculateFlightTime = async (req, res) => {
     countryCode,
   ];
 
-
   // Ending Calling of Amadues Aircraft In Avipages to Fresh Response
 
   console.log('this is current aircraft type', Aircraft);
@@ -515,7 +514,7 @@ exports.calculateFlightTime = async (req, res) => {
         );
       }
       res.json({
-        aviapages: { aircraftId, responseObj }
+        aviapages: { aircraftId, responseObj },
       });
 
       if (res.statusCode === 200) {
@@ -863,7 +862,7 @@ exports.calculateFlightTime = async (req, res) => {
                 );
               }
               res.json({
-                aviapages: { aircraftId, responseObj }
+                aviapages: { aircraftId, responseObj },
               });
               if (res.statusCode === 200) {
                 currentAircraftIndex =
