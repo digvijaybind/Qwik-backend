@@ -22,13 +22,13 @@ let sendSearchMail = (
   let MailGenerator = new MailGen({
     theme: 'default',
     product: {
-      name: 'Qikfly',
+      name: 'qwiklif',
       link: 'https://mailgen.js/',
     },
   });
   let response = {
     body: {
-      intro: 'User is Searching For Aircraft',
+      intro: 'User is Searching For Air Ambulance service',
       table: {
         data: [
           {
@@ -46,7 +46,7 @@ let sendSearchMail = (
   let mail = MailGenerator.generate(response);
   let message = {
     from: process.env.EMAIL,
-    to: 'miraclewebdev2@gmail.com',
+    to: 'binddigvijay8898912900@gmail.com',
     subject: 'Searching For Aircraft',
     html: mail,
   };
