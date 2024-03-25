@@ -32,7 +32,7 @@ exports.RegisterParamedics = async (req, res, next) => {
         const originalFilename = req.file.originalname; // Get the original filename
 
         // Upload the image to Supabase storage with the correct content type and original filename
-        const { data, error } = await superBase.storage.from('profile').upload(originalFilename, fileBuffer, {
+        const { data, error } = await superBase.storage.from('Form-data').upload(originalFilename, fileBuffer, {
           cacheControl: '3600',
           upsert: false,
           contentType: fileContentType, // Use the content type from the uploaded file
@@ -52,7 +52,7 @@ exports.RegisterParamedics = async (req, res, next) => {
     
         const fileUrl= await superBase
          .storage
-         .from('profile')
+         .from('Form-data')
          .getPublicUrl(fileUrlPath)
        
        console.log(fileUrl)

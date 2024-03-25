@@ -1,4 +1,4 @@
 module.exports = {
-  EMAIL: 'tijanioluwagbengamiracle@gmail.com',
-  PASSWORD: 'akbsunkocuvikktt',
+  EMAIL: 'binddigvijay123@gmail.com',
+  PASSWORD: 'dwoyvdoeaemxundu',
 };
