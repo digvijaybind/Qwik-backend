@@ -20,7 +20,7 @@ return res.status(500).send("Error");
 }
 } 
   catch (error) {
-    throw new Error(error);
+    res.status(500).json({message: error});
   }
 };
  
@@ -41,7 +41,6 @@ exports.VerifyPayment=async (req, res, next) => {
     });
     
   } catch (error) {
-
-    
+    res.status(500).json({message: error});
   }
 }
