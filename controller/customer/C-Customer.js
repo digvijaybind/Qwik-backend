@@ -279,13 +279,14 @@ exports.AmedeusTestAPitoken = async (req, res) => {
           }
         });
         console.log('ResponseData line ', ResponseData);
-        res.json({ ResponseData });
+
         const ResultData = new AmadusAircraft({
           Response: ResponseData,
         });
         ResultData.save();
         console.log('ResultData', ResultData);
         aircraftId = ResultData._id;
+        res.json({ aircraftId: aircraftId, ResponseData: ResponseData });
         console.log('aircraftId line 1305', aircraftId);
       });
 
@@ -501,9 +502,21 @@ exports.calculateFlightTime = async (req, res) => {
       ResultData.save();
       console.log('ResultData', ResultData);
       let aircraftId = ResultData._id;
-      console.log('aircraftId line 1305', aircraftId);
+      const HEADERS = [
+        'From',
+        'To',
+        'Date',
+        'Passengers',
+        ' mobile',
+        'countryCode',
+      ];
+      console.log('aircraftId line 1305', aircraftId, HEADERS);
       if (responseObj) {
-        await PayloadStoring(payload);
+        // await PayloadStoring(
+        //   payload,
+        //   '1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU',
+        //   HEADERS
+        // );
         sendSearchMail(
           originLocationCode,
           destinationLocationCode,
@@ -901,12 +914,15 @@ exports.SingleAvipageAircraftdata = async (req, res, next) => {
     return res.status(404).send({ message: 'Aircraft not found' });
   } else if (aircraftData) {
     if (aircraftData?.Response?.nearestOperatorWithPrice.length > 0) {
+      let from = aircraftData.Response.from;
+      let to = aircraftData.Response.to;
       const specificAircraft =
         aircraftData?.Response?.nearestOperatorWithPrice.find(
           (item) => String(item.operator._id) === Child_id
         );
+
       console.log('specificAircraft', specificAircraft);
-      res.json({ specificAircraft });
+      res.json({ from: from, to: to, specificAircraft: specificAircraft });
     }
   }
 };
