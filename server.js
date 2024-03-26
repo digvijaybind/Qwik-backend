@@ -10,6 +10,7 @@ const CustomerRouter = require("./routes/Customer-Router");
 const EquiryRouter = require("./routes/ConfirmEquiry-Router");
 const AdminRouter = require("./routes/Admin-Router");
 const FormDataRouter=require("./routes/Form-Data")
+const RayzorpayRouter=require("./routes/Paymount-Router")
 const cookieParser = require("cookie-parser");
 const errorMiddleware = require("./middleware/error-middleware");
 const dotenv = require("dotenv");
@@ -21,6 +22,7 @@ dotenv.config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+
 app.use(
   cookieSession({
     name: "sample-session",
@@ -28,24 +30,16 @@ app.use(
     httpOnly: true,
   })
 );
-// const corsOption = {
-//   credentials: true,
-//   origin: [
-//     "http://localhost:3000",
-//     "http://localhost:8080",
-//     "http://localhost:8000",
 
-//   ],
-// };
 const corsOptions = {origin: process.env.ALLOW_ORIGIN};
 app.use(cors(corsOptions));
 app.use(cors());
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cookieParser());
-app.get("/", (req, res) => {
-  res.send("Hello node API");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello node API");
+// });
 
 async function getAllAirports(req) {
   let allAirports = [];
@@ -89,7 +83,6 @@ app.get("/all-airports", async (req, res) => {
       //   // country_name: airport.country_name,
       //   // icao: airport.icao,
       //   // city_name: airport.city_name,
-      // }))
       airport
     );
   } catch (error) {
@@ -103,8 +96,8 @@ app.get("/all-airports", async (req, res) => {
 //   res.send("Hello this is");
 // });
 
-app.get("/blog", (req, res) => {
-  res.send("Hello bog is running");
+app.get("/", (req, res) => {
+  res.sendFile("standard.html",{root:__dirname})
 });
 
 app.use("/admin", AdminRouter);
@@ -112,6 +105,7 @@ app.use("/operator", OperatorRouter);
 app.use("/customer", CustomerRouter);
 app.use("/equiry", EquiryRouter);
 app.use("/formData",FormDataRouter)
+app.use("/rayzorpay",RayzorpayRouter)
 
 app.use(errorMiddleware);
 
