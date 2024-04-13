@@ -1,10 +1,13 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const AvipageaircraftSchema = new mongoose.Schema({
   Response: {
-    type: Object,
+    type: Array,
   },
 });
-const AvipageAircraft = mongoose.model("AvipageAircraftData", AvipageaircraftSchema);
+const AvipageAircraft = mongoose.model(
+  'AvipageAircraftData',
+  AvipageaircraftSchema
+);
 
-module.exports =AvipageAircraft;
+module.exports = AvipageAircraft;
