@@ -1,0 +1,27 @@
+services:
+  mongo_db:
+    container_name: database_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db # Volume definition moved here
+
+  app:
+    build: .
+    ports:
+      - 8000:3000
+    environment:
+      JWT_SECRET: 12345@3456
+      AVID_API_TOKEN: Token 7EbLl0snWGFsHUz67GhNvaVYyxq6i3IQJvBj
+      GOOGLE_API_KEY: AIzaSyCZnNZ9-uHBg0rj8YHKHQC25jHWqXP9Yoc
+      MONGODB_URL: mongodb://mongo_db:27017/test
+      AMD_API_TOKEN: Ec3lZ4zJViWGph6oHO5CDh1Erka2
+      SUPABASE_URL: https://gmeldlnvqdfmmwxrblmx.supabase.co
+      SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtZWxkbG52cWRmbW13eHJibG14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTQ3MTgxMTYsImV4cCI6MjAxMDI5NDExNn0.a4YtxMLTL5IeNHywgzNPM9-i107ZX-OvsTWbiVOA3LE
+      RAYZORPAY_KEY_ID: rzp_test_dSGUgBKlIU2Ecm
+      RAYZORPAY_KEY_SECRET: rjRwHvRQtkmGCCLuYvFmtGIS
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db: {}
