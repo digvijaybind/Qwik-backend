@@ -4,20 +4,14 @@ const CustomerController = require('../controller/customer/C-Customer');
 const asyncMiddleware = require('../middleware/async-middleware');
 
 router.post(
-  '/customerSearch',
+  '/avipageSearch',
   asyncMiddleware(CustomerController.calculateFlightTime)
 );
+
 router.post(
-  '/customerSearchTechaul',
-  asyncMiddleware(CustomerController.calculateFlightTimeForTakeall)
-);
-router.get('/aircraftLists', asyncMiddleware(CustomerController.AirCraftData));
-router.get('/airline', asyncMiddleware(CustomerController.AirlineBlog));
-router.post(
-  '/Amadeusairline',
+  '/AmadeusSearch',
   asyncMiddleware(CustomerController.AmedeusTestAPitoken)
 );
-router.get('/aircraftall', asyncMiddleware(CustomerController.AllAircraft));
 router.get(
   '/amadeus/aircraft/:concatenatedParam',
   asyncMiddleware(CustomerController.SingleAmadusAircraftdata)

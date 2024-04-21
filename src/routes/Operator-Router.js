@@ -1,57 +1,51 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const OperatorController = require("../controller/C-Operator");
-const {authMiddleware} = require("../middleware/authMiddleware");
-const asyncMiddleware = require("../middleware/async-middleware");
-// router.patch(
-//   "/editaircraft",
-//   OperatorController.login,
-//   OperatorController.EditOperator
-// );
+const OperatorController = require('../controller/C-Operator');
+const { authMiddleware } = require('../middleware/authMiddleware');
+const asyncMiddleware = require('../middleware/async-middleware');
 
-// new router endpoints in new api (crud)
-router.post("/register", asyncMiddleware(OperatorController.Register));
-router.post("/login", asyncMiddleware(OperatorController.Login));
+router.post('/register', asyncMiddleware(OperatorController.Register));
+router.post('/login', asyncMiddleware(OperatorController.Login));
 router.post(
-  "/addAircraftdeatils",
+  '/addAircraftdeatils',
   authMiddleware,
   asyncMiddleware(OperatorController.AddAircrafts)
 );
 router.get(
-  "/getAirCraftOperatorLists",
+  '/getAirCraftOperatorLists',
   authMiddleware,
   asyncMiddleware(OperatorController.getAirCraftOperatorLists)
 );
 router.get(
-  "/getOperatorLists",
+  '/getOperatorLists',
   authMiddleware,
   asyncMiddleware(OperatorController.getOperatorsLists)
 );
 // router.get("/getOperator", authMiddleware, OperatorController.getOperatorlist);
 router.put(
-  "/editAircraft/:id",
+  '/editAircraft/:id',
   authMiddleware,
   asyncMiddleware(OperatorController.EditOperator)
 );
 router.delete(
-  "/deleteAircraft/:id",
+  '/deleteAircraft/:id',
   authMiddleware,
   asyncMiddleware(OperatorController.DeleteOperator)
 );
 router.get(
-  "/getSingleOperator/:id",
+  '/getSingleOperator/:id',
   authMiddleware,
   asyncMiddleware(OperatorController.getSingleOperator)
 );
 router.get(
-  "/operatorListsOfAircraftOPerators",
+  '/operatorListsOfAircraftOPerators',
   authMiddleware,
   asyncMiddleware(OperatorController.getIndividualAirCraftOPeratorsLists)
 );
 router.get(
-  "/searchOperator",
+  '/searchOperator',
   authMiddleware,
   asyncMiddleware(OperatorController.getSearchFilter)
 );
-router.get("/allLocation", asyncMiddleware(OperatorController.GetAllLocation));
+router.get('/allLocation', asyncMiddleware(OperatorController.GetAllLocation));
 module.exports = router;
