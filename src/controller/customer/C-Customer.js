@@ -2,7 +2,6 @@ require('dotenv').config();
 const { Customer } = require('../../db/Customer');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
 const axios = require('axios');
 const { buildRequestConfig } = require('../../configs/aviapi.config');
 const { AircraftOPerator } = require('../../db/Operator');
@@ -10,6 +9,8 @@ const NodeGeocoder = require('node-geocoder');
 const { access_token } = require('../../configs/cronjob');
 const AmadusAircraft = require('../../db/AmadusAircraft');
 const AvipageAircraft = require('../../db/AvipageAircraft');
+const { isValidEmail } = require('../../regex/emailRegex');
+const { isValidCountryCode } = require('../../regex/countryCodeRegex');
 const geocoder = NodeGeocoder({
   provider: 'google',
   apiKey: process.env.GOOGLE_API_KEY,
@@ -31,11 +32,28 @@ const AirCraftDataArray = require(aircraftDataPath);
 console.log(AirCraftDataArray);
 
 exports.Register = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
   const { email, password } = req.body;
+
+  if (email === undefined || password === undefined) {
+    return res.status(400).json({
+      success: false,
+      msg: 'email,password are required',
+    });
+  } else if (typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({
+      error: 'email,password must be a string',
+    });
+  } else if (email === '' || password === '') {
+    return res.status(400).json({
+      success: false,
+      msg: `email,password cant take an empty string value i.e ''`,
+    });
+  } else if (!isValidEmail(email)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid email entered',
+    });
+  }
 
   try {
     const existingUser = await Customer.findOne({ email });
@@ -62,6 +80,12 @@ exports.Register = async (req, res) => {
 // Login controller
 exports.Login = async (req, res) => {
   const { email, password } = req.body;
+  if (email === undefined || password === undefined) {
+    return res.status(400).json({
+      success: false,
+      msg: 'email,password are required',
+    });
+  }
   console.log(email, password);
   try {
     const user = await Customer.findOne({ email });
@@ -97,6 +121,55 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     mobile,
     countryCode,
   } = req.body;
+
+  if (
+    originLocationCode === undefined ||
+    destinationLocationCode === undefined ||
+    departureDate === undefined ||
+    pax === undefined ||
+    mobile === undefined ||
+    countryCode === undefined
+  ) {
+    return res.status(400).json({
+      success: false,
+      msg: 'originLocationCode,destinationLocationCode,departureDate,pax,mobile,countryCode are required',
+    });
+  } else if (
+    typeof originLocationCode !== 'string' ||
+    typeof destinationLocationCode !== 'string' ||
+    typeof departureDate !== 'string' ||
+    typeof pax !== 'number' ||
+    typeof mobile !== 'string' ||
+    typeof countryCode !== 'string'
+  ) {
+    return res.status(400).json({
+      error:
+        'originLocationCode,destinationLocationCode,departureDate,mobile,countryCode must be a string and pax must be a number',
+    });
+  } else if (
+    originLocationCode === '' ||
+    destinationLocationCode === '' ||
+    departureDate === '' ||
+    pax === 0 ||
+    mobile === '' ||
+    countryCode === ''
+  ) {
+    return res.status(400).json({
+      success: false,
+      msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+    });
+  } else if (!isValidMobileNumber(mobile)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid mobile',
+    });
+  } else if (!isValidCountryCode(countryCode)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
+    });
+  }
+
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
     const accessToken = access_token;
@@ -327,10 +400,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 
     return { aircraftId, ResponseData };
   } catch (error) {
-    console.error('error', error.message);
-    return {
-      msg: error,
-    };
+    return res.status(500).json({ error: error });
   }
 };
 
@@ -343,6 +413,54 @@ exports.calculateFlightTime = async (req, res) => {
     mobile,
     countryCode,
   } = req.body;
+
+  if (
+    originLocationCode === undefined ||
+    destinationLocationCode === undefined ||
+    departureDate === undefined ||
+    pax === undefined ||
+    mobile === undefined ||
+    countryCode === undefined
+  ) {
+    return res.status(400).json({
+      success: false,
+      msg: 'originLocationCode,destinationLocationCode,departureDate,pax,mobile,countryCode are required',
+    });
+  } else if (
+    typeof originLocationCode !== 'string' ||
+    typeof destinationLocationCode !== 'string' ||
+    typeof departureDate !== 'string' ||
+    typeof pax !== 'number' ||
+    typeof mobile !== 'string' ||
+    typeof countryCode !== 'string'
+  ) {
+    return res.status(400).json({
+      error:
+        'originLocationCode,destinationLocationCode,departureDate,mobile,countryCode must be a string and pax must be a number',
+    });
+  } else if (
+    originLocationCode === '' ||
+    destinationLocationCode === '' ||
+    departureDate === '' ||
+    pax === 0 ||
+    mobile === '' ||
+    countryCode === ''
+  ) {
+    return res.status(400).json({
+      success: false,
+      msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+    });
+  } else if (!isValidMobileNumber(mobile)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid mobile',
+    });
+  } else if (!isValidCountryCode(countryCode)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
+    });
+  }
 
   async function fetchAirportData(departureAirportCode) {
     const responseSearch = await axios.get(
@@ -441,7 +559,7 @@ exports.calculateFlightTime = async (req, res) => {
               aviapagesResponse: aviapagesResponse,
             };
           } catch (error) {
-            return null;
+            return res.status(500).json({ error: 'error Occurred ' });
           }
         })
       );
@@ -854,29 +972,9 @@ exports.calculateFlightTime = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to calculate flight time');
-  }
-};
-
-exports.SingleAvipageAircraftdata = async (req, res, next) => {
-  const { concatenatedParam } = req.params;
-  const [id, Child_id] = concatenatedParam.split('-');
-  console.log('concatenatedParam', concatenatedParam);
-  console.log('id line 1320', id);
-  try {
-    const aircraftData = await AvipageAircraft.findById(id);
-    console.log('aircraftData', aircraftData);
-    if (!aircraftData) {
-      return res.status(404).send({ message: 'Aircraft not found' });
-    } else if (aircraftData) {
-      const specificOperator = aircraftData.Response.find(
-        (item) => String(item.operator._id) === Child_id
-      );
-      res.json(specificOperator);
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: 'Internal Server Error' });
+    return res
+      .status(500)
+      .json({ error: `Failed to calculate flight time ${error}` });
   }
 };
 
@@ -908,30 +1006,80 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-exports.SingleAmadusAircraftdata = async (req, res, next) => {
+exports.SingleAvipageAircraftdata = async (req, res, next) => {
   const { concatenatedParam } = req.params;
+  if (concatenatedParam === null || undefined) {
+    return res.status(400).json({
+      success: false,
+      msg: 'concatenatedParam is required',
+    });
+  }
   const [id, Child_id] = concatenatedParam.split('-');
+  if (id === null || undefined || Child_id === null || undefined) {
+    return res.status(400).json({
+      success: false,
+      msg: 'id or Child_id is missing',
+    });
+  }
   console.log('concatenatedParam', concatenatedParam);
   console.log('id line 1320', id);
-  const aircraftData = await AmadusAircraft.findById(id);
-  console.log('aircraftData', aircraftData);
-  if (!aircraftData) {
-    return res.status(404).send({ message: 'Aircraft not found' });
-  } else if (aircraftData) {
-    if (aircraftData?.Response?.AirCraftDatawithNotechStop) {
-      const specificAircraft =
-        aircraftData?.Response?.AirCraftDatawithNotechStop.find(
-          (item) => item.aircraft.id === Child_id
-        );
-      console.log('specificAircraft', specificAircraft);
-      res.json({ specificAircraft });
-    } else if (aircraftData.Response?.AirCraftDatawithtechStop) {
-      const specificAircraft =
-        aircraftData.Response?.AirCraftDatawithtechStop.find(
-          (item) => item.aircraft.id === Child_id
-        );
-      console.log('specificAircraft', specificAircraft);
-      res.json({ specificAircraft });
+  try {
+    const aircraftData = await AvipageAircraft.findById(id);
+    console.log('aircraftData', aircraftData);
+    if (!aircraftData) {
+      return res.status(404).send({ message: 'Aircraft not found' });
+    } else if (aircraftData) {
+      const specificOperator = aircraftData.Response.find(
+        (item) => String(item.operator._id) === Child_id
+      );
+      res.json(specificOperator);
     }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: 'Internal Server Error' });
+  }
+};
+
+exports.SingleAmadusAircraftdata = async (req, res, next) => {
+  const { concatenatedParam } = req.params;
+  if (concatenatedParam === null || undefined) {
+    return res.status(400).json({
+      success: false,
+      msg: 'concatenatedParam is required',
+    });
+  }
+  const [id, Child_id] = concatenatedParam.split('-');
+  if (id === null || undefined || Child_id === null || undefined) {
+    return res.status(400).json({
+      success: false,
+      msg: 'id or Child_id is missing',
+    });
+  }
+  console.log('concatenatedParam', concatenatedParam);
+  console.log('id line 1320', id);
+  try {
+    const aircraftData = await AmadusAircraft.findById(id);
+    console.log('aircraftData', aircraftData);
+    if (!aircraftData) {
+      return res.status(404).send({ message: 'Aircraft not found' });
+    } else if (aircraftData) {
+      if (aircraftData?.Response?.AirCraftDatawithNotechStop) {
+        const specificAircraft =
+          aircraftData?.Response?.AirCraftDatawithNotechStop.find(
+            (item) => item.aircraft.id === Child_id
+          );
+        console.log('specificAircraft', specificAircraft);
+        res.json({ specificAircraft });
+      } else if (aircraftData.Response?.AirCraftDatawithtechStop) {
+        const specificAircraft =
+          aircraftData.Response?.AirCraftDatawithtechStop.find(
+            (item) => item.aircraft.id === Child_id
+          );
+        console.log('specificAircraft', specificAircraft);
+        res.json({ specificAircraft });
+      }
+    }
+  } catch (error) {
+    return res.status(500).send({ message: 'Internal Server Error' });
   }
 };

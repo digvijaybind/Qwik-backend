@@ -2,8 +2,6 @@ const bcrypt = require('bcrypt');
 const { superBase } = require('../../configs/supabase');
 const multer = require('multer');
 const { Paramedics } = require('../../db/Paramedics');
-// const generateToken = require("../configs/jwtToken");
-// const OperatorService = require("../services/operator-service");
 
 const storage = multer.memoryStorage(); // Use memory storage for multer
 const upload = multer({ storage: storage }).single('resume_docFilePath');
@@ -20,10 +18,29 @@ exports.RegisterParamedics = async (req, res, next) => {
       console.log(req.file);
 
       const { country, location, degrees } = req.body;
-      if (!country && !location && !degrees) {
-        return res
-          .status(400)
-          .json({ error: 'country,location and degrees field are required' });
+
+      if (
+        country === undefined ||
+        location === undefined ||
+        degrees === undefined
+      ) {
+        return res.status(400).json({
+          success: false,
+          msg: 'country, location, degrees are required',
+        });
+      } else if (
+        typeof country !== 'string' ||
+        typeof location !== 'string' ||
+        typeof degrees !== 'string'
+      ) {
+        return res.status(400).json({
+          error: 'country, location, degrees must be a string',
+        });
+      } else if (country === '' || location === '' || degrees === '') {
+        return res.status(400).json({
+          success: false,
+          msg: `country, location, degrees cant take an empty string value i.e ''`,
+        });
       }
 
       try {
@@ -65,7 +82,7 @@ exports.RegisterParamedics = async (req, res, next) => {
         });
 
         await paramedics.save();
-        console.log('This new Doctor', paramedics);
+        console.log('This new paramedics', paramedics);
         return res.json({
           msg: 'Paramedics created successfully',
           data: paramedics,
@@ -77,6 +94,6 @@ exports.RegisterParamedics = async (req, res, next) => {
       }
     });
   } catch (error) {
-    throw new Error(error);
+    return res.status(500).json({ error: error });
   }
 };
