@@ -1,21 +1,29 @@
 const Admin = require('../db/Admin');
 const bcrypt = require('bcrypt');
 const Role = require('../db/role');
-const generateToken = require('../configs/jwtToken');
 const OperatorService = require('../services/operator-service');
 const { isValidEmail } = require('../regex/emailRegex');
 
 exports.Register = async (req, res, next) => {
   const { email, password } = req.body;
-  email = email.trim();
-  password = password.trim();
-  if (email == '' || password == '') {
-    res.json({
+
+  if (email === undefined || password === undefined) {
+    return res.status(400).json({
       success: false,
-      msg: 'Empty Input Fields!',
+      msg: 'email and password are required',
+    });
+  } else if (typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({
+      success: false,
+      msg: 'email and password must be a string',
+    });
+  } else if (email === '' || password === '') {
+    return res.status(400).json({
+      success: false,
+      msg: `email and password cant take an empty string value i.e ''`,
     });
   } else if (!isValidEmail(email)) {
-    res.json({
+    return res.status(400).json({
       success: false,
       msg: 'Invalid email entered',
     });
@@ -51,22 +59,24 @@ exports.Register = async (req, res, next) => {
         });
       }
     } catch (error) {
-      res.json({
-        message: error,
-        success: false,
-      });
+      console.error(error);
+      return res.status(500).json({ error: 'server error' });
     }
   }
 };
 
 exports.Login = async (req, res) => {
   const { email, password } = req.body;
-  email = email.trim();
-  password = password.trim();
-  if (email == '' || password == '') {
-    res.json({
+
+  if (email === undefined || password === undefined) {
+    return res.status(400).json({
       success: false,
-      msg: 'Empty Input Field!',
+      msg: 'email and password are required',
+    });
+  } else if (!isValidEmail(email)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid email entered',
     });
   } else {
     console.log('email', email);
@@ -82,39 +92,36 @@ exports.Login = async (req, res) => {
       const passwordMatch = await bcrypt.compare(password, admin.password);
 
       if (!passwordMatch) {
-        res.json({
+        return res.status(404).json({
           success: false,
-          msg: 'inCorrect password',
-        });
-      }
-      if (admin && passwordMatch) {
-        res.json({
-          id: admin?._id,
-          email,
-          password,
-          token: generateToken(admin?._id),
+          msg: `inCorrect password`,
         });
       }
     } catch (error) {
-      res.json({
-        msg: error,
-      });
+      console.error(error);
+      return res.status(500).json({ error: 'server error' });
     }
   }
 };
 
 exports.EditAircraftOperatorWithMargin = async (req, res) => {
   const { _id } = req.params;
+  if (_id === undefined || null) {
+    return res.status(400).json({
+      success: false,
+      msg: '_id is required',
+    });
+  }
   const AirOperator = {
     margin: req?.body?.margin,
   };
-  if (margin == null) {
-    res.json({
+  if (AirOperator.margin === undefined) {
+    return res.status(400).json({
       success: false,
-      msg: 'Empty Input Field!',
+      msg: 'margin is required',
     });
-  } else if (typeof margin !== 'number') {
-    res.json({
+  } else if (typeof AirOperator.margin !== 'number') {
+    return res.status(400).json({
       success: false,
       msg: 'Invalid margin :example margin must be a number',
     });
@@ -137,10 +144,7 @@ exports.EditAircraftOperatorWithMargin = async (req, res) => {
         msg: 'Operator Margin is updated',
       });
     } catch (error) {
-      res.json({
-        success: false,
-        msg: error,
-      });
+      return res.status(500).json({ error: 'server error' });
     }
   }
 };
