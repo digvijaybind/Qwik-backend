@@ -2,7 +2,7 @@ const axios = require('axios');
 const getAllAirports = async (req) => {
   let allAirports = [];
   console.log(req.query.q);
-  let nextPage = `https://dir.aviapages.com/api/airports/?search=${req.query.q}`;
+  let nextPage = `https://dir.aviapages.com/api/airports/?search_city=${req.query.q}`;
 
   while (nextPage) {
     try {
