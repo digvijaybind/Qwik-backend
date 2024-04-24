@@ -4,12 +4,12 @@ const CustomerController = require('../controller/customer/C-Customer');
 const asyncMiddleware = require('../middleware/async-middleware');
 
 router.post(
-  '/DedicatedSearch',
+  '/dedicatedSearch',
   asyncMiddleware(CustomerController.calculateFlightTime)
 );
 
 router.post(
-  '/CommericialSearch',
+  '/commericialSearch',
   asyncMiddleware(CustomerController.AmedeusTestAPitoken)
 );
 router.get(
