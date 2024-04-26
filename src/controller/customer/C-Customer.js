@@ -159,7 +159,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       success: false,
       msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
     });
-  } else if (!isValidMobileNumber(mobile)) {
+  } else if (isValidMobileNumber(mobile)) {
     return res.status(400).json({
       success: false,
       msg: 'Invalid mobile',
@@ -451,7 +451,7 @@ exports.calculateFlightTime = async (req, res) => {
       success: false,
       msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
     });
-  } else if (!isValidMobileNumber(mobile)) {
+  } else if (isValidMobileNumber(mobile)) {
     return res.status(400).json({
       success: false,
       msg: 'Invalid mobile',
