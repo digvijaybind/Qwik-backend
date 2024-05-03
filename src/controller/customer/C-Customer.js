@@ -159,16 +159,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       success: false,
       msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
     });
-  } else if (isValidMobileNumber(mobile)) {
-    return res.status(400).json({
-      success: false,
-      msg: 'Invalid mobile',
-    });
-  } else if (!isValidCountryCode(countryCode)) {
-    return res.status(400).json({
-      success: false,
-      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
-    });
   }
 
   try {
@@ -405,6 +395,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
   }
 };
 
+
 exports.calculateFlightTime = async (req, res) => {
   const {
     originLocationCode,
@@ -450,16 +441,6 @@ exports.calculateFlightTime = async (req, res) => {
     return res.status(400).json({
       success: false,
       msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
-    });
-  } else if (isValidMobileNumber(mobile)) {
-    return res.status(400).json({
-      success: false,
-      msg: 'Invalid mobile',
-    });
-  } else if (!isValidCountryCode(countryCode)) {
-    return res.status(400).json({
-      success: false,
-      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
     });
   }
 
