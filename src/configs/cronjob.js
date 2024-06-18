@@ -6,7 +6,7 @@ const data = {
   client_secret: 'uA0UEOCy3vIIkWZD',
   grant_type: 'client_credentials',
 };
-let access_token = 'wB0vGGiz32Gxe23mVJq44MPAwT1I';
+let access_token = 'lXFLVGjvGxrAfO9hTBApN6jLFnIc';
 const urlEncodedData = qs.stringify(data);
 const apiUrl = 'https://test.api.amadeus.com/v1/security/oauth2/token';
 

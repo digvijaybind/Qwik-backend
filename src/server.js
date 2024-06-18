@@ -79,12 +79,6 @@ app.get('/all-airports', async (req, res) => {
     const airport = await getAllAirports(req);
     console.log('airport', airport);
     res.json(
-      // airport.map((airport) => ({
-      //   // airport_id: airport.airport_id,
-      //   // country_name: airport.country_name,
-      //   // icao: airport.icao,
-      //   // city_name: airport.city_name,
-      // }))
       airport
     );
   } catch (error) {
