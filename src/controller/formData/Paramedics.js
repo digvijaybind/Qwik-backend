@@ -15,7 +15,7 @@ exports.RegisterParamedics = async (req, res, next) => {
       }
 
       // Check if req.file contains the uploaded file information
-      console.log(req.file);
+    
 
       const { country, location, degrees } = req.body;
 

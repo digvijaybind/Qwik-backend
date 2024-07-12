@@ -62,7 +62,7 @@ exports.RegisterPrivateJetOwner = async (req, res, next) => {
 
     await newPrivateJetOwner.save();
 
-    console.log('This is new Private Jet', newPrivateJetOwner);
+   
     res.status(201).json({
       message: 'Private Jet register successfully',
       data: newPrivateJetOwner,
