@@ -8,11 +8,9 @@ const authMiddleware = async (req, res, next) => {
 
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log(decoded);
-      console.log(decoded?.id)
+      
       const operator = await Operator.findById(decoded?.id);
       req.operator=operator
-      console.log("Operator:", operator);
       next();
     }
   } else {
