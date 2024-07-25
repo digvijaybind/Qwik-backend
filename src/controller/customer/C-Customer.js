@@ -395,7 +395,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
   }
 };
 
-
 exports.calculateFlightTime = async (req, res) => {
   const {
     originLocationCode,
@@ -509,6 +508,7 @@ exports.calculateFlightTime = async (req, res) => {
         (operator) =>
           operator.country_name === responseSearch.results[0].country_name
       );
+      console.log('line operator 512 ', validAircraftOperators);
 
       // Calculate distances for each operator
       const operatorsWithDistance = await Promise.all(

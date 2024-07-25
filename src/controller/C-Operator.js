@@ -17,6 +17,7 @@ exports.Register = async (req, res, next) => {
     contact_number,
     country_name,
   } = req.body;
+
   if (
     company_name === undefined ||
     email_address === undefined ||
@@ -81,6 +82,8 @@ exports.Register = async (req, res, next) => {
         password: hashedPassword,
         role: role,
       });
+
+      console.log('line 86 operator deatils', newUser);
       // res.json(newUser);
 
       await newUser.save();
@@ -121,6 +124,7 @@ exports.Login = async (req, res) => {
     }
     if (user && passwordMatch) {
       const aircraftCreatedByOPerator = user.aircraftOperators;
+      console.log('operator login line 127', aircraftCreatedByOPerator);
       res.json({
         id: user?._id,
         email_address,
@@ -190,6 +194,7 @@ exports.AddAircrafts = async (req, res, next) => {
         country_name: country_name,
         sr_no: req.body.sr_no,
       };
+      console.log('line 194 operator details', AirOperator);
       if (
         AirOperator.Aircraft_type === undefined ||
         AirOperator.Tail_sign === undefined ||
@@ -252,6 +257,7 @@ exports.AddAircrafts = async (req, res, next) => {
         },
         { new: true }
       );
+      console.log('line 257 operator details', Operator);
       await operator.save();
       res.json({ message: 'Aircraft created successfully', AirOperator });
     } else {

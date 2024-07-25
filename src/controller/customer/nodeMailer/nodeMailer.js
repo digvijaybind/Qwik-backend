@@ -46,7 +46,7 @@ let sendSearchMail = (
   let mail = MailGenerator.generate(response);
   let message = {
     from: process.env.EMAIL,
-    to: 'info@qwiklif.com',
+    to: 'binddigvijay8898912900@gmail.com',
     subject: 'Searching For Aircraft',
     html: mail,
   };

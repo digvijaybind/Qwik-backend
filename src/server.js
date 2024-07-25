@@ -10,6 +10,7 @@ const EquiryRouter = require('./routes/ConfirmEquiry-Router');
 const AdminRouter = require('./routes/Admin-Router');
 const FormDataRouter = require('./routes/Form-Data');
 const RayzorpayRouter = require('./routes/Paymount-Router');
+const BlogRouter=require('./routes/blogs');
 const cookieParser = require('cookie-parser');
 const errorMiddleware = require('./middleware/error-middleware');
 const dotenv = require('dotenv');
@@ -99,6 +100,7 @@ app.use('/customer', CustomerRouter);
 app.use('/equiry', EquiryRouter);
 app.use('/formData', FormDataRouter);
 app.use('/rayzorpay', RayzorpayRouter);
+app.use('/blogs', BlogRouter);
 
 app.use(errorMiddleware);
 
