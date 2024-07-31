@@ -2,7 +2,7 @@
 node_modules/
 
 # Local Netlify folder
-.netlify
+.netlify/
 
-# Enviroment variable
+# Environment variables
 .env
