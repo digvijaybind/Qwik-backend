@@ -1,19 +1,22 @@
-const { default: mongoose } = require("mongoose");
-const Mongoose = require("mongoose");
+const { default: mongoose } = require('mongoose');
+const Mongoose = require('mongoose');
 
 const EquirySchema = new mongoose.Schema({
+  From: {
+    type: String,
+  },
+  To: {
+    type: String,
+  },
   Name: {
     type: String,
-    required: true,
   },
   Phone: {
     type: String,
-    required: true,
   },
   Email: {
     type: String,
-    required: true,
   },
 });
 
-module.exports = Mongoose.model("ConfirmEquiry", EquirySchema);
+module.exports = Mongoose.model('ConfirmEquiry', EquirySchema);

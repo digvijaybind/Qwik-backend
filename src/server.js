@@ -98,7 +98,7 @@ app.use('/admin', AdminRouter);
 app.use('/operator', OperatorRouter);
 app.use('/customer', CustomerRouter);
 app.use('/equiry', EquiryRouter);
-app.use('/formData', FormDataRouter);
+app.use('/career', FormDataRouter);
 app.use('/rayzorpay', RayzorpayRouter);
 app.use('/blogs', BlogRouter);
 

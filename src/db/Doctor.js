@@ -9,10 +9,6 @@ const DoctorSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  visaDocumentPath:{
-    type:String,
-   required:true
-  },
   specialities:{
     type:String,
    required:true

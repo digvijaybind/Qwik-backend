@@ -15,14 +15,15 @@ exports.RegisterParamedics = async (req, res, next) => {
       }
 
       // Check if req.file contains the uploaded file information
-    
 
-      const { country, location, degrees } = req.body;
+      const { FullName, Email, country, location, degrees } = req.body;
 
       if (
         country === undefined ||
         location === undefined ||
-        degrees === undefined
+        degrees === undefined ||
+        FullName == undefined ||
+        Email == undefined
       ) {
         return res.status(400).json({
           success: false,
@@ -31,10 +32,13 @@ exports.RegisterParamedics = async (req, res, next) => {
       } else if (
         typeof country !== 'string' ||
         typeof location !== 'string' ||
-        typeof degrees !== 'string'
+        typeof degrees !== 'string' ||
+        typeof FullName !== 'string' ||
+        typeof Email !== 'String'
       ) {
         return res.status(400).json({
-          error: 'country, location, degrees must be a string',
+          error:
+            'country, location, degrees, FullName,Email   must be a string',
         });
       } else if (country === '' || location === '' || degrees === '') {
         return res.status(400).json({

@@ -4,7 +4,16 @@ const { isValidEmail } = require('../../regex/emailRegex');
 
 exports.RegisterHospital = async (req, res, next) => {
   const { hospitalName, ownersName, location, contactNumber, email } = req.body;
+ 
 
+  console.log(
+    'requested data',
+    hospitalName,
+    ownersName,
+    location,
+    contactNumber,
+    email
+  );
   if (
     hospitalName === undefined ||
     ownersName === undefined ||

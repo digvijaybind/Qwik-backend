@@ -25,6 +25,7 @@ const {
 } = require('../../controller/customer/nodeMailer/nodeMailer');
 const path = require('path');
 const { log } = require('console');
+const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
 const aircraftDataPath = path.join(
   __dirname,
   '../../database/customaircfat.json'
@@ -376,6 +377,8 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             '1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU',
             HEADERS
           );
+         let whatsappMessage = `*Patient's enquiry:* \n\n*From:* ${originLocationCode} \n*To:* ${destinationLocationCode} \n*Date:* ${departureDate} \n*Contact Number:* ${countryCode} ${mobile}`;
+          sendWhatsAppMessage(process.env.User_Number, whatsappMessage);
           sendSearchMail(
             originLocationCode,
             destinationLocationCode,
