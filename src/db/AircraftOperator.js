@@ -5,18 +5,9 @@ const AircraftOperatorSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  ownersName: {
-    type: String,
-    required: true,
-  },
   contactDetails: {
     type: String,
     required: true,
-  },
-  
-numberOfleets:{
-    type:String,
-   required:true
   },
   numberOfCountriesOperating:{
     type:String,
@@ -26,7 +17,7 @@ numberOfleets:{
     type:String,
    required:true
   },
-  companyHeadQuater:{
+  email:{
     type:String,
     required:true
   }

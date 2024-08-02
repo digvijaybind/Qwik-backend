@@ -2,10 +2,12 @@ const { Doctor } = require('../../db/Doctor');
 
 exports.RegisterDoctor = async (req, res, next) => {
   try {
-    console.log('Request Body:', req.body); // Log the request body
-
     const { fullName, country, specialities, location, degrees } = req.body;
-
+    console.log('fullName:', fullName); // Log the request body
+    console.log('country', country); // Log the request body
+    console.log('specialities', specialities); // Log the request body
+    console.log('location', location); // Log the request body
+    console.log('degrees', degrees); // Log the request body
     if (
       fullName === undefined ||
       country === undefined ||

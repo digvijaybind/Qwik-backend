@@ -3,22 +3,18 @@ const { isValidMobileNumber } = require('../../regex/phoneNumberRegex');
 exports.RegisterAircraftOperatorOwner = async (req, res, next) => {
   const {
     companyName,
-    ownersName,
     contactDetails,
-    numberOfleets,
     numberOfCountriesOperating,
     location,
-    companyHeadQuater,
+    email
   } = req.body;
 
   if (
     companyName === undefined ||
-    ownersName === undefined ||
     contactDetails === undefined ||
-    numberOfleets === undefined ||
     numberOfCountriesOperating === undefined ||
     location === undefined ||
-    companyHeadQuater === undefined
+    email === undefined
   ) {
     return res.status(400).json({
       success: false,
@@ -26,12 +22,10 @@ exports.RegisterAircraftOperatorOwner = async (req, res, next) => {
     });
   } else if (
     typeof companyName !== 'string' ||
-    typeof ownersName !== 'string' ||
     typeof contactDetails !== 'string' ||
-    typeof numberOfleets !== 'string' ||
     typeof numberOfCountriesOperating !== 'string' ||
     typeof location !== 'string' ||
-    typeof companyHeadQuater !== 'string'
+    typeof email !== 'string'
   ) {
     return res.status(400).json({
       error:
@@ -39,12 +33,10 @@ exports.RegisterAircraftOperatorOwner = async (req, res, next) => {
     });
   } else if (
     companyName === '' ||
-    ownersName === '' ||
     contactDetails === '' ||
-    numberOfleets === '' ||
     numberOfCountriesOperating === '' ||
     location === '' ||
-    companyHeadQuater === ''
+    email === ''
   ) {
     return res.status(400).json({
       success: false,
@@ -60,12 +52,10 @@ exports.RegisterAircraftOperatorOwner = async (req, res, next) => {
       // create new operator
       const newAircraftOperator = new AircraftOperator({
         companyName,
-        ownersName,
         contactDetails,
-        numberOfleets,
         numberOfCountriesOperating,
         location,
-        companyHeadQuater,
+        email,
       });
 
       await newAircraftOperator.save();

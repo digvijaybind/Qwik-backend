@@ -1,7 +1,11 @@
 const Mongoose = require('mongoose');
 
-const ParamedicsSchema = new Mongoose.Schema({
-  FullName: {
+const InsuranceSchema = new Mongoose.Schema({
+  CompanyName: {
+    type: String,
+    required: true,
+  },
+  ContactNumber: {
     type: String,
     required: true,
   },
@@ -9,19 +13,18 @@ const ParamedicsSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  country: {
+  ContactPerson: {
     type: String,
     required: true,
   },
-  degrees: {
-    type: String,
-    required: true,
-  },
-  contact: {
+  PersonContact: {
     type: String,
     required: true,
   },
 });
 
-const Paramedics = Mongoose.model('ParamedicsData', ParamedicsSchema);
-module.exports = { Paramedics };
+const Insurance = Mongoose.model('InsuranceData', InsuranceSchema);
+
+module.exports = {
+  Insurance,
+};

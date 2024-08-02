@@ -10,7 +10,8 @@ const EquiryRouter = require('./routes/ConfirmEquiry-Router');
 const AdminRouter = require('./routes/Admin-Router');
 const FormDataRouter = require('./routes/Form-Data');
 const RayzorpayRouter = require('./routes/Paymount-Router');
-const BlogRouter=require('./routes/blogs');
+const InsuranceRouter = require('./routes/Insurance');
+const BlogRouter = require('./routes/blogs');
 const cookieParser = require('cookie-parser');
 const errorMiddleware = require('./middleware/error-middleware');
 const dotenv = require('dotenv');
@@ -79,12 +80,6 @@ app.get('/all-airports', async (req, res) => {
     const airport = await getAllAirports(req);
     console.log('airport', airport);
     res.json(
-      // airport.map((airport) => ({
-      //   // airport_id: airport.airport_id,
-      //   // country_name: airport.country_name,
-      //   // icao: airport.icao,
-      //   // city_name: airport.city_name,
-      // }))
       airport
     );
   } catch (error) {
@@ -101,7 +96,7 @@ app.use('/equiry', EquiryRouter);
 app.use('/career', FormDataRouter);
 app.use('/rayzorpay', RayzorpayRouter);
 app.use('/blogs', BlogRouter);
-
+app.use('/insurance', InsuranceRouter);
 app.use(errorMiddleware);
 
 app.listen(8000, () => {
