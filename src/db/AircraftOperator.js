@@ -1,26 +1,26 @@
 const Mongoose = require("mongoose");
 
 const AircraftOperatorSchema = new Mongoose.Schema({
-  companyName:{
+  companyName: {
     type: String,
     required: true,
   },
-  contactDetails: {
+  contactWithCountryCode: {
     type: String,
     required: true,
   },
-  numberOfCountriesOperating:{
-    type:String,
-   required:true
+  numberOfCountriesPresence: {
+    type: String,
+    required: true,
   },
-  location:{
-    type:String,
-   required:true
+  location: {
+    type: String,
+    required: true,
   },
-  email:{
-    type:String,
-    required:true
-  }
+  email: {
+    type: String,
+    required: true,
+  },
 });
 
 

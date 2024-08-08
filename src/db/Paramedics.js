@@ -1,11 +1,11 @@
 const Mongoose = require('mongoose');
 
 const ParamedicsSchema = new Mongoose.Schema({
-  FullName: {
+  fullName: {
     type: String,
     required: true,
   },
-  Email: {
+  email: {
     type: String,
     required: true,
   },
@@ -17,7 +17,7 @@ const ParamedicsSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  contact: {
+  contactNumberWithCountryCode: {
     type: String,
     required: true,
   },

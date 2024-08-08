@@ -5,22 +5,22 @@ const DoctorSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  country: {
+  contactNumberWithCountryCode: {
     type: String,
     required: true,
   },
-  specialities:{
-    type:String,
-   required:true
+  specialities: {
+    type: String,
+    required: true,
   },
-  location:{
-    type:String,
-   required:true
+  location: {
+    type: String,
+    required: true,
   },
-  degrees :{
-    type:String,
-    required:true
-  }
+  degrees: {
+    type: String,
+    required: true,
+  },
 });
 
 

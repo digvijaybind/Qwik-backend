@@ -158,7 +158,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
   ) {
     return res.status(400).json({
       success: false,
-      msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+      msg: `originLocationCode,destinationLocat ionCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
     });
   }
 
@@ -278,14 +278,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
               price: {
                 ...itemData.price,
                 totalPrice: parseFloat(
-                  (Number(itemData.price.grandTotal) +
-                    (Number(itemData.price.grandTotal) * a) / 100) *
-                    9 +
-                    ((Number(itemData.price.grandTotal) +
-                      (Number(itemData.price.grandTotal) * 7) / 100) *
-                      9 *
-                      b) /
-                      100
+                  (Number(itemData.price.grandTotal) + (Number(itemData.price.grandTotal) * a) / 100) * 9 +((Number(itemData.price.grandTotal) + (Number(itemData.price.grandTotal) * 7) / 100) * 9 *  b) /   100
                 ),
               },
             });
