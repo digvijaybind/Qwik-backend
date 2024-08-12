@@ -26,16 +26,16 @@ const generateTicketPDF = (ticketDetails) => {
       '..',
       'public',
       'images',
-      'qwikliflogo.png'
+      'qwikliflogo.png',
     );
     if (fs.existsSync(logoPath)) {
-      doc.image(logoPath, 50, 30, { width: 120 });
+      doc.image(logoPath, 50, 30, { width: 80 });
     }
 
     // Add title
     doc
       .font('Helvetica-Bold')
-      .fontSize(24) // Reduced font size for a better layout
+      .fontSize(18) // Reduced font size for a better layout
       .fillColor('#004080')
       .text('Air Ambulance Ticket Confirmation', { align: 'center' })
       .moveDown(1.5); // Increased spacing below the title
@@ -53,7 +53,7 @@ const generateTicketPDF = (ticketDetails) => {
       .fillColor('#000000')
       .text(
         `Ticket ID: ${ticketDetails.id} | Name: ahmed | Event: Booking Air ambulance`,
-        { align: 'center' }
+        { align: 'center' },
       )
       .moveDown(2);
 
@@ -96,13 +96,13 @@ const generateTicketPDF = (ticketDetails) => {
       .fontSize(14)
       .fillColor('#333333')
       .text(
-        'Specialized Stretchers: Designed for patient comfort and safety during transfer.'
+        'Specialized Stretchers: Designed for patient comfort and safety during transfer.',
       )
       .text(
-        'Medical Supplies: Dressings, bandages, catheters, and other necessary supplies.'
+        'Medical Supplies: Dressings, bandages, catheters, and other necessary supplies.',
       )
       .text(
-        "Personal Items: Space for patient's personal belongings, if needed."
+        "Personal Items: Space for patient's personal belongings, if needed.",
       )
       .moveDown(2);
 
@@ -117,13 +117,13 @@ const generateTicketPDF = (ticketDetails) => {
       .fontSize(14)
       .fillColor('#333333')
       .text(
-        'Ground Transportation: Coordination of ground ambulance services to and from the aircraft.'
+        'Ground Transportation: Coordination of ground ambulance services to and from the aircraft.',
       )
       .text(
-        'Flight Coordination: Planning and arranging the flight path, permissions, and clearances.'
+        'Flight Coordination: Planning and arranging the flight path, permissions, and clearances.',
       )
       .text(
-        'Communication Systems: For constant contact between the air crew and ground medical team.'
+        'Communication Systems: For constant contact between the air crew and ground medical team.',
       )
       .moveDown(2);
 
@@ -138,13 +138,13 @@ const generateTicketPDF = (ticketDetails) => {
       .fontSize(14)
       .fillColor('#333333')
       .text(
-        'Medical Escort Services: For non-critical patients who may not require a full medical team.'
+        'Medical Escort Services: For non-critical patients who may not require a full medical team.',
       )
       .text(
-        'Family Support: Arrangements for family members to accompany the patient, if feasible.'
+        'Family Support: Arrangements for family members to accompany the patient, if feasible.',
       )
       .text(
-        'Post-Flight Care: Coordination with receiving medical facilities for continued care upon arrival.'
+        'Post-Flight Care: Coordination with receiving medical facilities for continued care upon arrival.',
       )
       .moveDown(2);
 
@@ -159,13 +159,13 @@ const generateTicketPDF = (ticketDetails) => {
       .fontSize(14)
       .fillColor('#333333')
       .text(
-        'Insurance Handling: Coordination with insurance providers for coverage and claims processing.'
+        'Insurance Handling: Coordination with insurance providers for coverage and claims processing.',
       )
       .text(
-        'Legal and Regulatory Compliance: Ensuring all operations comply with aviation and healthcare regulations.'
+        'Legal and Regulatory Compliance: Ensuring all operations comply with aviation and healthcare regulations.',
       )
       .text(
-        'Infection Control: Protocols to prevent cross-contamination and infection.'
+        'Infection Control: Protocols to prevent cross-contamination and infection.',
       )
       .moveDown(2);
 
@@ -180,10 +180,10 @@ const generateTicketPDF = (ticketDetails) => {
       .fontSize(14)
       .fillColor('#333333')
       .text(
-        'Language Support: Multilingual staff or translation services to assist with communication.'
+        'Language Support: Multilingual staff or translation services to assist with communication.',
       )
       .text(
-        'Catering: Provision of meals and refreshments for long-distance transfers.'
+        'Catering: Provision of meals and refreshments for long-distance transfers.',
       )
       .moveDown(2);
 
