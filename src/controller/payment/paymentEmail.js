@@ -4,12 +4,21 @@ const nodemailer = require('nodemailer');
 const path = require('path'); // Import path module
 const { EMAIL, PASSWORD } = require('../../nodeMailerdata');
 
-const sendEmail = (to, subject, intro, tableData, attachmentPath) => {
-  // Validate attachmentPath
+const sendEmail = (to, subject, intro, ticketDetails, attachmentPath) => {
   if (typeof attachmentPath !== 'string') {
     throw new Error('Invalid attachment path');
   }
+  const doctors = ticketDetails.doctors || [];
+  const paramedics = ticketDetails.paramedics || [];
+  const equipment = ticketDetails.equipment || [];
 
+  const tableData = [
+    { key: 'Ticket Id', value: ticketDetails.id },
+    { key: 'Name', value: ticketDetails.name },
+    { key: 'Doctors', value: doctors.join(', ') || 'N/A' },
+    { key: 'Paramedics', value: paramedics.join(', ') || 'N/A' },
+    { key: 'Equipment', value: equipment.join(', ') || 'N/A' },
+  ];
   let config = {
     service: 'gmail',
     auth: {
@@ -57,6 +66,5 @@ const sendEmail = (to, subject, intro, tableData, attachmentPath) => {
 
   return transporter.sendMail(message);
 };
-
 
 module.exports = { sendEmail };

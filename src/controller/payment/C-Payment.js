@@ -73,15 +73,14 @@ exports.PaymentConfirmation = async (req, res, next) => {
 
         console.log('pdfPath', pdfPath);
         if (fs.existsSync(pdfPath)) {
-        
           await sendEmail(
             'info@zamzamsoftwares.com',
             'Your Ticket Booking is Confirmed! We are pleased to inform you that your payment has been successfully processed. ',
-            '',
+            ticketDetails,
             [],
-            pdfPath
+            pdfPath,
           );
-          fs.unlinkSync(pdfPath); 
+          fs.unlinkSync(pdfPath);
         } else {
           console.error('PDF file does not exist at path:', pdfPath);
           res.status(500).json({ message: 'Failed to generate PDF' });
