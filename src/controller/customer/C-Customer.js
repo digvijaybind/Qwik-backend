@@ -613,6 +613,7 @@ exports.calculateFlightTime = async (req, res) => {
           console.log('This is ResultData', ResultData);
           return res.json(final);
         }
+        
       } else {
         // for getting at least max techstop during the journey
         let selectedTechStops = [];

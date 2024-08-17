@@ -594,10 +594,11 @@ exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
       return res.status(404).json({ message: 'UserOperator Does Not Exist' });
     }
 
-    // Convert the operator to a plain JavaScript object
+
     const operatorObject = operator.toObject();
 
-    // Extract only the aircraftOperator information
+   
+    
     const aircraftOperators = operatorObject.aircraftOperators.map(
       (entry) => entry.aircraftOperator
     );
