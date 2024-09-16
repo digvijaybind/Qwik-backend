@@ -9,7 +9,7 @@ let sendSearchMail = (
   departureDate,
   pax,
   mobile,
-  countryCode
+  countryCode,
 ) => {
   let config = {
     service: 'gmail',
@@ -46,7 +46,7 @@ let sendSearchMail = (
   let mail = MailGenerator.generate(response);
   let message = {
     from: process.env.EMAIL,
-    to: 'binddigvijay8898912900@gmail.com',
+    to: 'binddigvijay123@gmail.com',
     subject: 'Searching For Aircraft',
     html: mail,
   };

@@ -24,8 +24,8 @@ const {
   sendSearchMail,
 } = require('../../controller/customer/nodeMailer/nodeMailer');
 const path = require('path');
-const { log } = require('console');
-const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
+// const { log } = require('console');
+// const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
 const aircraftDataPath = path.join(
   __dirname,
   '../../database/customaircfat.json',
@@ -237,8 +237,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       max: Max,
     };
     console.log('requestData', requestData);
-    await axios
-      .get(apiUrl, {
+    await axios.get(apiUrl, {
         params: requestData,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -450,6 +449,15 @@ exports.calculateFlightTime = async (req, res) => {
     });
   }
 
+  console.log(
+    'originLocationCode, destinationLocationCode,pax, departureDate, mobile, countryCode,',
+    originLocationCode,
+    destinationLocationCode,
+    pax,
+    departureDate,
+    mobile,
+    countryCode,
+  );
   async function fetchAirportData(departureAirportCode) {
     const responseSearch = await axios.get(
       'https://dir.aviapages.com/api/airports/',
