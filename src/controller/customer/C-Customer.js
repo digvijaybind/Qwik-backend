@@ -24,6 +24,7 @@ const {
   sendSearchMail,
 } = require('../../controller/customer/nodeMailer/nodeMailer');
 const path = require('path');
+// const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
 // const { log } = require('console');
 // const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
 const aircraftDataPath = path.join(
@@ -237,7 +238,8 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       max: Max,
     };
     console.log('requestData', requestData);
-    await axios.get(apiUrl, {
+    await axios
+      .get(apiUrl, {
         params: requestData,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -380,8 +382,11 @@ exports.AmedeusTestAPitoken = async (req, res) => {
             '1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU',
             HEADERS,
           );
-          let whatsappMessage = `*Patient's enquiry:* \n\n*From:* ${originLocationCode} \n*To:* ${destinationLocationCode} \n*Date:* ${departureDate} \n*Contact Number:* ${countryCode} ${mobile}`;
-          sendWhatsAppMessage(process.env.User_Number, whatsappMessage);
+
+          // let whatsappMessage = `*Patient's enquiry:* \n\n*From:* ${originLocationCode} \n*To:* ${destinationLocationCode} \n*Date:* ${departureDate} \n*Contact Number:* ${countryCode} ${mobile}`;
+
+          // sendWhatsAppMessage('+917777920323', whatsappMessage);
+
           sendSearchMail(
             originLocationCode,
             destinationLocationCode,
@@ -621,7 +626,6 @@ exports.calculateFlightTime = async (req, res) => {
           console.log('This is ResultData', ResultData);
           return res.json(final);
         }
-        
       } else {
         // for getting at least max techstop during the journey
         let selectedTechStops = [];
