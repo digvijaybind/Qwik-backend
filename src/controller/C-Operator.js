@@ -300,6 +300,8 @@ exports.AddAircrafts = async (req, res, next) => {
         } else if (response.data.results.length > 1) {
           const results = response.data.results;
           for (const result of results) {
+            console.log('result is ', result);
+
             if (result.icao) {
               icaoCode = result.icao;
               country_name = result.country_name;
@@ -597,8 +599,8 @@ exports.getIndividualAirCraftOPeratorsLists = async (req, res) => {
 
     const operatorObject = operator.toObject();
 
-   
-    
+
+
     const aircraftOperators = operatorObject.aircraftOperators.map(
       (entry) => entry.aircraftOperator
     );
