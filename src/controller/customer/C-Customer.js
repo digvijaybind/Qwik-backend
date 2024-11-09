@@ -165,14 +165,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-    const accessToken = access_token;
-  
+
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
     let aircraftId;
 
-    console.log('access_token', access_token);
     const originLocationcode = originLocationCode;
     const destinationLocationcode = destinationLocationCode;
     const departuredate = departureDate;
@@ -238,18 +236,22 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       adults: Pax,
       max: Max,
     };
-    console.log('requestData', requestData);
+
+    const AccessToken = await access_token;
+
+    console.log('Access Token:', accessToken);
+    console.log('Authorization Header:', `Bearer ${accessToken}`);
+
     await axios
       .get(apiUrl, {
         params: requestData,
         headers: {
-          Authorization: `Bearer Kp5Nnpjfy4JUCZXOLbL8F7JphXVf`,
+          Authorization: `Bearer MrNZ8BqaxFe9dr3r1z1Gv8PspbGc`,
           'Content-Type': 'application/json',
         },
       })
       .then(async (response) => {
         console.log('response Data data line 989', response.data.data);
-
         const filteredData = response.data.data.filter((item) => {
           console.log('item line 1164', item);
           const segments = item.itineraries.flatMap(
@@ -298,13 +300,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 a.price.grandTotal - b.price.grandTotal;
               },
             );
-            debugger;
 
             console.log(
               'sortedAircraftByPrice IS this now::',
               sortedAircraftByPrice,
             );
-            debugger;
+
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
             console.log('ResponseData is now :::', ResponseData);
@@ -401,6 +402,18 @@ exports.AmedeusTestAPitoken = async (req, res) => {
         }
         res.json({ aircraftId: aircraftId, ResponseData: ResponseData });
         console.log('aircraftId line 1305', aircraftId);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log('Error Response:', error.response.data); // Response data from the server
+          console.log('Error Status:', error.response.status); // HTTP status code
+          console.log('Error Headers:', error.response.headers); // Any headers returned
+        } else if (error.request) {
+          console.log('Error Request:', error.request); // Request made but no response
+        } else {
+          console.log('Error Message:', error.message); // Other error messages
+        }
+        console.log('Error Config:', error.config); // Config used for the request
       });
 
     return { aircraftId, ResponseData };
@@ -479,7 +492,7 @@ exports.calculateFlightTime = async (req, res) => {
         },
       },
     );
-console.log('responseSearch.data', responseSearch.data);
+    console.log('responseSearch.data', responseSearch.data);
     return responseSearch.data;
   }
 
