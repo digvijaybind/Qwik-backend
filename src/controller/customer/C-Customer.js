@@ -243,7 +243,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       .get(apiUrl, {
         params: requestData,
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer Kp5Nnpjfy4JUCZXOLbL8F7JphXVf`,
           'Content-Type': 'application/json',
         },
       })
