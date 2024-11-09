@@ -1,28 +1,30 @@
-const Mongoose = require("mongoose");
+const Mongoose = require('mongoose');
 
 const AircraftOperatorSchema = new Mongoose.Schema({
-  companyName: {
+  COMPANY_NAME: {
     type: String,
     required: true,
   },
-  contactWithCountryCode: {
+  COMPANY_CONTACT_NUMBER: {
     type: String,
     required: true,
   },
-  numberOfCountriesPresence: {
+  NUMBER_OF_COUNTRIES_PRESENCE: {
     type: String,
     required: true,
   },
-  location: {
+  COMPANY_LOCATION: {
     type: String,
     required: true,
   },
-  email: {
+  COMPANY_EMAIL: {
     type: String,
     required: true,
   },
 });
 
-
-const AircraftOperator = Mongoose.model("AircraftOperatorData", AircraftOperatorSchema);
-module.exports={AircraftOperator}
+const AircraftOperator = Mongoose.model(
+  'AircraftOperatorData',
+  AircraftOperatorSchema,
+);
+module.exports = { AircraftOperator };

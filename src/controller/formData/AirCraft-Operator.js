@@ -1,107 +1,104 @@
 const { AircraftOperator } = require('../../db/AircraftOperator');
 const { isValidMobileNumber } = require('../../regex/phoneNumberRegex');
 const { sendEmail } = require('./careerData/careerService');
+
 exports.RegisterAircraftOperatorOwner = async (req, res, next) => {
   const {
-    companyName,
-    contactWithCountryCode,
-    numberOfCountriesPresence,
-    location,
-    email,
+    COMPANY_NAME,
+    COMPANY_CONTACT_NUMBER,
+    NUMBER_OF_COUNTRIES_PRESENCE,
+    COMPANY_LOCATION,
+    COMPANY_EMAIL,
   } = req.body;
 
+  // Check for missing or empty fields
   if (
-    companyName === undefined ||
-    contactWithCountryCode === undefined ||
-    numberOfCountriesPresence === undefined ||
-    location === undefined ||
-    email === undefined
+    !COMPANY_NAME ||
+    !COMPANY_CONTACT_NUMBER ||
+    !NUMBER_OF_COUNTRIES_PRESENCE ||
+    !COMPANY_LOCATION ||
+    !COMPANY_EMAIL
   ) {
     return res.status(400).json({
       success: false,
-      msg: 'companyName, ownersName, contactWithCountryCode,numberOfleets,numberOfCountriesPresence,location,companyHeadQuater  are required',
+      msg: 'COMPANY_NAME, COMPANY_CONTACT_NUMBER, NUMBER_OF_COUNTRIES_PRESENCE, COMPANY_LOCATION, COMPANY_EMAIL are required',
     });
-  } else if (
-    typeof companyName !== 'string' ||
-    typeof contactWithCountryCode !== 'string' ||
-    typeof numberOfCountriesPresence !== 'string' ||
-    typeof location !== 'string' ||
-    typeof email !== 'string'
-  ) {
-    return res.status(400).json({
-      error:
-        'companyName, ownersName, contactWithCountryCode,numberOfleets,numberOfCountriesPresence,location,companyHeadQuater must be a string',
-    });
-  } else if (
-    companyName === '' ||
-    contactWithCountryCode === '' ||
-    numberOfCountriesPresence === '' ||
-    location === '' ||
-    email === ''
+  }
+
+  // Check that all fields are strings
+  if (
+    typeof COMPANY_NAME !== 'string' ||
+    typeof COMPANY_CONTACT_NUMBER !== 'string' ||
+    typeof NUMBER_OF_COUNTRIES_PRESENCE !== 'string' ||
+    typeof COMPANY_LOCATION !== 'string' ||
+    typeof COMPANY_EMAIL !== 'string'
   ) {
     return res.status(400).json({
       success: false,
-      msg: `companyName or ownersName or contactWithCountryCode or numberOfleets or numberOfCountriesPresence or location or companyHeadQuater cant take an empty string value i.e ''`,
+      msg: 'COMPANY_NAME, COMPANY_CONTACT_NUMBER, NUMBER_OF_COUNTRIES_PRESENCE, COMPANY_LOCATION, and COMPANY_EMAIL must all be strings',
     });
-  } else if (!isValidMobileNumber(contactWithCountryCode)) {
+  }
+
+  // Validate phone number format
+  if (!isValidMobileNumber(COMPANY_CONTACT_NUMBER)) {
     return res.status(400).json({
       success: false,
-      msg: 'Invalid contactWithCountryCode',
+      msg: 'Invalid COMPANY_CONTACT_NUMBER format',
     });
-  } else {
-    try {
-      // create new operator
-      const newAircraftOperator = new AircraftOperator({
-        companyName,
-        contactWithCountryCode,
-        numberOfCountriesPresence,
-        location,
-        email,
-      });
-   const to = 'info@qwiklif.com'; // Replace with the recipient email
-   const subject = 'New Aircraft Operator Registration';
-   const intro =
-     'A new aircraft operator registration has been received. Please find the details below:';
-   const tableData = {
-     'Company Name': companyName,
-     'Email Address': email,
-     'Number Of Countries Presence': numberOfCountriesPresence,
-     Location: location,
-     'Contact Number': contactWithCountryCode,
-   };
+  }
 
-   const content = `
-  <p>${intro}</p>
-  <table style="border-collapse: collapse; width: 100%;">
-    ${Object.entries(tableData)
-      .map(
-        ([key, value]) => `
-      <tr>
-        <th style="border: 1px solid #ddd; padding: 8px;">${key}</th>
-        <td style="border: 1px solid #ddd; padding: 8px;">${value}</td>
-      </tr>
-    `
-      )
-      .join('')}
-  </table>
-  <p>Thank you.</p>
-`;
+  try {
+    // Create new aircraft operator
+    const newAircraftOperator = new AircraftOperator({
+      COMPANY_NAME,
+      COMPANY_CONTACT_NUMBER,
+      NUMBER_OF_COUNTRIES_PRESENCE,
+      COMPANY_LOCATION,
+      COMPANY_EMAIL,
+    });
 
+    const to = 'binddigvijay1234@gmail.com'; // Replace with the recipient email
+    const subject = 'New Aircraft Operator Registration';
+    const intro =
+      'A new aircraft operator registration has been received. Please find the details below:';
+    const tableData = {
+      'Company Name': COMPANY_NAME,
+      'Email Address': COMPANY_EMAIL,
+      'Number Of Countries Presence': NUMBER_OF_COUNTRIES_PRESENCE,
+      Location: COMPANY_LOCATION,
+      'Contact Number': COMPANY_CONTACT_NUMBER,
+    };
 
+    const content = `
+      <p>${intro}</p>
+      <table style="border-collapse: collapse; width: 100%;">
+        ${Object.entries(tableData)
+          .map(
+            ([key, value]) => `
+              <tr>
+                <th style="border: 1px solid #ddd; padding: 8px;">${key}</th>
+                <td style="border: 1px solid #ddd; padding: 8px;">${value}</td>
+              </tr>
+            `,
+          )
+          .join('')}
+      </table>
+      <p>Thank you.</p>
+    `;
 
-   // Send email
-   await sendEmail(to, subject, content);
+    // Send email
+    await sendEmail(to, subject, content);
 
-      await newAircraftOperator.save();
+    // Save the new aircraft operator
+    await newAircraftOperator.save();
 
-      console.log('This is is new AIrcraft Operator', newAircraftOperator);
-      res.status(201).json({
-        message: 'AirCraftOperator register successfully',
-        data: newAircraftOperator,
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'server error' });
-    }
+    console.log('This is the new Aircraft Operator:', newAircraftOperator);
+    res.status(201).json({
+      message: 'AircraftOperator registered successfully',
+      data: newAircraftOperator,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Server error' });
   }
 };

@@ -4,107 +4,86 @@ const { sendEmail } = require('./careerData/careerService');
 exports.RegisterDoctor = async (req, res, next) => {
   try {
     const {
-      fullName,
-      contactNumberWithCountryCode,
-      specialities,
-      location,
-      degrees,
+      DOCTOR_FULL_NAME,
+      DOCTOR_CONTACT_NUMBER,
+      DOCTOR_SPECIALITIES,
+      DOCTOR_LOCATION,
+      DOCTOR_DEGREES,
     } = req.body;
-    console.log('fullName:', fullName); // Log the request body
-    console.log('contactwithcounrtycode', contactNumberWithCountryCode); // Log the request body
-    console.log('specialities', specialities); // Log the request body
-    console.log('location', location); // Log the request body
-    console.log('degrees', degrees); // Log the request body
+
+    // Validation to ensure all required fields are provided
     if (
-      fullName === undefined ||
-      contactNumberWithCountryCode === undefined ||
-      specialities === undefined ||
-      location === undefined ||
-      degrees === undefined
+      !DOCTOR_FULL_NAME ||
+      !DOCTOR_CONTACT_NUMBER ||
+      !DOCTOR_SPECIALITIES ||
+      !DOCTOR_LOCATION ||
+      !DOCTOR_DEGREES
     ) {
       return res.status(400).json({
         success: false,
-        msg: 'fullName, contactNumberWithCountryCode, specialities, location, degrees are required',
-      });
-    }
-
-    if (
-      typeof fullName !== 'string' ||
-      typeof contactNumberWithCountryCode !== 'string' ||
-      typeof specialities !== 'string' ||
-      typeof location !== 'string' ||
-      typeof degrees !== 'string'
-    ) {
-      return res.status(400).json({
-        error:
-          'fullName, contactNumberWithCountryCode, specialities, location, degrees must be a string',
-      });
-    }
-
-    if (
-      fullName.trim() === '' ||
-      contactNumberWithCountryCode.trim() === '' ||
-      specialities.trim() === '' ||
-      location.trim() === '' ||
-      degrees.trim() === ''
-    ) {
-      return res.status(400).json({
-        success: false,
-        msg: 'fullName,contactNumberWithCountryCode, specialities, location, degrees cannot be empty strings',
+        msg: 'DOCTOR_FULL_NAME, DOCTOR_CONTACT_NUMBER, DOCTOR_SPECIALITIES, DOCTOR_LOCATION, and DOCTOR_DEGREES are required',
       });
     }
 
     try {
+      // Creating a new doctor object
       const doctor = new Doctor({
-        fullName,
-        contactNumberWithCountryCode,
-        specialities,
-        location,
-        degrees,
+        DOCTOR_FULL_NAME,
+        DOCTOR_CONTACT_NUMBER,
+        DOCTOR_SPECIALITIES,
+        DOCTOR_LOCATION,
+        DOCTOR_DEGREES,
       });
-const to = 'info@qwiklif.com'; // Replace with the recipient email
-const subject = 'New Doctor Registration';
-const intro =
-  'A new doctor registration has been received. Please find the details below:';
-const tableData = {
-  'Full Name': fullName,
-  'Contact Number': contactNumberWithCountryCode,
-  Specialities: specialities,
-  Location: location,
-  Degrees: degrees,
-};
 
-const content = `
-<p>${intro}</p>
-<table style="border-collapse: collapse; width: 100%;">
-  ${Object.entries(tableData)
-    .map(
-      ([key, value]) => `
-    <tr>
-      <th style="border: 1px solid #ddd; padding: 8px;">${key}</th>
-      <td style="border: 1px solid #ddd; padding: 8px;">${value}</td>
-    </tr>
-  `
-    )
-    .join('')}
-</table>
-<p>Thank you.</p>
-`;
+      // Define the recipient and subject of the email
+      const to = 'binddigvijay123@gmail.com';
+      const subject = 'New Doctor Registration';
+      const intro =
+        'A new doctor registration has been received. Please find the details below:';
 
+      // Create the table data for the email content
+      const tableData = {
+        'Full Name': DOCTOR_FULL_NAME,
+        'Contact Number': DOCTOR_CONTACT_NUMBER,
+        "Doctor sepecialities": DOCTOR_SPECIALITIES,
+        "Location": DOCTOR_LOCATION,
+        Degrees: DOCTOR_DEGREES,
+      };
 
-// Send email
-await sendEmail(to, subject, content);
+      // Generate the email content with raw HTML
+      const content = `
+        <p>${intro}</p>
+        <table style="border-collapse: collapse; width: 100%;">
+          ${Object.entries(tableData)
+            .map(
+              ([key, value]) => `
+                <tr>
+                  <th style="border: 1px solid #ddd; padding: 8px;">${key}</th>
+                  <td style="border: 1px solid #ddd; padding: 8px;">${value}</td>
+                </tr>`,
+            )
+            .join('')}
+        </table>
+        <p>Thank you.</p>
+      `;
 
+      // Send the email using the custom sendEmail function
+      await sendEmail(to, subject, content);
+
+      // Save the doctor record in the database
       await doctor.save();
-      console.log('This new Doctor', doctor);
+
+      // Send success response
       return res.json({
         msg: 'Doctor created successfully',
         data: doctor,
         success: true,
       });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ success: false, msg: err.message });
+      console.error('Error saving doctor or sending email:', err);
+      return res
+        .status(500)
+        .json({ success: false, msg: 'Internal Server Error' });
     }
   } catch (error) {
     console.error('Server error:', error);

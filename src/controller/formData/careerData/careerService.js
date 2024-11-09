@@ -25,9 +25,7 @@ const sendEmail = (to, subject, intro, tableData) => {
   let response = {
     body: {
       intro: intro,
-      table: {
-        data: tableData,
-      },
+      html: tableData,
     },
   };
 

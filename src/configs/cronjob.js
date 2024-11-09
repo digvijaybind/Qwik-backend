@@ -8,6 +8,8 @@ const data = {
 };
 
 let access_token = process.env.Amadeus_access_token;
+
+console.log('access token receive', access_token);
 const urlEncodedData = qs.stringify(data);
 const apiUrl = 'https://test.api.amadeus.com/v1/security/oauth2/token';
 
@@ -20,7 +22,8 @@ async function getProcessedApiData() {
     });
 
     access_token = response.data.access_token;
-    console.log('access_token', response.data);
+    console.log('New access_token', response.data.access_token);
+  
     console.log('this access_token', access_token);
   } catch (error) {
     console.error('Error fetching or processing API data:', error);

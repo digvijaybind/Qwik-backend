@@ -1,23 +1,23 @@
 const Mongoose = require('mongoose');
 
 const InsuranceSchema = new Mongoose.Schema({
-  companyName: {
+  COMPANY_NAME: {
     type: String,
     required: true,
   },
-  companyContactNumber: {
+  COMPANY_CONTACT_NUMBER: {
     type: String,
     required: true,
   },
-  email: {
+  COMPANY_EMAIL: {
     type: String,
     required: true,
   },
-  contactPerson: {
+  CONTACT_PERSON_NAME: {
     type: String,
     required: true,
   },
-  personContact: {
+  CONTACT_PERSON_NUMBER: {
     type: String,
     required: true,
   },

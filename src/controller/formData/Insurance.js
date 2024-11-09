@@ -4,18 +4,18 @@ const { sendEmail } = require('./careerData/careerService');
 exports.InsuranceOnboard = async (req, res, next) => {
   try {
     const {
-      companyName,
-      email,
-      companyContactNumber,
-      contactPerson,
-      personContact,
+      COMPANY_NAME, 
+      COMPANY_EMAIL, 
+      COMPANY_CONTACT_NUMBER,
+      CONTACT_PERSON_NAME,
+      CONTACT_PERSON_NUMBER,
     } = req.body;
     if (
-      !companyName ||
-      !email ||
-      !companyContactNumber ||
-      !contactPerson ||
-      !personContact
+      !COMPANY_NAME ||
+      !COMPANY_EMAIL ||
+      !COMPANY_CONTACT_NUMBER ||
+      !CONTACT_PERSON_NAME ||
+      !CONTACT_PERSON_NUMBER
     ) {
       return res
         .status(400)
@@ -23,30 +23,26 @@ exports.InsuranceOnboard = async (req, res, next) => {
     }
 
     // Debugging information
-    console.log('companyName:', companyName);
-    console.log('email:', email);
-    console.log('company:', companyContactNumber);
-    console.log('ContactPerson:', contactPerson);
-    console.log('PersonContact:', personContact);
+
 
     try {
       const InsuranceData = new Insurance({
-        companyName,
-        email,
-        companyContactNumber,
-        contactPerson,
-        personContact,
+        COMPANY_NAME,
+        COMPANY_EMAIL,
+        COMPANY_CONTACT_NUMBER,
+        CONTACT_PERSON_NAME,
+        CONTACT_PERSON_NUMBER,
       });
-      const to = 'info@qwiklif.com'; // Replace with the recipient email
+      const to = 'binddigvijay1234@gmail.com'; // Replace with the recipient email
       const subject = 'New Insurance Company Onboarding';
       const intro =
         'A new insurance company onboarding request has been received. Please find the details below:';
       const tableData = {
-        'Company Name': companyName,
-        'Email Address': email,
-        'Company Contact Number': companyContactNumber,
-        'Contact Person': contactPerson,
-        'Person Contact Number': personContact,
+        'Company Name': COMPANY_NAME,
+        'Email Address': COMPANY_EMAIL,
+        'Company Contact Number': COMPANY_CONTACT_NUMBER,
+        'Contact Person': CONTACT_PERSON_NAME,
+        'Person Contact Number': CONTACT_PERSON_NUMBER,
       };
 
       const content = `
@@ -59,14 +55,12 @@ exports.InsuranceOnboard = async (req, res, next) => {
       <th style="border: 1px solid #ddd; padding: 8px;">${key}</th>
       <td style="border: 1px solid #ddd; padding: 8px;">${value}</td>
     </tr>
-  `
+  `,
     )
     .join('')}
 </table>
 <p>Thank you.</p>
 `;
-
-
 
       // Send email
       await sendEmail(to, subject, content);

@@ -166,6 +166,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
     const accessToken = access_token;
+  
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -297,11 +298,13 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 a.price.grandTotal - b.price.grandTotal;
               },
             );
+            debugger;
 
             console.log(
               'sortedAircraftByPrice IS this now::',
               sortedAircraftByPrice,
             );
+            debugger;
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
             console.log('ResponseData is now :::', ResponseData);
@@ -476,7 +479,7 @@ exports.calculateFlightTime = async (req, res) => {
         },
       },
     );
-
+console.log('responseSearch.data', responseSearch.data);
     return responseSearch.data;
   }
 

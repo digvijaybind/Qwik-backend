@@ -1,5 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
+
+console.log('supabse url', process.env.SUPABASE_URL);
 const superBase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY

@@ -2,41 +2,51 @@ const { Paramedics } = require('../../db/Paramedics');
 const { sendEmail } = require('./careerData/careerService');
 
 exports.RegisterParamedics = async (req, res, next) => {
-  const { fullName, email, country, degrees, contactNumberWithCountryCode } =
-    req.body;
+  const {
+    FULL_NAME,
+    EMAIL_ADDRESS,
+    COUNTRY_OF_RESIDENCE,
+    EDUCATION_DEGREES,
+    CONTACT_NUMBER_WITH_COUNTRY_CODE,
+  } = req.body;
 
   // Debugging: Log the extracted values
   console.log('Extracted Values:', {
-    fullName,
-    email,
-    country,
-    degrees,
-    contactNumberWithCountryCode,
+    FULL_NAME,
+    EMAIL_ADDRESS,
+    COUNTRY_OF_RESIDENCE,
+    EDUCATION_DEGREES,
+    CONTACT_NUMBER_WITH_COUNTRY_CODE,
   });
   try {
     // Debugging: Log the request body
     console.log('Request Body:', req.body);
 
     // Extract fields
-    const { fullName, email, country, degrees, contactNumberWithCountryCode } =
-      req.body;
+    const {
+      FULL_NAME,
+      EMAIL_ADDRESS,
+      COUNTRY_OF_RESIDENCE,
+      EDUCATION_DEGREES,
+      CONTACT_NUMBER_WITH_COUNTRY_CODE,
+    } = req.body;
 
     // Debugging: Log the extracted values
     console.log('Extracted Values:', {
-      fullName,
-      email,
-      country,
-      degrees,
-      contactNumberWithCountryCode,
+      FULL_NAME,
+      EMAIL_ADDRESS,
+      COUNTRY_OF_RESIDENCE,
+      EDUCATION_DEGREES,
+      CONTACT_NUMBER_WITH_COUNTRY_CODE,
     });
 
     // Validate required fields
     if (
-      !fullName ||
-      !email ||
-      !country ||
-      !degrees ||
-      !contactNumberWithCountryCode
+      !FULL_NAME ||                                        
+  !EMAIL_ADDRESS  ||                                   
+  !COUNTRY_OF_RESIDENCE ||                              
+  !EDUCATION_DEGREES ||                                
+  !CONTACT_NUMBER_WITH_COUNTRY_CODE               
     ) {
       return res
         .status(400)
@@ -45,17 +55,17 @@ exports.RegisterParamedics = async (req, res, next) => {
 
     // Validate data types
     if (
-      typeof fullName !== 'string' ||
-      typeof email !== 'string' ||
-      typeof country !== 'string' ||
-      typeof degrees !== 'string' ||
-      typeof contactNumberWithCountryCode !== 'string'
+      typeof FULL_NAME !== 'string' ||
+      typeof EMAIL_ADDRESS !== 'string' ||
+      typeof COUNTRY_OF_RESIDENCE !== 'string' ||
+      typeof EDUCATION_DEGREES !== 'string' ||
+      typeof CONTACT_NUMBER_WITH_COUNTRY_CODE !== 'string'
     ) {
       return res.status(400).json({ error: 'All fields must be strings' });
     }
 
     // Validate non-empty strings
-    if (country.trim() === '' || degrees.trim() === '') {
+    if (COUNTRY_OF_RESIDENCE.trim() === '' || EDUCATION_DEGREES.trim() === '') {
       return res.status(400).json({
         success: false,
         msg: 'Country and degrees cannot be empty strings',
@@ -64,33 +74,33 @@ exports.RegisterParamedics = async (req, res, next) => {
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(EMAIL_ADDRESS)) {
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
     try {
       const paramedics = new Paramedics({
-        fullName,
-        email,
-        country,
-        degrees,
-        contactNumberWithCountryCode,
+        FULL_NAME,
+        EMAIL_ADDRESS,
+        COUNTRY_OF_RESIDENCE,
+        EDUCATION_DEGREES,
+        CONTACT_NUMBER_WITH_COUNTRY_CODE,
       });
-const to = 'info@qwiklif.com'; // Replace with the recipient email
-const subject = 'New Paramedics Registration';
-const intro =
-  'A new paramedics registration has been received. Please find the details below:';
-const tableData = [
-  {
-    'Full Name': fullName,
-    'Email Address': email,
-    'Country of Residence': country,
-    Qualifications: degrees,
-    'Contact Number': contactNumberWithCountryCode,
-  },
-];
+      const to = 'binddigvijay1234@gmail.com'; // Replace with the recipient email
+      const subject = 'New Paramedics Registration';
+      const intro =
+        'A new paramedics registration has been received. Please find the details below:';
+      const tableData = [
+        {
+          'Full Name': FULL_NAME,
+          'Email Address': EMAIL_ADDRESS,
+          'Country of Residence': COUNTRY_OF_RESIDENCE,
+          Qualifications: EDUCATION_DEGREES,
+          'Contact Number': CONTACT_NUMBER_WITH_COUNTRY_CODE,
+        },
+      ];
 
-const content = `
+      const content = `
   <p>${intro}</p>
   <table style="border-collapse: collapse; width: 100%;">
     <tr>
@@ -117,8 +127,7 @@ const content = `
   <p>Thank you.</p>
 `;
 
-console.log(content);
-
+      console.log(content);
 
       // Send email
       await sendEmail(to, subject, intro, tableData);

@@ -16,8 +16,7 @@ const cookieParser = require('cookie-parser');
 const errorMiddleware = require('./middleware/error-middleware');
 const dotenv = require('dotenv');
 require('./database/Database');
-const { superBaseConnect } = require('./configs/supabase');
-superBaseConnect();
+
 dotenv.config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

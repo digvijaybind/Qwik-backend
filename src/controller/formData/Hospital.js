@@ -5,60 +5,60 @@ const { sendEmail } = require('./careerData/careerService');
 
 exports.RegisterHospital = async (req, res, next) => {
   const {
-    hospitalName,
-    ownerName,
-    location,
-    contactNumberWithCountryCode,
-    email,
+    HOSPITAL_NAME,
+    HOSPITAL_OWNER_NAME,
+    HOSPITAL_LOCATION,
+    HOSPITAL_CONTACT_NUMBER,
+    HOSPITAL_EMAIL,
   } = req.body;
 
   console.log(
     'requested data',
-    hospitalName,
-    ownerName,
-    location,
-    contactNumberWithCountryCode,
-    email
+    HOSPITAL_NAME,
+    HOSPITAL_OWNER_NAME,
+    HOSPITAL_LOCATION,
+    HOSPITAL_CONTACT_NUMBER,
+    HOSPITAL_EMAIL,
   );
   if (
-    hospitalName === undefined ||
-    ownerName === undefined ||
-    location === undefined ||
-    contactNumberWithCountryCode === undefined ||
-    email === undefined
+    HOSPITAL_NAME === undefined ||
+    HOSPITAL_OWNER_NAME === undefined ||
+    HOSPITAL_LOCATION === undefined ||
+    HOSPITAL_CONTACT_NUMBER === undefined ||
+    HOSPITAL_EMAIL === undefined
   ) {
     return res.status(400).json({
       success: false,
-      msg: 'hospitalName, ownerName, location,contactNumber,email  are required',
+      msg: 'HOSPITAL_NAME,  HOSPITAL_OWNER_NAME,  HOSPITAL_LOCATION,HOSPITAL_CONTACT_NUMBER, HOSPITAL_EMAIL  are required',
     });
   } else if (
-    typeof hospitalName !== 'string' ||
-    typeof ownerName !== 'string' ||
-    typeof location !== 'string' ||
-    typeof contactNumberWithCountryCode !== 'string' ||
-    typeof email !== 'string'
+    typeof HOSPITAL_NAME !== 'string' ||
+    typeof HOSPITAL_OWNER_NAME !== 'string' ||
+    typeof HOSPITAL_LOCATION !== 'string' ||
+    typeof HOSPITAL_CONTACT_NUMBER !== 'string' ||
+    typeof HOSPITAL_EMAIL !== 'string'
   ) {
     return res.status(400).json({
       error:
-        'hospitalName, ownerName, location,contactNumberWithCountryCode,email must be a string',
+        'HOSPITAL_NAME,  HOSPITAL_OWNER_NAME l,HOSPITAL_LOCATION,HOSPITAL_CONTACT_NUMBER, HOSPITAL_EMAIL must be a string',
     });
   } else if (
-    hospitalName === '' ||
-    ownerName === '' ||
-    location === '' ||
-    contactNumberWithCountryCode === '' ||
-    email === ''
+    HOSPITAL_NAME === '' ||
+    HOSPITAL_OWNER_NAME === '' ||
+    HOSPITAL_LOCATION === '' ||
+    HOSPITAL_CONTACT_NUMBER === '' ||
+    HOSPITAL_EMAIL === ''
   ) {
     return res.status(400).json({
       success: false,
-      msg: `hospitalName, ownerName, location,contactNumberWithCountryCode,email cant take an empty string value i.e ''`,
+      msg: `HOSPITAL_NAME,  HOSPITAL_OWNER_NAME, HOSPITAL_LOCATION,HOSPITAL_CONTACT_NUMBER, HOSPITAL_EMAIL cant take an empty string value i.e ''`,
     });
-  } else if (!isValidMobileNumber(contactNumberWithCountryCode)) {
+  } else if (!HOSPITAL_CONTACT_NUMBER) {
     return res.status(400).json({
       success: false,
       msg: 'Invalid contactNumber',
     });
-  } else if (!isValidEmail(email)) {
+  } else if (!isValidEmail(HOSPITAL_EMAIL)) {
     return res.status(400).json({
       success: false,
       msg: 'Invalid email entered',
@@ -66,23 +66,23 @@ exports.RegisterHospital = async (req, res, next) => {
   } else {
     try {
       const newHospital = new Hospital({
-        hospitalName,
-        ownerName,
-        location,
-        contactNumberWithCountryCode,
-        email,
+        HOSPITAL_NAME,
+        HOSPITAL_OWNER_NAME,
+        HOSPITAL_LOCATION,
+        HOSPITAL_CONTACT_NUMBER,
+        HOSPITAL_EMAIL,
       });
 
-      const to = 'info@qwiklif.com'; // Replace with the recipient email
+      const to = 'binddigvijay1234@gmail.com'; // Replace with the recipient email
       const subject = 'New Hospital Onboarding';
       const intro =
         'A new hospital Onboarding has been received. Please find the details below:';
       const tableData = {
-        'Hospital Name': hospitalName,
-        'Owner Name': ownerName,
-        Location: location,
-        'Contact Number': contactNumberWithCountryCode,
-        'Email Address': email,
+        'Hospital Name': HOSPITAL_NAME,
+        'Owner Name': HOSPITAL_OWNER_NAME,
+        Location: HOSPITAL_LOCATION,
+        'Contact Number': HOSPITAL_CONTACT_NUMBER,
+        'Email Address': HOSPITAL_EMAIL,
       };
 
       const content = `
@@ -95,14 +95,12 @@ exports.RegisterHospital = async (req, res, next) => {
       <th style="border: 1px solid #ddd; padding: 8px;">${key}</th>
       <td style="border: 1px solid #ddd; padding: 8px;">${value}</td>
     </tr>
-  `
+  `,
     )
     .join('')}
 </table>
 <p>Thank you.</p>
 `;
-
-      
 
       // Send email
       await sendEmail(to, subject, content);

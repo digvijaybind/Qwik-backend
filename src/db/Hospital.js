@@ -1,23 +1,23 @@
 const Mongoose = require("mongoose");
 
 const HospitalSchema = new Mongoose.Schema({
-  hospitalName: {
+  HOSPITAL_NAME: {
     type: String,
     required: true,
   },
-  ownerName: {
+  HOSPITAL_OWNER_NAME: {
     type: String,
     required: true,
   },
-  location: {
+  HOSPITAL_LOCATION: {
     type: String,
     required: true,
   },
-  contactNumberWithCountryCode: {
+  HOSPITAL_CONTACT_NUMBER: {
     type: String,
     required: true,
   },
-  email: {
+  HOSPITAL_EMAIL: {
     type: String,
     required: true,
   },
