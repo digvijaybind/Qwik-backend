@@ -997,7 +997,7 @@ async function getLatLonFromLocation(location) {
   }
 }
 function haversineDistance(lat1, lon1, lat2, lon2) {
-  // Radius of the Earth in kilometers
+  // Radius of the Earth in kilometer
   const R = 6371;
 
   const dLat = (lat2 - lat1) * (Math.PI / 180);
