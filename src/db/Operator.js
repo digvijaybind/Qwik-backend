@@ -13,13 +13,13 @@ const OperatorSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
-  contact_number:{
-    type:String,
-    required:true
+  contact_number: {
+    type: String,
+    required: true
   },
-  country_name:{
-    type:String,
-    required:true
+  country_name: {
+    type: String,
+    required: true
   },
   aircraftOperators: [
     {
@@ -29,25 +29,25 @@ const OperatorSchema = new Mongoose.Schema({
       },
       Aircraft_type: String,
       Tail_sign: String,
-      location:String,
-      icao:String,
-      country_name:String,
-      charges_per_hour:Number,
-      speed:Number,
-      margin:Number,
-      sr_no:Number
+      location: String,
+      icao: String,
+      country_name: String,
+      charges_per_hour: Number,
+      speed: Number,
+      margin: Number,
+      sr_no: Number
 
     }
   ],
-  role:{
-    type:String,
-   required:true
+  role: {
+    type: String,
+    required: true
   }
 });
 const AircraftOPeratorSchema = new Mongoose.Schema({
   Aircraft_type: {
     type: String,
-    enum: ["Challenger605", "Learjet 45", "C 90"],
+    enum: ["Learjet 45", "C90", "B200"],
   },
   Tail_sign: {
     type: String,
@@ -71,13 +71,13 @@ const AircraftOPeratorSchema = new Mongoose.Schema({
     type: Number,
     default: 0,
   },
- 
 
-  sr_no:{
-    type:Number
+
+  sr_no: {
+    type: Number
   },
 
-  date: {type: Date, default: Date.now},
+  date: { type: Date, default: Date.now },
   operator: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: 'OperatorSchema'
@@ -90,4 +90,4 @@ const AircraftOPerator = Mongoose.model(
   "AircraftOPerator",
   AircraftOPeratorSchema
 );
-module.exports = {Operator, AircraftOPerator};
+module.exports = { Operator, AircraftOPerator };
