@@ -1,4 +1,4 @@
-const mobileRegex = /^(?:\+?\d{12,13}|\d{10,11})$/;
+const mobileRegex = /^(?:\+?\d{5,13}|\d{5,11})$/;
 
 const isValidMobileNumber = (text) => {
   // Ensure text is a string using typeof
