@@ -534,7 +534,7 @@ exports.calculateFlightTime = async (req, res) => {
           operator.country_name === responseSearch.results[0].country_name
       );
 
-      // Calculate distances for each operator
+      // Calculate distances for each operato
       const operatorsWithDistance = await Promise.all(
         validAircraftOperators.map(async (operator) => {
           try {
