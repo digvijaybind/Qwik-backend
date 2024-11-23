@@ -165,8 +165,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-    const accessToken = access_token;
-
+    const accessToken =await  access_token;
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -239,11 +238,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       max: Max,
     };
     console.log('requestData', requestData);
+   
     await axios
       .get(apiUrl, {
         params: requestData,
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer fG0x1ELOY7CKM03JllbVal0lexJG`,
           'Content-Type': 'application/json',
         },
       })
@@ -282,12 +282,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 totalPrice: parseFloat(
                   (Number(itemData.price.grandTotal) +
                     (Number(itemData.price.grandTotal) * a) / 100) *
-                  9 +
-                  ((Number(itemData.price.grandTotal) +
-                    (Number(itemData.price.grandTotal) * 7) / 100) *
-                    9 *
-                    b) /
-                  100,
+                    9 +
+                    ((Number(itemData.price.grandTotal) +
+                      (Number(itemData.price.grandTotal) * 7) / 100) *
+                      9 *
+                      b) /
+                      100,
                 ),
               },
               From: originLocationcode,
@@ -298,13 +298,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 a.price.grandTotal - b.price.grandTotal;
               },
             );
-            debugger;
 
             console.log(
               'sortedAircraftByPrice IS this now::',
               sortedAircraftByPrice,
             );
-            debugger;
+
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
             console.log('ResponseData is now :::', ResponseData);
@@ -314,7 +313,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
               return (
                 itinerarie.segments.length >= 2 &&
                 itinerarie.segments[1].carrierCode ===
-                itinerarie.segments[0].carrierCode
+                  itinerarie.segments[0].carrierCode
               );
             },
           );
@@ -327,12 +326,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 totalPrice: parseFloat(
                   (Number(itemData.price.grandTotal) +
                     (Number(itemData.price.grandTotal) * a) / 100) *
-                  9 +
-                  ((Number(itemData.price.grandTotal) +
-                    (Number(itemData.price.grandTotal) * 7) / 100) *
-                    9 *
-                    b) /
-                  100,
+                    9 +
+                    ((Number(itemData.price.grandTotal) +
+                      (Number(itemData.price.grandTotal) * 7) / 100) *
+                      9 *
+                      b) /
+                      100,
                 ),
               },
               From: originLocationcode,
@@ -461,12 +460,7 @@ exports.calculateFlightTime = async (req, res) => {
       success: false,
       msg: 'Invalid mobile',
     });
-  } else if (!isValidCountryCode(countryCode)) {
-    return res.status(400).json({
-      success: false,
-      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
-    });
-  }
+  } 
 
   async function fetchAirportData(departureAirportCode) {
     const responseSearch = await axios.get(
@@ -519,67 +513,100 @@ exports.calculateFlightTime = async (req, res) => {
     return response.data;
   }
 
-  async function calculateNearestOperator() {
-    try {
-      const departureAirportCode = originLocationCode;
+ async function calculateNearestOperator() {
+  try {
+    const departureAirportCode = originLocationCode;
 
-      // Fetch airport data with caching
-      const responseSearch = await fetchAirportData(departureAirportCode);
+    // Fetch airport data with caching
+    const responseSearch = await fetchAirportData(departureAirportCode);
 
-      const aircraftOperators = await AircraftOPerator.find();
-      console.log(aircraftOperators);
+    const departureCountry = responseSearch.results[0].country_name;
+    const departureLatitude = responseSearch.results[0].latitude;
+    const departureLongitude = responseSearch.results[0].longitude;
 
-      const validAircraftOperators = aircraftOperators.filter(
-        (operator) =>
-          operator.country_name === responseSearch.results[0].country_name
+    // Fetch all available aircraft operators
+    const aircraftOperators = await AircraftOPerator.find();
+    console.log(`Total Aircraft Operators Found: ${aircraftOperators.length}`);
+
+    // Step 1: Separate operators into within-country and outside-country lists
+    const operatorsWithinCountry = aircraftOperators.filter(
+      (operator) => operator.country_name === departureCountry
+    );
+
+    const operatorsOutsideCountry = aircraftOperators.filter(
+      (operator) => operator.country_name !== departureCountry
+    );
+
+    console.log(
+      `Operators within ${departureCountry}: ${operatorsWithinCountry.length}`
+    );
+    console.log(
+      `Operators outside ${departureCountry}: ${operatorsOutsideCountry.length}`
+    );
+
+    // Step 2: Determine which operators to use
+    const validAircraftOperators =
+      operatorsWithinCountry.length > 0
+        ? operatorsWithinCountry
+        : operatorsOutsideCountry;
+
+    if (operatorsWithinCountry.length === 0) {
+      console.warn(
+        `No operators found within ${departureCountry}. Searching globally.`
       );
-
-      // Calculate distances for each operato
-      const operatorsWithDistance = await Promise.all(
-        validAircraftOperators.map(async (operator) => {
-          try {
-            const operatorLocation = await getLatLonFromLocation(
-              operator.location
-            );
-
-            const distance = haversineDistance(
-              operatorLocation.lat,
-              operatorLocation.lon,
-              responseSearch.results[0].latitude,
-              responseSearch.results[0].longitude
-            );
-
-            const timeHours = distance / (operator.speed || 1);
-
-            // Fetch flight cost with caching
-            const aviapagesResponse = await calculateFlightCost(
-              originLocationCode,
-              operator.icao,
-              operator.Aircraft_type
-            );
-
-            return {
-              operator,
-              distance,
-              timeHours,
-              aviapagesResponse: aviapagesResponse,
-            };
-          } catch (error) {
-            return res.status(500).json({ error: 'error Occurred ' });
-          }
-        })
-      );
-
-      const validOperatorsWithDistance = operatorsWithDistance.filter(
-        (result) => result !== null
-      );
-      validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
-
-      return validOperatorsWithDistance.slice(0, 5);
-    } catch (error) {
-      throw error;
     }
+
+    // Step 3: Calculate distance, time, and cost for each operator
+    const operatorsWithDistance = await Promise.all(
+      validAircraftOperators.map(async (operator) => {
+        try {
+          const operatorLocation = await getLatLonFromLocation(
+            operator.location
+          );
+
+          const distance = haversineDistance(
+            operatorLocation.lat,
+            operatorLocation.lon,
+            departureLatitude,
+            departureLongitude
+          );
+
+          const timeHours = distance / (operator.speed || 1);
+
+          // Fetch flight cost with caching
+          const aviapagesResponse = await calculateFlightCost(
+            originLocationCode,
+            operator.icao,
+            operator.Aircraft_type
+          );
+
+          return {
+            operator,
+            distance,
+            timeHours,
+            aviapagesResponse,
+          };
+        } catch (error) {
+          console.error(`Error processing operator ${operator.name}:`, error);
+          return null; // Exclude this operator from the results
+        }
+      })
+    );
+
+    // Step 4: Filter and sort results
+    const validOperatorsWithDistance = operatorsWithDistance.filter(
+      (result) => result !== null
+    );
+    validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
+
+    // Return the top 5 nearest operators
+    return validOperatorsWithDistance.slice(0, 5);
+  } catch (error) {
+    console.error('Error in calculateNearestOperator:', error);
+    throw error;
   }
+}
+
 
   try {
     const nearestOperator = await calculateNearestOperator();
@@ -628,9 +655,11 @@ exports.calculateFlightTime = async (req, res) => {
           const ResultData = new AvipageAircraft({
             Response: final,
           });
+         
           ResultData.save();
+           aircraftId = ResultData._id;
           console.log('This is ResultData', ResultData);
-          return res.json(final);
+          return res.json({final,  aircraftId:aircraftId});
         }
       } else {
         // for getting at least max techstop during the journey
@@ -934,7 +963,7 @@ exports.calculateFlightTime = async (req, res) => {
                     totalTimeFromToto +
                     selectedTechStops.length * 0.5) +
                   selectedTechStops.length * 50000,
-                totalPriceWithTechStopAndAdminMargin:
+                totalPriceWithAdminMargin:
                   operator.operator.charges_per_hour *
                   (operator.aviapagesResponse.time.airway +
                     totalTimeFromToto +
@@ -957,8 +986,9 @@ exports.calculateFlightTime = async (req, res) => {
                   Response: final,
                 });
                 ResultData.save();
+                 aircraftId = ResultData._id;
                 console.log('This is ResultData', ResultData);
-                return res.json(final);
+                return res.json({ final, aircraftId: aircraftId });
               }
             }
           }

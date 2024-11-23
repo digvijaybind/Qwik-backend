@@ -22,7 +22,7 @@ exports.InsuranceOnboard = async (req, res, next) => {
         .json({ msg: 'All fields are required', success: false });
     }
 
-    // Debugging information
+
 
 
     try {

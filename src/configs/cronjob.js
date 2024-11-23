@@ -7,7 +7,7 @@ const data = {
   client_secret: 'uA0UEOCy3vIIkWZD',
   grant_type: 'client_credentials',
 };
-let access_token = process.env.AMADUS_ACCESS_TOKEN
+let access_token =  process.env.AMADUS_ACCESS_TOKEN
 const urlEncodedData = qs.stringify(data);
 const apiUrl = 'https://test.api.amadeus.com/v1/security/oauth2/token';
 
@@ -21,6 +21,7 @@ async function getProcessedApiData() {
 
     access_token = response.data.access_token;
     console.log('access_token', response.data);
+
     console.log('this access_token', access_token);
   } catch (error) {
     console.error('Error fetching or processing API data:', error);
