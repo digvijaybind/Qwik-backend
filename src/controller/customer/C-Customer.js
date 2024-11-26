@@ -243,7 +243,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       .get(apiUrl, {
         params: requestData,
         headers: {
-          Authorization: `Bearer fG0x1ELOY7CKM03JllbVal0lexJG`,
+          Authorization: `Bearer wCIHWaxsY4WTlGKsiB0Gt9ZHdN1F`,
           'Content-Type': 'application/json',
         },
       })
@@ -585,6 +585,7 @@ exports.calculateFlightTime = async (req, res) => {
             distance,
             timeHours,
             aviapagesResponse,
+          
           };
         } catch (error) {
           console.error(`Error processing operator ${operator.name}:`, error);
@@ -598,9 +599,10 @@ exports.calculateFlightTime = async (req, res) => {
       (result) => result !== null
     );
     validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
-
+    console.log(' validOperatorsWithDistance.', validOperatorsWithDistance);
     // Return the top 5 nearest operators
     return validOperatorsWithDistance.slice(0, 5);
+
   } catch (error) {
     console.error('Error in calculateNearestOperator:', error);
     throw error;
@@ -648,8 +650,10 @@ exports.calculateFlightTime = async (req, res) => {
             (operator.operator.margin / 100),
           from: from,
           to: to,
+        
         };
 
+         console.log("data is here  with tech halts",data);
         final.push(data);
         if (final.length === nearestOperator.length) {
           const ResultData = new AvipageAircraft({
@@ -959,15 +963,15 @@ exports.calculateFlightTime = async (req, res) => {
                 },
                 TotalPriceWithTechStop:
                   operator.operator.charges_per_hour *
-                  (operator.aviapagesResponse.time.airway +
-                    totalTimeFromToto +
-                    selectedTechStops.length * 0.5) +
+                    (operator.aviapagesResponse.time.airway +
+                      totalTimeFromToto +
+                      selectedTechStops.length * 0.5) +
                   selectedTechStops.length * 50000,
                 totalPriceWithAdminMargin:
                   operator.operator.charges_per_hour *
-                  (operator.aviapagesResponse.time.airway +
-                    totalTimeFromToto +
-                    selectedTechStops.length * 0.5) +
+                    (operator.aviapagesResponse.time.airway +
+                      totalTimeFromToto +
+                      selectedTechStops.length * 0.5) +
                   selectedTechStops.length * 50000 +
                   ((operator.operator.charges_per_hour *
                     (operator.aviapagesResponse.time.airway +
@@ -975,11 +979,13 @@ exports.calculateFlightTime = async (req, res) => {
                       selectedTechStops.length * 0.5) +
                     selectedTechStops.length * 50000) *
                     operator.operator.margin) /
-                  100,
+                    100,
                 from: from,
                 to: to,
+               
               };
 
+              console.log("final data with tech halts",data)
               final.push(data);
               if (final.length === nearestOperator.length) {
                 const ResultData = new AvipageAircraft({
