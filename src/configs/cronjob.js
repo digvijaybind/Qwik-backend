@@ -28,8 +28,8 @@ async function getProcessedApiData() {
     access_token = null;
   }
 }
-
-cron.schedule('*/2 * * * *', async () => {
+console.log('cronjob access_token ', access_token);
+cron.schedule('*/30 * * * *', async () => {
   const rawApiData = await getProcessedApiData();
 });
 

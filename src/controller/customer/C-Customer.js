@@ -172,7 +172,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     let ResponseData = {};
     let aircraftId;
 
-    console.log('access_token', access_token);
+    console.log('access_token line 175' , access_token);
     const originLocationcode = originLocationCode;
     const destinationLocationcode = destinationLocationCode;
     const departuredate = departureDate;
@@ -251,14 +251,38 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       .then(async (response) => {
         console.log('response Data data line 989', response.data.data);
 
-        const filteredData = response.data.data.filter((item) => {
-          console.log('item line 1164', item);
-          const segments = item.itineraries.flatMap(
-            (itinerary) => itinerary.segments,
-          );
-          const carrierCodes = segments.map((segment) => segment.carrierCode);
-          return carrierCodes.some((code) => airlines.includes(code));
-        });
+  // const filteredData = response.data.data.filter((item) => {
+  //   // Flatten all segments from itineraries
+  //   const segments = item.itineraries.flatMap(
+  //     (itinerary) => itinerary.segments,
+  //   );
+
+  //   // Check if all segments have valid carrier codes
+  //   const isValid = segments.some(
+  //     (segment) =>
+  //       airlines.includes(segment.carrierCode) &&
+  //       airlines.includes(segment.operating?.carrierCode),
+  //   );
+
+
+  //   console.log("valid operating airlines",isValid)
+  //   // Return true if all segments are valid
+  //   return isValid;
+  // });
+
+const filteredData = response.data.data.filter((item) => {
+  const segments = item.itineraries.flatMap((itinerary) => itinerary.segments);
+
+  // Ensure all segments have valid `operating.carrierCode`
+  const isValid = segments.every((segment) => {
+    const operatingCarrierCode = segment.operating?.carrierCode;
+    console.log('Operating Carrier Code:', operatingCarrierCode); // Debugging
+    return airlines.includes(operatingCarrierCode); // Match only allowed airlines
+  });
+
+  console.log('Is Valid:', isValid); // Debugging
+  return isValid; // Include only valid items
+});
 
         console.log('filteredData', filteredData);
 
