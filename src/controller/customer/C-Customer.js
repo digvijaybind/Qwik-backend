@@ -165,7 +165,8 @@ exports.AmedeusTestAPitoken = async (req, res) => {
 
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-    const accessToken =await  access_token;
+    const accessToken = await Promise.resolve(access_token); // Await resolution if needed
+
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
@@ -238,12 +239,12 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       max: Max,
     };
     console.log('requestData', requestData);
-   
+
     await axios
       .get(apiUrl, {
         params: requestData,
         headers: {
-          Authorization: `Bearer wCIHWaxsY4WTlGKsiB0Gt9ZHdN1F`,
+          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
       })
