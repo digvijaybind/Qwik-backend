@@ -98,6 +98,6 @@ app.use('/blogs', BlogRouter);
 app.use('/insurance', InsuranceRouter);
 app.use(errorMiddleware);
 
-app.listen(8000, () => {
+app.listen(8000, '0.0.0.0',() => {
   console.log('node API app is running on port 8000');
 });
