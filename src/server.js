@@ -31,7 +31,7 @@ app.use(
 
 const corsOptions = { origin: `*` };
 app.use(cors(corsOptions));
-app.use(cors());
+app.use(cors({ origin: 'http://api.qwiklif.co' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
