@@ -448,7 +448,7 @@ exports.EditOperator = async (req, res) => {
     typeof AirOperator.charges_per_hour !== 'number' ||
     typeof AirOperator.country_name !== 'string' ||
     typeof AirOperator.speed !== 'number' ||
-    typeof AirOperator.sr_no !== 'string'
+    typeof AirOperator.sr_no !== 'number'
   ) {
     return res.status(400).json({
       error:

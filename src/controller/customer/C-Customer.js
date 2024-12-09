@@ -24,6 +24,7 @@ const {
   sendSearchMail,
 } = require('../../controller/customer/nodeMailer/nodeMailer');
 const path = require('path');
+const { log } = require('util');
 // const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
 // const { log } = require('console');
 // const { sendWhatsAppMessage } = require('../../configs/sendWhatsAppMessage');
@@ -172,7 +173,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     let ResponseData = {};
     let aircraftId;
 
-    console.log('access_token line 175' , access_token);
+    console.log('access_token line 175', access_token);
     const originLocationcode = originLocationCode;
     const destinationLocationcode = destinationLocationCode;
     const departuredate = departureDate;
@@ -251,38 +252,38 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       .then(async (response) => {
         console.log('response Data data line 989', response.data.data);
 
-  // const filteredData = response.data.data.filter((item) => {
-  //   // Flatten all segments from itineraries
-  //   const segments = item.itineraries.flatMap(
-  //     (itinerary) => itinerary.segments,
-  //   );
+        // const filteredData = response.data.data.filter((item) => {
+        //   // Flatten all segments from itineraries
+        //   const segments = item.itineraries.flatMap(
+        //     (itinerary) => itinerary.segments,
+        //   );
 
-  //   // Check if all segments have valid carrier codes
-  //   const isValid = segments.some(
-  //     (segment) =>
-  //       airlines.includes(segment.carrierCode) &&
-  //       airlines.includes(segment.operating?.carrierCode),
-  //   );
+        //   // Check if all segments have valid carrier codes
+        //   const isValid = segments.some(
+        //     (segment) =>
+        //       airlines.includes(segment.carrierCode) &&
+        //       airlines.includes(segment.operating?.carrierCode),
+        //   );
 
 
-  //   console.log("valid operating airlines",isValid)
-  //   // Return true if all segments are valid
-  //   return isValid;
-  // });
+        //   console.log("valid operating airlines",isValid)
+        //   // Return true if all segments are valid
+        //   return isValid;
+        // });
 
-const filteredData = response.data.data.filter((item) => {
-  const segments = item.itineraries.flatMap((itinerary) => itinerary.segments);
+        const filteredData = response.data.data.filter((item) => {
+          const segments = item.itineraries.flatMap((itinerary) => itinerary.segments);
 
-  // Ensure all segments have valid `operating.carrierCode`
-  const isValid = segments.every((segment) => {
-    const operatingCarrierCode = segment.operating?.carrierCode;
-    console.log('Operating Carrier Code:', operatingCarrierCode); // Debugging
-    return airlines.includes(operatingCarrierCode); // Match only allowed airlines
-  });
+          // Ensure all segments have valid `operating.carrierCode`
+          const isValid = segments.every((segment) => {
+            const operatingCarrierCode = segment.operating?.carrierCode;
+            console.log('Operating Carrier Code:', operatingCarrierCode); // Debugging
+            return airlines.includes(operatingCarrierCode); // Match only allowed airlines
+          });
 
-  console.log('Is Valid:', isValid); // Debugging
-  return isValid; // Include only valid items
-});
+          console.log('Is Valid:', isValid); // Debugging
+          return isValid; // Include only valid items
+        });
 
         console.log('filteredData', filteredData);
 
@@ -307,12 +308,12 @@ const filteredData = response.data.data.filter((item) => {
                 totalPrice: parseFloat(
                   (Number(itemData.price.grandTotal) +
                     (Number(itemData.price.grandTotal) * a) / 100) *
-                    9 +
-                    ((Number(itemData.price.grandTotal) +
-                      (Number(itemData.price.grandTotal) * 7) / 100) *
-                      9 *
-                      b) /
-                      100,
+                  9 +
+                  ((Number(itemData.price.grandTotal) +
+                    (Number(itemData.price.grandTotal) * 7) / 100) *
+                    9 *
+                    b) /
+                  100,
                 ),
               },
               From: originLocationcode,
@@ -338,7 +339,7 @@ const filteredData = response.data.data.filter((item) => {
               return (
                 itinerarie.segments.length >= 2 &&
                 itinerarie.segments[1].carrierCode ===
-                  itinerarie.segments[0].carrierCode
+                itinerarie.segments[0].carrierCode
               );
             },
           );
@@ -351,12 +352,12 @@ const filteredData = response.data.data.filter((item) => {
                 totalPrice: parseFloat(
                   (Number(itemData.price.grandTotal) +
                     (Number(itemData.price.grandTotal) * a) / 100) *
-                    9 +
-                    ((Number(itemData.price.grandTotal) +
-                      (Number(itemData.price.grandTotal) * 7) / 100) *
-                      9 *
-                      b) /
-                      100,
+                  9 +
+                  ((Number(itemData.price.grandTotal) +
+                    (Number(itemData.price.grandTotal) * 7) / 100) *
+                    9 *
+                    b) /
+                  100,
                 ),
               },
               From: originLocationcode,
@@ -434,6 +435,620 @@ const filteredData = response.data.data.filter((item) => {
 };
 
 
+// exports.calculateFlightTime = async (req, res) => {
+//   const {
+//     originLocationCode,
+//     destinationLocationCode,
+//     pax,
+//     departureDate,
+//     mobile,
+//     countryCode,
+//   } = req.body;
+
+//   if (
+//     originLocationCode === undefined ||
+//     destinationLocationCode === undefined ||
+//     departureDate === undefined ||
+//     pax === undefined ||
+//     mobile === undefined ||
+//     countryCode === undefined
+//   ) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: 'originLocationCode,destinationLocationCode,departureDate,pax,mobile,countryCode are required',
+//     });
+//   } else if (
+//     typeof originLocationCode !== 'string' ||
+//     typeof destinationLocationCode !== 'string' ||
+//     typeof departureDate !== 'string' ||
+//     typeof pax !== 'number' ||
+//     typeof mobile !== 'string' ||
+//     typeof countryCode !== 'string'
+//   ) {
+//     return res.status(400).json({
+//       error:
+//         'originLocationCode,destinationLocationCode,departureDate,mobile,countryCode must be a string and pax must be a number',
+//     });
+//   } else if (
+//     originLocationCode === '' ||
+//     destinationLocationCode === '' ||
+//     departureDate === '' ||
+//     pax === 0 ||
+//     mobile === '' ||
+//     countryCode === ''
+//   ) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+//     });
+//   } else if (!isValidMobileNumber(mobile)) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: 'Invalid mobile',
+//     });
+//   } 
+
+//   async function fetchAirportData(departureAirportCode) {
+//     const responseSearch = await axios.get(
+//       'https://dir.aviapages.com/api/airports/',
+//       {
+//         headers: {
+//           accept: 'application/json',
+//           Authorization: process.env.AVID_API_TOKEN,
+//         },
+//         params: {
+//           search: departureAirportCode,
+//         },
+//       }
+//     );
+
+//     return responseSearch.data;
+//   }
+
+//   async function calculateFlightCost(
+//     departureAirport,
+//     operatorIcao,
+//     aircraft,
+//     pax,
+//     date
+//   ) {
+//     const requestData = {
+//       departure_airport: departureAirport,
+//       arrival_airport: operatorIcao,
+//       aircraft: aircraft,
+//       pax: pax,
+//       departure_datetime: date,
+//       airway_time: true,
+//       great_circle_distance: true,
+//       advise_techstop: true,
+//     };
+
+//     const aviapagesApiConfig = {
+//       method: 'post',
+//       url: 'https://frc.aviapages.com/flight_calculator/',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: process.env.AVID_API_TOKEN,
+//       },
+//       data: requestData,
+//     };
+
+//     const response = await axios(aviapagesApiConfig);
+
+//     response.data.time.airway = response.data.time.airway / 60;
+//     return response.data;
+//   }
+
+//  async function calculateNearestOperator() {
+//   try {
+//     const departureAirportCode = originLocationCode;
+
+//     // Fetch airport data with caching
+//     const responseSearch = await fetchAirportData(departureAirportCode);
+
+//     const departureCountry = responseSearch.results[0].country_name;
+//     const departureLatitude = responseSearch.results[0].latitude;
+//     const departureLongitude = responseSearch.results[0].longitude;
+
+//     // Fetch all available aircraft operators
+//     const aircraftOperators = await AircraftOPerator.find();
+//     console.log(`Total Aircraft Operators Found: ${aircraftOperators.length}`);
+
+//     // Step 1: Separate operators into within-country and outside-country lists
+//     const operatorsWithinCountry = aircraftOperators.filter(
+//       (operator) => operator.country_name === departureCountry
+//     );
+
+//     const operatorsOutsideCountry = aircraftOperators.filter(
+//       (operator) => operator.country_name !== departureCountry
+//     );
+
+//     console.log(
+//       `Operators within ${departureCountry}: ${operatorsWithinCountry.length}`
+//     );
+//     console.log(
+//       `Operators outside ${departureCountry}: ${operatorsOutsideCountry.length}`
+//     );
+
+//     // Step 2: Determine which operators to use
+//     const validAircraftOperators =
+//       operatorsWithinCountry.length > 0
+//         ? operatorsWithinCountry
+//         : operatorsOutsideCountry;
+
+//     if (operatorsWithinCountry.length === 0) {
+//       console.warn(
+//         `No operators found within ${departureCountry}. Searching globally.`
+//       );
+//     }
+
+//     // Step 3: Calculate distance, time, and cost for each operator
+//     const operatorsWithDistance = await Promise.all(
+//       validAircraftOperators.map(async (operator) => {
+//         try {
+//           const operatorLocation = await getLatLonFromLocation(
+//             operator.location
+//           );
+
+//           const distance = haversineDistance(
+//             operatorLocation.lat,
+//             operatorLocation.lon,
+//             departureLatitude,
+//             departureLongitude
+//           );
+
+//           const timeHours = distance / (operator.speed || 1);
+
+//           // Fetch flight cost with caching
+//           const aviapagesResponse = await calculateFlightCost(
+//             originLocationCode,
+//             operator.icao,
+//             operator.Aircraft_type
+//           );
+
+//           return {
+//             operator,
+//             distance,
+//             timeHours,
+//             aviapagesResponse,
+
+//           };
+//         } catch (error) {
+//           console.error(`Error processing operator ${operator.name}:`, error);
+//           return null; // Exclude this operator from the results
+//         }
+//       })
+//     );
+
+//     // Step 4: Filter and sort results
+//     const validOperatorsWithDistance = operatorsWithDistance.filter(
+//       (result) => result !== null
+//     );
+//     validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
+//     console.log(' validOperatorsWithDistance.', validOperatorsWithDistance);
+//     // Return the top 5 nearest operators
+//     return validOperatorsWithDistance.slice(0, 5);
+
+//   } catch (error) {
+//     console.error('Error in calculateNearestOperator:', error);
+//     throw error;
+//   }
+// }
+
+
+//   try {
+//     const nearestOperator = await calculateNearestOperator();
+//     console.log('everything works', nearestOperator);
+//     if (nearestOperator === null) {
+//       res.json({ error: 'No nearest distance to the departure location' });
+//     }
+//     let final = [];
+//     nearestOperator.map(async (operator) => {
+//       console.log("welome operetor line", operator);
+
+//       let from = originLocationCode.toString();
+
+//       let to = destinationLocationCode.toString();
+//       let departure_datetime = departureDate.toString();
+
+//       let dataa = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${operator.operator.Aircraft_type}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
+//       console.log('THis is operator line 1039', operator);
+//       const response = await axios(buildRequestConfig(dataa));
+//       console.log('response is line 1044' + response.data);
+
+//       if (
+//         !response.data.airport.techstop ||
+//         response.data.airport.techstop.length === 0
+//       ) {
+//         const totalTimeFromToto = response.data.time.airway / 60;
+//         console.log(totalTimeFromToto);
+//         const data = {
+//           ...operator,
+//           totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
+//           price:
+//             operator.operator.charges_per_hour *
+//             (operator.aviapagesResponse.time.airway + totalTimeFromToto),
+//           totalPriceWithAdminMargin:
+//             operator.operator.charges_per_hour *
+//             (operator.aviapagesResponse.time.airway + totalTimeFromToto) +
+//             operator.operator.charges_per_hour *
+//             (operator.aviapagesResponse.time.airway + totalTimeFromToto) *
+//             (operator.operator.margin / 100),
+//           from: from,
+//           to: to,
+
+//         };
+
+//          console.log("data is here  with tech halts",data);
+//         final.push(data);
+//         if (final.length === nearestOperator.length) {
+//           const ResultData = new AvipageAircraft({
+//             Response: final,
+//           });
+
+//           ResultData.save();
+//            aircraftId = ResultData._id;
+//           console.log('This is ResultData', ResultData);
+//           return res.json({final,  aircraftId:aircraftId});
+//         }
+//       } else {
+//         // for getting at least max techstop during the journey
+//         let selectedTechStops = [];
+//         let usedTime = [];
+//         let techStopAirportDetails = [];
+//         let techStopAirport;
+//         let finalLegTechStopDepatureOne;
+
+//         for (let i = 0; i < response.data.airport.techstop.length; i++) {
+//           techStopAirport = response.data.airport.techstop[i];
+//           console.log('this techStopAirport line 1092', techStopAirport);
+//           techStopAirportDetails.push(techStopAirport);
+//           previousAirport = techStopAirport;
+
+//           if (i === 0) {
+//             let techStopData = `{
+//               "departure_airport": "${from}",
+//               "arrival_airport": "${to}",
+//               "aircraft": "${operator.operator.Aircraft_type}",
+//               "pax":"${pax}",
+//               "departure_datetime":"${departure_datetime}",
+//               "airway_time": true,
+//               "advise_techstops": true
+//             }`;
+
+//             let techStopResponse = await axios(
+//               buildRequestConfig(techStopData)
+//             );
+//             let techStopAirport = techStopResponse.data.airport.techstop;
+//             techStopAirportDetails.push(techStopAirport);
+
+//             console.log('techStopResponse line 1113', techStopResponse.data);
+
+//             while (techStopResponse.data.time.airway == null) {
+//               if (techStopResponse.data.airport.techstop.length > 0) {
+//                 techStopAirport = techStopResponse.data.airport.techstop[0];
+
+//                 techStopData = `{
+//                   "departure_airport": "${originLocationCode}",
+//                   "arrival_airport": "${techStopAirport}",
+//                   "aircraft": "${operator.operator.Aircraft_type}",
+//                   "pax":"${pax}",
+//                   "departure_datetime":"${departure_datetime}",
+//                   "airway_time": true,
+//                   "advise_techstops": true
+//                 }`;
+
+//                 techStopResponse = await axios(
+//                   buildRequestConfig(techStopData)
+//                 );
+//                 console.log('techStopResponse line 1136', {
+//                   op: techStopResponse.data,
+//                   from: techStopData,
+//                 });
+//               } else {
+//                 break;
+//               }
+//             }
+
+//             if (techStopResponse.data.time.airway != null) {
+//               firstLegTime = techStopResponse.data.time.airway;
+//               usedTime.push(firstLegTime);
+//               console.log('firstLeg', firstLegTime);
+//               finalLegTechStopDepatureOne =
+//                 techStopResponse.data.airport.arrival_airport;
+//               if (techStopResponse.data.airport.arrival_airport != to) {
+//                 selectedTechStops.push(
+//                   techStopResponse.data.airport.arrival_airport
+//                 );
+//               }
+//             }
+//           }
+//         }
+
+//         // Define the continueJourney function
+//         async function continueJourneypartOne(
+//           fromAirport,
+//           toAirport,
+//           aircraft
+//         ) {
+//           if (finalLegTechStopDepatureOne !== toAirport) {
+//             const techStopData = `{
+//         "departure_airport": "${fromAirport}",
+//         "arrival_airport": "${toAirport}",
+//         "aircraft": "${aircraft}",
+//         "pax":"${pax}",
+//         "departure_datetime":"${departure_datetime}",
+//         "airway_time": true,
+//         "advise_techstops": true
+//       }`;
+
+//             const techStopResponse = await axios(
+//               buildRequestConfig(techStopData)
+//             );
+//             console.log('Tech Stop Response line 1176', {
+//               op: techStopResponse.data,
+//               from: techStopData,
+//             });
+
+//             if (
+//               techStopResponse.data.airport.techstop &&
+//               techStopResponse.data.airport.techstop.length > 0
+//             ) {
+//               // If tech stops are suggested, pick the first one
+//               const nextTechStop = techStopResponse.data.airport.techstop[0];
+//               // totalTechStopTime += techStopResponse.data.time.airway;
+
+//               // Calculate airway time from lastTechStopDepature to nextTechStop
+//               const airwayTimeData = `{
+//           "departure_airport": "${finalLegTechStopDepatureOne}",
+//           "arrival_airport": "${nextTechStop}",
+//           "aircraft": "${aircraft}",
+//           "pax":"${pax}",
+//           "departure_datetime":"${departure_datetime}",
+//           "airway_time": true,
+//           "advise_techstops": false
+//         }`;
+
+//               const airwayTimeResponse = await axios(
+//                 buildRequestConfig(airwayTimeData)
+//               );
+
+//               console.log('Airway Time Responsee', airwayTimeResponse.data);
+//               console.log('Tech Stop Response line 1201', {
+//                 op: airwayTimeResponse.data,
+//                 from: airwayTimeData,
+//               });
+
+//               // Update the finalLegTechStopDepature
+//               finalLegTechStopDepatureOne = nextTechStop;
+//               if (airwayTimeResponse.data.time.airway != null) {
+//                 usedTime.push(airwayTimeResponse.data.time.airway);
+//                 finalLegTechStopDepatureOne =
+//                   airwayTimeResponse.data.airport.arrival_airport;
+//                 if (airwayTimeResponse.data.airport.arrival_airport != to) {
+//                   selectedTechStops.push(
+//                     airwayTimeResponse.data.airport.arrival_airport
+//                   );
+//                 }
+//                 console.log(
+//                   'finalLegTechStopDepatureOneo',
+//                   finalLegTechStopDepatureOne
+//                 );
+//               }
+//             }
+//           }
+
+//           // console.log("Total Tech Stop Timeeee:", totalTechStopTime);
+//           console.log('Final Destinationww:', toAirport);
+
+//           async function continueJourneypartTwo(
+//             fromAirport,
+//             toAirport,
+//             aircraft
+//           ) {
+//             let totalTechStopTime = 0;
+
+//             if (finalLegTechStopDepatureOne !== toAirport) {
+//               const techStopData = `{
+//             "departure_airport": "${fromAirport}",
+//             "arrival_airport": "${toAirport}",
+//             "aircraft": "${aircraft}",
+//             "pax":"${pax}",
+//             "departure_datetime":"${departure_datetime}",
+//             "airway_time": true,
+//             "advise_techstops": true
+//           }`;
+
+//               const techStopResponse = await axios(
+//                 buildRequestConfig(techStopData)
+//               );
+//               console.log('Tech Stop Response', techStopResponse.data);
+//               continueJourneyTimeThree = techStopResponse.data.time.airway;
+//               console.log('Tech Stop Response line 1253', {
+//                 op: techStopResponse.data,
+//                 from: techStopData,
+//               });
+
+//               if (
+//                 techStopResponse.data.time.airway != null &&
+//                 techStopResponse.data.airport.arrival_airport != to
+//               ) {
+//                 usedTime.push(techStopResponse.data.time.airway);
+//                 selectedTechStops.push(
+//                   techStopResponse.data.airport.arrival_airport
+//                 );
+//               }
+
+//               if (
+//                 techStopResponse.data.airport.techstop &&
+//                 techStopResponse.data.airport.techstop.length > 0
+//               ) {
+//                 // If tech stops are suggested, pick the first one
+
+//                 const nextTechStop = techStopResponse.data.airport.techstop[0];
+//                 console.log('This next here', nextTechStop);
+
+//                 totalTechStopTime += techStopResponse.data.time.airway;
+
+//                 // Calculate airway time from lastTechStopDepature to nextTechStop
+//                 const airwayTimeData = `{
+//               "departure_airport": "${finalLegTechStopDepatureOne}",
+//               "arrival_airport": "${nextTechStop}",
+//               "aircraft": "${aircraft}",
+//               "pax":"${pax}",
+//               "departure_datetime":"${departure_datetime}",
+//               "airway_time": true,
+//               "advise_techstops": false
+//             }`;
+
+//                 const airwayTimeResponse = await axios(
+//                   buildRequestConfig(airwayTimeData)
+//                 );
+//                 getMoreTechstop = airwayTimeResponse;
+//                 console.log(
+//                   'Airway Time Responsee2222',
+//                   airwayTimeResponse.data.airport.techstop
+//                 );
+//                 console.log('Tech Stop Response line 1285', {
+//                   op: airwayTimeResponse.data,
+//                   from: airwayTimeData,
+//                 });
+//                 // Update the finalLegTechStopDepature
+//                 finalLegTechStopDepatureOne = nextTechStop;
+//                 if (airwayTimeResponse.data.time.airway != null) {
+//                   usedTime.push(airwayTimeResponse.data.time.airway);
+//                   console.log('firstLeg', firstLegTime);
+//                   finalLegTechStopDepatureOne =
+//                     airwayTimeResponse.data.airport.arrival_airport;
+//                   if (airwayTimeResponse.data.airport.arrival_airport != to) {
+//                     selectedTechStops.push(
+//                       airwayTimeResponse.data.airport.arrival_airport
+//                     );
+//                   }
+//                   console.log(
+//                     'finalLegTechStopDepatureOne',
+//                     finalLegTechStopDepatureOne
+//                   );
+//                 }
+//               }
+//             }
+
+//             console.log('Total Tech Stop Timeeee:', totalTechStopTime);
+//             console.log('Final Destinationww:', toAirport);
+//           }
+//           // for knowing the averagespeed from the From to To Location
+//           async function KnowAverageSpeedTime(
+//             fromAirport,
+//             toAirport,
+//             aircraft
+//           ) {
+//             const techStopData = `{
+//           "departure_airport": "${fromAirport}",
+//           "arrival_airport": "${toAirport}",
+//           "aircraft": "${aircraft}",
+//           "pax":"${pax}",
+//           "departure_datetime":"${departure_datetime}",
+//           "airway_time": true,
+//           "advise_techstops": true,
+//           "average_speed_time": true
+//         }`;
+
+//             const techStopResponse = await axios(
+//               buildRequestConfig(techStopData)
+//             );
+//             finalLegAverageSpeedTime = techStopResponse.data.time.average_speed;
+//             console.log(
+//               'Tech Stop Response in while loop',
+//               techStopResponse.data
+//             );
+
+//             console.log('finalLegAverageSpeedTime', finalLegAverageSpeedTime);
+
+//             if (techStopResponse.data) {
+//               const finalLegAverageSpeedInAirwayFormat =
+//                 finalLegAverageSpeedTime / 60;
+//               let total = 0;
+
+//               for (let i = 0; i < usedTime.length; i++) {
+//                 total += usedTime[i];
+//               }
+
+//               const totalTimeFromToto =
+//                 (finalLegAverageSpeedInAirwayFormat + total) / 60;
+//               console.log(totalTimeFromToto);
+//               console.log('this total time for nowoo', totalTimeFromToto);
+
+//               const data = {
+//                 ...operator,
+//                 totalTime:
+//                   operator.aviapagesResponse.time.airway + totalTimeFromToto,
+//                 techStopAirport: {
+//                   selectedTechStops: selectedTechStops,
+//                   techStopTime: `${0.5}hour / 45minute`,
+//                   techStopCost: `${50000}rs`,
+//                 },
+//                 TotalPriceWithTechStop:
+//                   operator.operator.charges_per_hour *
+//                     (operator.aviapagesResponse.time.airway +
+//                       totalTimeFromToto +
+//                       selectedTechStops.length * 0.5) +
+//                   selectedTechStops.length * 50000,
+//                 totalPriceWithAdminMargin:
+//                   operator.operator.charges_per_hour *
+//                     (operator.aviapagesResponse.time.airway +
+//                       totalTimeFromToto +
+//                       selectedTechStops.length * 0.5) +
+//                   selectedTechStops.length * 50000 +
+//                   ((operator.operator.charges_per_hour *
+//                     (operator.aviapagesResponse.time.airway +
+//                       totalTimeFromToto +
+//                       selectedTechStops.length * 0.5) +
+//                     selectedTechStops.length * 50000) *
+//                     operator.operator.margin) /
+//                     100,
+//                 from: from,
+//                 to: to,
+
+//               };
+
+//               console.log("final data with tech halts",data)
+//               final.push(data);
+//               if (final.length === nearestOperator.length) {
+//                 const ResultData = new AvipageAircraft({
+//                   Response: final,
+//                 });
+//                 ResultData.save();
+//                  aircraftId = ResultData._id;
+//                 console.log('This is ResultData', ResultData);
+//                 return res.json({ final, aircraftId: aircraftId });
+//               }
+//             }
+//           }
+//           KnowAverageSpeedTime(from, to, operator.operator.Aircraft_type);
+//           continueJourneypartTwo(
+//             finalLegTechStopDepatureOne,
+//             to,
+//             operator.operator.Aircraft_type
+//           );
+//           console.log('selectedTechStops', selectedTechStops);
+//         }
+
+//         continueJourneypartOne(
+//           finalLegTechStopDepatureOne,
+//           to,
+//           operator.operator.Aircraft_type
+//         );
+//       }
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ error: `Failed to calculate flight time ${error}` });
+//   }
+// };
+
+
 exports.calculateFlightTime = async (req, res) => {
   const {
     originLocationCode,
@@ -485,7 +1100,12 @@ exports.calculateFlightTime = async (req, res) => {
       success: false,
       msg: 'Invalid mobile',
     });
-  } 
+  } else if (!isValidCountryCode(countryCode)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
+    });
+  }
 
   async function fetchAirportData(departureAirportCode) {
     const responseSearch = await axios.get(
@@ -538,174 +1158,1070 @@ exports.calculateFlightTime = async (req, res) => {
     return response.data;
   }
 
- async function calculateNearestOperator() {
-  try {
-    const departureAirportCode = originLocationCode;
+  async function calculateNearestOperator() {
+    try {
+      const departureAirportCode = originLocationCode;
 
-    // Fetch airport data with caching
-    const responseSearch = await fetchAirportData(departureAirportCode);
+      // Fetch airport data with caching
+      const responseSearch = await fetchAirportData(departureAirportCode);
 
-    const departureCountry = responseSearch.results[0].country_name;
-    const departureLatitude = responseSearch.results[0].latitude;
-    const departureLongitude = responseSearch.results[0].longitude;
+      const aircraftOperators = await AircraftOPerator.find();
+      console.log(aircraftOperators);
 
-    // Fetch all available aircraft operators
-    const aircraftOperators = await AircraftOPerator.find();
-    console.log(`Total Aircraft Operators Found: ${aircraftOperators.length}`);
-
-    // Step 1: Separate operators into within-country and outside-country lists
-    const operatorsWithinCountry = aircraftOperators.filter(
-      (operator) => operator.country_name === departureCountry
-    );
-
-    const operatorsOutsideCountry = aircraftOperators.filter(
-      (operator) => operator.country_name !== departureCountry
-    );
-
-    console.log(
-      `Operators within ${departureCountry}: ${operatorsWithinCountry.length}`
-    );
-    console.log(
-      `Operators outside ${departureCountry}: ${operatorsOutsideCountry.length}`
-    );
-
-    // Step 2: Determine which operators to use
-    const validAircraftOperators =
-      operatorsWithinCountry.length > 0
-        ? operatorsWithinCountry
-        : operatorsOutsideCountry;
-
-    if (operatorsWithinCountry.length === 0) {
-      console.warn(
-        `No operators found within ${departureCountry}. Searching globally.`
+      const validAircraftOperators = aircraftOperators.filter(
+        (operator) =>
+          operator.country_name === responseSearch.results[0].country_name
       );
+
+      // Calculate distances for each operato
+      const operatorsWithDistance = await Promise.all(
+        validAircraftOperators.map(async (operator) => {
+          try {
+            const operatorLocation = await getLatLonFromLocation(
+              operator.location
+            );
+
+            const distance = haversineDistance(
+              operatorLocation.lat,
+              operatorLocation.lon,
+              responseSearch.results[0].latitude,
+              responseSearch.results[0].longitude
+            );
+
+            const timeHours = distance / (operator.speed || 1);
+
+            // Fetch flight cost with caching
+            const aviapagesResponse = await calculateFlightCost(
+              originLocationCode,
+              operator.icao,
+              operator.Aircraft_type
+            );
+
+            return {
+              operator,
+              distance,
+              timeHours,
+              aviapagesResponse: aviapagesResponse,
+            };
+          } catch (error) {
+            return res.status(500).json({ error: 'error Occurred ' });
+          }
+        })
+      );
+
+      const validOperatorsWithDistance = operatorsWithDistance.filter(
+        (result) => result !== null
+      );
+      validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
+
+      return validOperatorsWithDistance.slice(0, 5);
+    } catch (error) {
+      throw error;
     }
-
-    // Step 3: Calculate distance, time, and cost for each operator
-    const operatorsWithDistance = await Promise.all(
-      validAircraftOperators.map(async (operator) => {
-        try {
-          const operatorLocation = await getLatLonFromLocation(
-            operator.location
-          );
-
-          const distance = haversineDistance(
-            operatorLocation.lat,
-            operatorLocation.lon,
-            departureLatitude,
-            departureLongitude
-          );
-
-          const timeHours = distance / (operator.speed || 1);
-
-          // Fetch flight cost with caching
-          const aviapagesResponse = await calculateFlightCost(
-            originLocationCode,
-            operator.icao,
-            operator.Aircraft_type
-          );
-
-          return {
-            operator,
-            distance,
-            timeHours,
-            aviapagesResponse,
-          
-          };
-        } catch (error) {
-          console.error(`Error processing operator ${operator.name}:`, error);
-          return null; // Exclude this operator from the results
-        }
-      })
-    );
-
-    // Step 4: Filter and sort results
-    const validOperatorsWithDistance = operatorsWithDistance.filter(
-      (result) => result !== null
-    );
-    validOperatorsWithDistance.sort((a, b) => a.distance - b.distance);
-    console.log(' validOperatorsWithDistance.', validOperatorsWithDistance);
-    // Return the top 5 nearest operators
-    return validOperatorsWithDistance.slice(0, 5);
-
-  } catch (error) {
-    console.error('Error in calculateNearestOperator:', error);
-    throw error;
   }
-}
 
+  async function nearestOperatorToOutsideRegion() {
+    try {
+      const departureAirportCode = originLocationCode;
 
-  try {
-    const nearestOperator = await calculateNearestOperator();
-    console.log('everything works', nearestOperator);
-    if (nearestOperator === null) {
-      res.json({ error: 'No nearest distance to the departure location' });
-    }
-    let final = [];
-    nearestOperator.map(async (operator) => {
-      console.log("welome operetor line", operator);
+      // Fetch airport data with caching
+      const responseSearch = await fetchAirportData(departureAirportCode);
 
-      let from = originLocationCode.toString();
+      const aircraftOperators = await AircraftOPerator.find();
+      console.log(aircraftOperators);
 
-      let to = destinationLocationCode.toString();
-      let departure_datetime = departureDate.toString();
-
-      let dataa = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${operator.operator.Aircraft_type}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
-      console.log('THis is operator line 1039', operator);
-      const response = await axios(buildRequestConfig(dataa));
-      console.log('response is line 1044' + response.data);
-
-      if (
-        !response.data.airport.techstop ||
-        response.data.airport.techstop.length === 0
-      ) {
-        const totalTimeFromToto = response.data.time.airway / 60;
-        console.log(totalTimeFromToto);
-        const data = {
+      // Function to get the location coordinates asynchronously
+      const getOperatorLocation = async (operator) => {
+        const operatorLocation = await getLatLonFromLocation(operator.location);
+        return {
           ...operator,
-          totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
-          price:
-            operator.operator.charges_per_hour *
-            (operator.aviapagesResponse.time.airway + totalTimeFromToto),
-          totalPriceWithAdminMargin:
-            operator.operator.charges_per_hour *
-            (operator.aviapagesResponse.time.airway + totalTimeFromToto) +
-            operator.operator.charges_per_hour *
-            (operator.aviapagesResponse.time.airway + totalTimeFromToto) *
-            (operator.operator.margin / 100),
-          from: from,
-          to: to,
-        
+          lat: operatorLocation.lat,
+          lon: operatorLocation.lon,
         };
+      };
 
-         console.log("data is here  with tech halts",data);
-        final.push(data);
-        if (final.length === nearestOperator.length) {
-          const ResultData = new AvipageAircraft({
-            Response: final,
-          });
-         
-          ResultData.save();
-           aircraftId = ResultData._id;
-          console.log('This is ResultData', ResultData);
-          return res.json({final,  aircraftId:aircraftId});
+      // Now, to find the 5 nearest countries to the selected country:
+      const validAircraftOperators = await Promise.all(
+        aircraftOperators
+          .filter((operator) => operator.country_name !== responseSearch.results[0].country_name) // Exclude the selected country
+          .map(async (operator) => {
+            const operatorWithCoordinates = await getOperatorLocation(operator);
+            const distance = haversineDistance(
+              operatorWithCoordinates.lat,
+              operatorWithCoordinates.lon,
+              responseSearch.results[0].latitude,
+              responseSearch.results[0].longitude,
+
+            );
+            return { ...operatorWithCoordinates._doc, distance };
+          })
+      );
+
+      // Sort by distance, ascending
+      validAircraftOperators.sort((a, b) => a.distance - b.distance);
+      console.log('validAircraftOperators duue to countrtyb outside line 1262', validAircraftOperators.sort((a, b) => a.distance - b.distance));
+
+
+      // Take the top 5 nearest countries
+      const nearestOperatorToOutsideRegion = validAircraftOperators.slice(0, 5);
+
+      console.log("nearestOperatorToOutsideRegion line 1268", nearestOperatorToOutsideRegion); // Display the 5 nearest countries
+
+      console.log("1315", nearestOperatorToOutsideRegion);
+
+      return nearestOperatorToOutsideRegion
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+  const nearestOperator = await calculateNearestOperator();
+
+
+
+  if (nearestOperator.length === 0) {
+    //No nearest distance to the departure location Request is outside of the country 
+
+    let finalToCustomerPlace = [];
+    let operatorsWithoutTechStop = [];
+    let operatorsWithoutTechStopCalculated = [];
+    let operatorsWithTechStop = [];
+    try {
+
+      const nearestOperators = await nearestOperatorToOutsideRegion()
+      console.log('everything works 1329', nearestOperators);
+      console.log('this is length 1289', nearestOperators.length);
+
+
+      const nearestOperatorsWithNoTechstopPromises = nearestOperators.map(async (operator) => {
+        console.log("welome operetor line icao is this line 1298", operator.icao);
+
+        let from = operator.icao.toString();
+        let to = originLocationCode.toString();
+        let departure_datetime = departureDate.toString();
+        let dataa = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${operator.Aircraft_type}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
+        console.log('THis is operator line 1306', operator);
+        const response = await axios(buildRequestConfig(dataa));
+        console.log('response is line 1044' + response.data);
+
+        if (
+          !response.data.airport.techstop ||
+          response.data.airport.techstop.length === 0
+        ) {
+          const totalTimeFromToto = response.data.time.airway / 60;
+          console.log(totalTimeFromToto);
+          const data = {
+            ...operator,
+            totalTime: totalTimeFromToto,
+            price:
+              operator.charges_per_hour * (totalTimeFromToto),
+            totalPriceWithAdminMargin:
+              (operator.charges_per_hour * (totalTimeFromToto)) +
+              ((operator.charges_per_hour) * (totalTimeFromToto) * (operator.margin / 100)),
+            from: from,
+            to: to,
+          };
+          console.log('line 1322 data', data);
+          finalToCustomerPlace.push(data);
+          // finalToCustomerPlace.push(data);
+
+
+
         }
-      } else {
-        // for getting at least max techstop during the journey
-        let selectedTechStops = [];
-        let usedTime = [];
-        let techStopAirportDetails = [];
-        let techStopAirport;
-        let finalLegTechStopDepatureOne;
+        else {
+          operatorsWithTechStop.push(operator);
+        }
+        // Wait for all promises to complete
+      });
+      await Promise.all(nearestOperatorsWithNoTechstopPromises);
+      console.log("finalTocustomerplace line 140", operatorsWithoutTechStop);
+      if (operatorsWithoutTechStop.length === 0) {
+        console.log('am sorry cant travel 1340', operatorsWithoutTechStop.length);
 
-        for (let i = 0; i < response.data.airport.techstop.length; i++) {
-          techStopAirport = response.data.airport.techstop[i];
-          console.log('this techStopAirport line 1092', techStopAirport);
-          techStopAirportDetails.push(techStopAirport);
-          previousAirport = techStopAirport;
+      }
 
-          if (i === 0) {
-            let techStopData = `{
+      console.log("finalTocustomerplace line 1342", operatorsWithTechStop);
+
+      if (!finalToCustomerPlace.length >= 1 || !finalToCustomerPlace.length >= 2) {
+        const nearestOperatorsWithTechstoppPromises = operatorsWithTechStop.map(async (operator) => {
+          console.log("welome operetor line icao is this line 1298", operator.icao);
+
+          let from = operator.icao.toString();
+          let to = originLocationCode.toString();
+          let departure_datetime = departureDate.toString();
+
+          let dataa = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${operator.Aircraft_type}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
+          console.log('THis is operator line 1306', operator);
+          const response = await axios(buildRequestConfig(dataa));
+          console.log('response is line 1044' + response.data);
+
+
+          if (response.data.airport.techstop ||
+            response.data.airport.techstop.length !== 0) {
+            // for getting at least max techstop during the journey to customer place if it happpened
+            let selectedTechStops = [];
+            let usedTime = [];
+            let techStopAirportDetails = [];
+            let techStopAirport;
+            let finalLegTechStopDepatureOne;
+
+            for (let i = 0; i < response.data.airport.techstop.length; i++) {
+              techStopAirport = response.data.airport.techstop[i];
+              console.log('this techStopAirport line 1092', techStopAirport);
+              techStopAirportDetails.push(techStopAirport);
+              previousAirport = techStopAirport;
+
+              if (i === 0) {
+                let techStopData = `{
+                "departure_airport": "${from}",
+                "arrival_airport": "${to}",
+                "aircraft": "${operator.Aircraft_type}",
+                "pax":"${pax}",
+                "departure_datetime":"${departure_datetime}",
+                "airway_time": true,
+                "advise_techstops": true
+              }`;
+
+                let techStopResponse = await axios(
+                  buildRequestConfig(techStopData)
+                );
+                let techStopAirport = techStopResponse.data.airport.techstop;
+                techStopAirportDetails.push(techStopAirport);
+
+                console.log('techStopResponse line 1113', techStopResponse.data);
+
+                while (techStopResponse.data.time.airway == null) {
+                  if (techStopResponse.data.airport.techstop.length > 0) {
+                    techStopAirport = techStopResponse.data.airport.techstop[0];
+
+                    techStopData = `{
+                    "departure_airport": "${originLocationCode}",
+                    "arrival_airport": "${techStopAirport}",
+                    "aircraft": "${operator.Aircraft_type}",
+                    "pax":"${pax}",
+                    "departure_datetime":"${departure_datetime}",
+                    "airway_time": true,
+                    "advise_techstops": true
+                  }`;
+
+                    techStopResponse = await axios(
+                      buildRequestConfig(techStopData)
+                    );
+                    console.log('techStopResponse line 1136', {
+                      op: techStopResponse.data,
+                      from: techStopData,
+                    });
+                  } else {
+                    break;
+                  }
+                }
+
+                if (techStopResponse.data.time.airway != null) {
+                  console.log('yes am not null 1334', techStopResponse.data.time.airway);
+
+                  firstLegTime = techStopResponse.data.time.airway;
+                  usedTime.push(firstLegTime);
+                  console.log('firstLeg', firstLegTime);
+                  console.log('Thsi is used time now line 1339', usedTime);
+
+                  finalLegTechStopDepatureOne =
+                    techStopResponse.data.airport.arrival_airport;
+                  if (techStopResponse.data.airport.arrival_airport != to) {
+                    selectedTechStops.push(
+                      techStopResponse.data.airport.arrival_airport
+                    );
+                  }
+                }
+              }
+            }
+
+            // Define the continueJourney function
+            async function continueJourneypartOne(
+              fromAirport,
+              toAirport,
+              aircraft
+            ) {
+              if (finalLegTechStopDepatureOne !== toAirport) {
+                const techStopData = `{
+          "departure_airport": "${fromAirport}",
+          "arrival_airport": "${toAirport}",
+          "aircraft": "${aircraft}",
+          "pax":"${pax}",
+          "departure_datetime":"${departure_datetime}",
+          "airway_time": true,
+          "advise_techstops": true
+        }`;
+
+                const techStopResponse = await axios(
+                  buildRequestConfig(techStopData)
+                );
+                console.log('Tech Stop Response line 1176', {
+                  op: techStopResponse.data,
+                  from: techStopData,
+                });
+
+                if (
+                  techStopResponse.data.airport.techstop &&
+                  techStopResponse.data.airport.techstop.length > 0
+                ) {
+                  // If tech stops are suggested, pick the first one
+                  const nextTechStop = techStopResponse.data.airport.techstop[0];
+                  // totalTechStopTime += techStopResponse.data.time.airway;
+
+                  // Calculate airway time from lastTechStopDepature to nextTechStop
+                  const airwayTimeData = `{
+            "departure_airport": "${finalLegTechStopDepatureOne}",
+            "arrival_airport": "${nextTechStop}",
+            "aircraft": "${aircraft}",
+            "pax":"${pax}",
+            "departure_datetime":"${departure_datetime}",
+            "airway_time": true,
+            "advise_techstops": false
+          }`;
+
+                  const airwayTimeResponse = await axios(
+                    buildRequestConfig(airwayTimeData)
+                  );
+
+                  console.log('Airway Time Responsee', airwayTimeResponse.data);
+                  console.log('Tech Stop Response line 1201', {
+                    op: airwayTimeResponse.data,
+                    from: airwayTimeData,
+                  });
+
+                  // Update the finalLegTechStopDepature
+                  finalLegTechStopDepatureOne = nextTechStop;
+                  if (airwayTimeResponse.data.time.airway != null) {
+                    usedTime.push(airwayTimeResponse.data.time.airway);
+                    finalLegTechStopDepatureOne =
+                      airwayTimeResponse.data.airport.arrival_airport;
+                    if (airwayTimeResponse.data.airport.arrival_airport != to) {
+                      selectedTechStops.push(
+                        airwayTimeResponse.data.airport.arrival_airport
+                      );
+                    }
+                    console.log(
+                      'finalLegTechStopDepatureOneo',
+                      finalLegTechStopDepatureOne
+                    );
+                  }
+                }
+              }
+
+              // console.log("Total Tech Stop Timeeee:", totalTechStopTime);
+              console.log('Final Destinationww:', toAirport);
+
+              async function continueJourneypartTwo(
+                fromAirport,
+                toAirport,
+                aircraft
+              ) {
+                let totalTechStopTime = 0;
+
+                if (finalLegTechStopDepatureOne !== toAirport) {
+                  const techStopData = `{
+              "departure_airport": "${fromAirport}",
+              "arrival_airport": "${toAirport}",
+              "aircraft": "${aircraft}",
+              "pax":"${pax}",
+              "departure_datetime":"${departure_datetime}",
+              "airway_time": true,
+              "advise_techstops": true
+            }`;
+
+                  const techStopResponse = await axios(
+                    buildRequestConfig(techStopData)
+                  );
+                  console.log('Tech Stop Response', techStopResponse.data);
+                  continueJourneyTimeThree = techStopResponse.data.time.airway;
+                  console.log('continueJourneyTimeThree 1451', continueJourneyTimeThree);
+
+                  console.log('Tech Stop Response line 1253', {
+                    op: techStopResponse.data,
+                    from: techStopData,
+                  });
+
+                  if (
+                    techStopResponse.data.time.airway != null
+                  ) {
+                    usedTime.push(techStopResponse.data.time.airway);
+                    console.log('used time in this time is now 1463', usedTime);
+
+
+                    if (techStopResponse.data.airport.arrival_airport != to) {
+
+                      selectedTechStops.push(
+                        techStopResponse.data.airport.arrival_airport
+                      );
+
+                    }
+
+                    console.log('selected techstop 1545', selectedTechStops);
+
+                  }
+
+                  if (
+                    techStopResponse.data.airport.techstop &&
+                    techStopResponse.data.airport.techstop.length > 0
+                  ) {
+                    // If tech stops are suggested, pick the first one
+
+                    const nextTechStop = techStopResponse.data.airport.techstop[0];
+                    console.log('This next here', nextTechStop);
+
+                    totalTechStopTime += techStopResponse.data.time.airway;
+
+                    // Calculate airway time from lastTechStopDepature to nextTechStop
+                    const airwayTimeData = `{
+                "departure_airport": "${finalLegTechStopDepatureOne}",
+                "arrival_airport": "${nextTechStop}",
+                "aircraft": "${aircraft}",
+                "pax":"${pax}",
+                "departure_datetime":"${departure_datetime}",
+                "airway_time": true,
+                "advise_techstops": false
+              }`;
+
+                    const airwayTimeResponse = await axios(
+                      buildRequestConfig(airwayTimeData)
+                    );
+                    getMoreTechstop = airwayTimeResponse;
+                    console.log(
+                      'Airway Time Responsee2222',
+                      airwayTimeResponse.data.airport.techstop
+                    );
+                    console.log('Tech Stop Response line 1285', {
+                      op: airwayTimeResponse.data,
+                      from: airwayTimeData,
+                    });
+                    // Update the finalLegTechStopDepature
+                    finalLegTechStopDepatureOne = nextTechStop;
+                    if (airwayTimeResponse.data.time.airway != null) {
+                      usedTime.push(airwayTimeResponse.data.time.airway);
+                      console.log('firstLeg', firstLegTime);
+                      finalLegTechStopDepatureOne =
+                        airwayTimeResponse.data.airport.arrival_airport;
+                      if (airwayTimeResponse.data.airport.arrival_airport != to) {
+                        selectedTechStops.push(
+                          airwayTimeResponse.data.airport.arrival_airport
+                        );
+                      }
+                      console.log(
+                        'finalLegTechStopDepatureOne',
+                        finalLegTechStopDepatureOne
+                      );
+                    }
+                  }
+                }
+
+                console.log('Total Tech Stop Timeeee:', totalTechStopTime);
+                console.log('Final Destinationww:', toAirport);
+              }
+              // for knowing the averagespeed from the From to To Location
+              async function KnowAverageSpeedTime(
+                fromAirport,
+                toAirport,
+                aircraft
+              ) {
+                const techStopData = `{
+            "departure_airport": "${fromAirport}",
+            "arrival_airport": "${toAirport}",
+            "aircraft": "${aircraft}",
+            "pax":"${pax}",
+            "departure_datetime":"${departure_datetime}",
+            "airway_time": true,
+            "advise_techstops": true,
+            "average_speed_time": true
+          }`;
+
+                const techStopResponse = await axios(
+                  buildRequestConfig(techStopData)
+                );
+                finalLegAverageSpeedTime = techStopResponse.data.time.average_speed;
+                console.log(
+                  'Tech Stop Response in while loop',
+                  techStopResponse.data
+                );
+
+                console.log('finalLegAverageSpeedTime', finalLegAverageSpeedTime);
+
+                if (techStopResponse.data) {
+                  const finalLegAverageSpeedInAirwayFormat =
+                    finalLegAverageSpeedTime / 60;
+                  console.log('My techstop average time 1558', finalLegAverageSpeedTime);
+
+                  let total = 0;
+
+                  for (let i = 0; i < usedTime.length; i++) {
+                    total += usedTime[i];
+                    console.log('total time 1564', total);
+
+                  }
+
+                  const totalTimeFromToto =
+                    (finalLegAverageSpeedInAirwayFormat + (total / 60))
+                  console.log(totalTimeFromToto);
+                  console.log('this total time for nowoo', totalTimeFromToto);
+
+                  const data = {
+                    ...operator,
+                    totalTime: totalTimeFromToto,
+                    techStopAirport: {
+                      selectedTechStops: selectedTechStops,
+                      techStopTime: `${0.5}hour / 45minute`,
+                      techStopCost: `${50000}rs`,
+                    },
+                    TotalPriceWithTechStop:
+                      operator.charges_per_hour *
+                      (totalTimeFromToto +
+                        selectedTechStops.length * 0.5) +
+                      selectedTechStops.length * 50000,
+                    totalPriceWithTechStopAndAdminMargin:
+                      operator.charges_per_hour *
+                      (totalTimeFromToto +
+                        selectedTechStops.length * 0.5) +
+                      selectedTechStops.length * 50000 +
+                      ((operator.charges_per_hour *
+                        (totalTimeFromToto +
+                          selectedTechStops.length * 0.5) +
+                        selectedTechStops.length * 50000) *
+                        operator.margin) /
+                      100,
+                    from: from,
+                    to: to,
+                  };
+
+                  operatorsWithoutTechStopCalculated.push(data);
+                }
+              }
+              KnowAverageSpeedTime(from, to, operator.Aircraft_type);
+              continueJourneypartTwo(
+                finalLegTechStopDepatureOne,
+                to,
+                operator.Aircraft_type
+              );
+              console.log('selectedTechStops', selectedTechStops);
+            }
+
+            continueJourneypartOne(
+              finalLegTechStopDepatureOne,
+              to,
+              operator.Aircraft_type
+            );
+          }
+        })
+
+        await Promise.all(nearestOperatorsWithTechstoppPromises)
+        finalToCustomerPlace.push(...operatorsWithoutTechStopCalculated)
+        console.log('my final to customer place is now 1709', operatorsWithoutTechStopCalculated);
+
+
+      }
+
+
+
+      //for real customer journey joureny to final destination
+
+      try {
+
+        console.log('everything works', finalToCustomerPlace);
+
+        let final = [];
+        finalToCustomerPlace.map(async (operator) => {
+          console.log("welome operetor line", operator);
+
+          let from = originLocationCode.toString();
+
+          let to = destinationLocationCode.toString();
+          let departure_datetime = departureDate.toString();
+
+          let dataa = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${operator.Aircraft_type}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
+          console.log('THis is operator line 1039', operator);
+          const response = await axios(buildRequestConfig(dataa));
+          console.log('response is line 1044' + response.data);
+
+          if (
+            !response.data.airport.techstop ||
+            response.data.airport.techstop.length === 0
+          ) {
+            const totalTimeFromToto = response.data.time.airway / 60;
+            console.log(totalTimeFromToto);
+            const data = {
+              ...operator,
+              totalTime: operator.totalTime + totalTimeFromToto,
+              price: operator.price + (operator.charges_per_hour * (totalTimeFromToto)),
+              totalPriceWithAdminMargin: operator.totalPriceWithTechStopAndAdminMargin ? operator.totalPriceWithTechStopAndAdminMargin + (operator.charges_per_hour * (totalTimeFromToto) + (operator.charges_per_hour *
+                (totalTimeFromToto) *
+                (operator.margin / 100))) : operator.totalPriceWithAdminMargin + (operator.charges_per_hour * (totalTimeFromToto) + (operator.charges_per_hour *
+                  (totalTimeFromToto) *
+                  (operator.margin / 100))),
+              from: from,
+              to: to,
+            };
+
+            final.push(data);
+            if (final.length === finalToCustomerPlace.length) {
+              const ResultData = new AvipageAircraft({
+                Response: final,
+              });
+              ResultData.save();
+              console.log('This is ResultData', ResultData);
+              return res.json(final);
+            }
+          }
+          else {
+            setTimeout(async () => {
+              // for getting at least max techstop during the journey
+              let selectedTechStops = [];
+              let usedTime = [];
+              let techStopAirportDetails = [];
+              let techStopAirport;
+              let finalLegTechStopDepatureOne;
+
+              for (let i = 0; i < response.data.airport.techstop.length; i++) {
+                techStopAirport = response.data.airport.techstop[i];
+                console.log('this techStopAirport line 1092', techStopAirport);
+                techStopAirportDetails.push(techStopAirport);
+                previousAirport = techStopAirport;
+
+                if (i === 0) {
+                  let techStopData = `{
+                   "departure_airport": "${from}",
+                   "arrival_airport": "${to}",
+                   "aircraft": "${operator.Aircraft_type}",
+                   "pax":"${pax}",
+                   "departure_datetime":"${departure_datetime}",
+                   "airway_time": true,
+                   "advise_techstops": true
+                 }`;
+
+                  let techStopResponse = await axios(
+                    buildRequestConfig(techStopData)
+                  );
+                  let techStopAirport = techStopResponse.data.airport.techstop;
+                  techStopAirportDetails.push(techStopAirport);
+
+                  console.log('techStopResponse line 1113', techStopResponse.data);
+
+                  while (techStopResponse.data.time.airway == null) {
+                    if (techStopResponse.data.airport.techstop.length > 0) {
+                      techStopAirport = techStopResponse.data.airport.techstop[0];
+
+                      techStopData = `{
+                       "departure_airport": "${originLocationCode}",
+                       "arrival_airport": "${techStopAirport}",
+                       "aircraft": "${operator.Aircraft_type}",
+                       "pax":"${pax}",
+                       "departure_datetime":"${departure_datetime}",
+                       "airway_time": true,
+                       "advise_techstops": true
+                     }`;
+
+                      techStopResponse = await axios(
+                        buildRequestConfig(techStopData)
+                      );
+                      console.log('techStopResponse line 1136', {
+                        op: techStopResponse.data,
+                        from: techStopData,
+                      });
+                    } else {
+                      break;
+                    }
+                  }
+
+                  if (techStopResponse.data.time.airway != null) {
+                    console.log('yes am not null 1334', techStopResponse.data.time.airway);
+
+                    firstLegTime = techStopResponse.data.time.airway;
+                    usedTime.push(firstLegTime);
+                    console.log('firstLeg', firstLegTime);
+                    console.log('Thsi is used time now line 1339', usedTime);
+
+                    finalLegTechStopDepatureOne =
+                      techStopResponse.data.airport.arrival_airport;
+                    if (techStopResponse.data.airport.arrival_airport != to) {
+                      selectedTechStops.push(
+                        techStopResponse.data.airport.arrival_airport
+                      );
+                    }
+                  }
+
+                }
+              }
+
+              // Define the continueJourney function
+              async function continueJourneypartOne(
+                fromAirport,
+                toAirport,
+                aircraft
+              ) {
+                if (finalLegTechStopDepatureOne !== toAirport) {
+                  const techStopData = `{
+             "departure_airport": "${fromAirport}",
+             "arrival_airport": "${toAirport}",
+             "aircraft": "${aircraft}",
+             "pax":"${pax}",
+             "departure_datetime":"${departure_datetime}",
+             "airway_time": true,
+             "advise_techstops": true
+           }`;
+
+                  const techStopResponse = await axios(
+                    buildRequestConfig(techStopData)
+                  );
+                  console.log('Tech Stop Response line 1176', {
+                    op: techStopResponse.data,
+                    from: techStopData,
+                  });
+
+                  if (
+                    techStopResponse.data.airport.techstop &&
+                    techStopResponse.data.airport.techstop.length > 0
+                  ) {
+                    // If tech stops are suggested, pick the first one
+                    const nextTechStop = techStopResponse.data.airport.techstop[0];
+                    // totalTechStopTime += techStopResponse.data.time.airway;
+
+                    // Calculate airway time from lastTechStopDepature to nextTechStop
+                    const airwayTimeData = `{
+               "departure_airport": "${finalLegTechStopDepatureOne}",
+               "arrival_airport": "${nextTechStop}",
+               "aircraft": "${aircraft}",
+               "pax":"${pax}",
+               "departure_datetime":"${departure_datetime}",
+               "airway_time": true,
+               "advise_techstops": false
+             }`;
+
+                    const airwayTimeResponse = await axios(
+                      buildRequestConfig(airwayTimeData)
+                    );
+
+                    console.log('Airway Time Responsee', airwayTimeResponse.data);
+                    console.log('Tech Stop Response line 1201', {
+                      op: airwayTimeResponse.data,
+                      from: airwayTimeData,
+                    });
+
+                    // Update the finalLegTechStopDepature
+                    finalLegTechStopDepatureOne = nextTechStop;
+                    if (airwayTimeResponse.data.time.airway != null) {
+                      usedTime.push(airwayTimeResponse.data.time.airway);
+                      finalLegTechStopDepatureOne =
+                        airwayTimeResponse.data.airport.arrival_airport;
+                      if (airwayTimeResponse.data.airport.arrival_airport != to) {
+                        selectedTechStops.push(
+                          airwayTimeResponse.data.airport.arrival_airport
+                        );
+                      }
+                      console.log(
+                        'finalLegTechStopDepatureOneo',
+                        finalLegTechStopDepatureOne
+                      );
+                    }
+                  }
+                }
+
+                // console.log("Total Tech Stop Timeeee:", totalTechStopTime);
+                console.log('Final Destinationww:', toAirport);
+
+                async function continueJourneypartTwo(
+                  fromAirport,
+                  toAirport,
+                  aircraft
+                ) {
+                  let totalTechStopTime = 0;
+
+                  if (finalLegTechStopDepatureOne !== toAirport) {
+                    const techStopData = `{
+                 "departure_airport": "${fromAirport}",
+                 "arrival_airport": "${toAirport}",
+                 "aircraft": "${aircraft}",
+                 "pax":"${pax}",
+                 "departure_datetime":"${departure_datetime}",
+                 "airway_time": true,
+                 "advise_techstops": true
+               }`;
+
+                    const techStopResponse = await axios(
+                      buildRequestConfig(techStopData)
+                    );
+                    console.log('Tech Stop Response', techStopResponse.data);
+                    continueJourneyTimeThree = techStopResponse.data.time.airway;
+                    console.log('continueJourneyTimeThree 1451', continueJourneyTimeThree);
+
+                    console.log('Tech Stop Response line 1253', {
+                      op: techStopResponse.data,
+                      from: techStopData,
+                    });
+
+                    if (
+                      techStopResponse.data.time.airway != null
+                    ) {
+                      usedTime.push(techStopResponse.data.time.airway);
+                      console.log('used time in this time is now 1463', usedTime);
+
+
+                      if (techStopResponse.data.airport.arrival_airport != to) {
+
+                        selectedTechStops.push(
+                          techStopResponse.data.airport.arrival_airport
+                        );
+
+                      }
+
+                      console.log('selected techstop 1545', selectedTechStops);
+
+                    }
+
+                    if (
+                      techStopResponse.data.airport.techstop &&
+                      techStopResponse.data.airport.techstop.length > 0
+                    ) {
+                      // If tech stops are suggested, pick the first one
+
+                      const nextTechStop = techStopResponse.data.airport.techstop[0];
+                      console.log('This next here', nextTechStop);
+
+                      totalTechStopTime += techStopResponse.data.time.airway;
+
+                      // Calculate airway time from lastTechStopDepature to nextTechStop
+                      const airwayTimeData = `{
+                   "departure_airport": "${finalLegTechStopDepatureOne}",
+                   "arrival_airport": "${nextTechStop}",
+                   "aircraft": "${aircraft}",
+                   "pax":"${pax}",
+                   "departure_datetime":"${departure_datetime}",
+                   "airway_time": true,
+                   "advise_techstops": false
+                 }`;
+
+                      const airwayTimeResponse = await axios(
+                        buildRequestConfig(airwayTimeData)
+                      );
+                      getMoreTechstop = airwayTimeResponse;
+                      console.log(
+                        'Airway Time Responsee2222',
+                        airwayTimeResponse.data.airport.techstop
+                      );
+                      console.log('Tech Stop Response line 1285', {
+                        op: airwayTimeResponse.data,
+                        from: airwayTimeData,
+                      });
+                      // Update the finalLegTechStopDepature
+                      finalLegTechStopDepatureOne = nextTechStop;
+                      if (airwayTimeResponse.data.time.airway != null) {
+                        usedTime.push(airwayTimeResponse.data.time.airway);
+                        console.log('firstLeg', firstLegTime);
+                        finalLegTechStopDepatureOne =
+                          airwayTimeResponse.data.airport.arrival_airport;
+                        if (airwayTimeResponse.data.airport.arrival_airport != to) {
+                          selectedTechStops.push(
+                            airwayTimeResponse.data.airport.arrival_airport
+                          );
+                        }
+                        console.log(
+                          'finalLegTechStopDepatureOne',
+                          finalLegTechStopDepatureOne
+                        );
+                      }
+                    }
+                  }
+
+                  console.log('Total Tech Stop Timeeee:', totalTechStopTime);
+                  console.log('Final Destinationww:', toAirport);
+                }
+                // for knowing the averagespeed from the From to To Location
+                async function KnowAverageSpeedTime(
+                  fromAirport,
+                  toAirport,
+                  aircraft
+                ) {
+                  const techStopData = `{
+               "departure_airport": "${fromAirport}",
+               "arrival_airport": "${toAirport}",
+               "aircraft": "${aircraft}",
+               "pax":"${pax}",
+               "departure_datetime":"${departure_datetime}",
+               "airway_time": true,
+               "advise_techstops": true,
+               "average_speed_time": true
+             }`;
+
+                  const techStopResponse = await axios(
+                    buildRequestConfig(techStopData)
+                  );
+                  finalLegAverageSpeedTime = techStopResponse.data.time.average_speed;
+                  console.log(
+                    'Tech Stop Response in while loop',
+                    techStopResponse.data
+                  );
+
+                  console.log('finalLegAverageSpeedTime', finalLegAverageSpeedTime);
+
+                  if (techStopResponse.data) {
+                    const finalLegAverageSpeedInAirwayFormat =
+                      finalLegAverageSpeedTime / 60;
+                    console.log('My techstop average time 1558', finalLegAverageSpeedTime);
+
+                    let total = 0;
+
+                    for (let i = 0; i < usedTime.length; i++) {
+                      total += usedTime[i];
+                      console.log('total time 1564', total);
+
+                    }
+
+                    const totalTimeFromToto =
+                      (finalLegAverageSpeedInAirwayFormat + (total / 60))
+                    console.log(totalTimeFromToto);
+                    console.log('this total time for nowoo', totalTimeFromToto);
+
+                    const data = {
+                      ...operator,
+                      totalTime: operator.totalTime + totalTimeFromToto,
+                      techStopAirport: {
+                        selectedTechStops: operator.techStopAirport ? [...operator.techStopAirport.selectedTechStops, ...selectedTechStops] : selectedTechStops,
+                        techStopTime: `${0.5}hour / 45minute`,
+                        techStopCost: `${50000}rs`,
+                      },
+                      TotalPriceWithTechStop: operator.TotalPriceWithTechStop ?
+                        operator.TotalPriceWithTechStop + (operator.charges_per_hour *
+                          (totalTimeFromToto + selectedTechStops.length * 0.5) +
+                          (selectedTechStops.length * 50000)) : (operator.charges_per_hour *
+                            (totalTimeFromToto + selectedTechStops.length * 0.5) +
+                            (selectedTechStops.length * 50000)),
+                      totalPriceWithTechStopAndAdminMargin: operator.totalPriceWithTechStopAndAdminMargin ?
+                        operator.totalPriceWithTechStopAndAdminMargin + (operator.charges_per_hour *
+                          (totalTimeFromToto + (selectedTechStops.length * 0.5))) +
+                        (selectedTechStops.length * 50000) + (((operator.charges_per_hour) * (totalTimeFromToto + (selectedTechStops.length * 0.5)) +
+                          (selectedTechStops.length * 50000)) *
+                          (operator.margin)) /
+                        100 : (operator.charges_per_hour *
+                          (totalTimeFromToto + (selectedTechStops.length * 0.5))) +
+                        (selectedTechStops.length * 50000) + (((operator.charges_per_hour) * (totalTimeFromToto + (selectedTechStops.length * 0.5)) +
+                          (selectedTechStops.length * 50000)) *
+                          (operator.margin)) /
+                        100,
+                      from: from,
+                      to: to,
+                    };
+
+                    final.push(data);
+                    if (final.length === finalToCustomerPlace.length) {
+                      const ResultData = new AvipageAircraft({
+                        Response: final,
+                      });
+                      ResultData.save();
+                      console.log('This is ResultData', ResultData);
+                      return res.json(final);
+                    }
+                  }
+                }
+                KnowAverageSpeedTime(from, to, operator.Aircraft_type);
+                continueJourneypartTwo(
+                  finalLegTechStopDepatureOne,
+                  to,
+                  operator.Aircraft_type
+                );
+                console.log('selectedTechStops', selectedTechStops);
+              }
+
+              continueJourneypartOne(
+                finalLegTechStopDepatureOne,
+                to,
+                operator.Aircraft_type
+              );
+            }, 40000);
+          }
+        });
+
+      } catch (error) {
+        console.error(error);
+        return res
+          .status(500)
+          .json({ error: `Failed to calculate flight time ${error}` });
+      }
+
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ error: `Failed to calculate flight time ${error}` });
+
+    }
+
+
+  }
+
+  else if (nearestOperator.length > 0) {
+    try {
+
+      console.log('everything works', nearestOperator);
+
+      let final = [];
+      nearestOperator.map(async (operator) => {
+        console.log("welome operetor line", operator);
+
+        let from = originLocationCode.toString();
+
+        let to = destinationLocationCode.toString();
+        let departure_datetime = departureDate.toString();
+
+        let dataa = `{"departure_airport": "${from}", "arrival_airport": "${to}", "aircraft": "${operator.operator.Aircraft_type}", "pax":"${pax}", "departure_datetime":"${departure_datetime}", "airway_time": true, "advise_techstops": true}\r\n`;
+        console.log('THis is operator line 1039', operator);
+        const response = await axios(buildRequestConfig(dataa));
+        console.log('response is line 1044' + response.data);
+
+        if (
+          !response.data.airport.techstop ||
+          response.data.airport.techstop.length === 0
+        ) {
+          const totalTimeFromToto = response.data.time.airway / 60;
+          console.log(totalTimeFromToto);
+          const data = {
+            ...operator,
+            totalTime: operator.aviapagesResponse.time.airway + totalTimeFromToto,
+            price:
+              operator.operator.charges_per_hour *
+              (operator.aviapagesResponse.time.airway + totalTimeFromToto),
+            totalPriceWithAdminMargin:
+              operator.operator.charges_per_hour *
+              (operator.aviapagesResponse.time.airway + totalTimeFromToto) +
+              operator.operator.charges_per_hour *
+              (operator.aviapagesResponse.time.airway + totalTimeFromToto) *
+              (operator.operator.margin / 100),
+            from: from,
+            to: to,
+          };
+
+          final.push(data);
+          if (final.length === nearestOperator.length) {
+            const ResultData = new AvipageAircraft({
+              Response: final,
+            });
+            ResultData.save();
+            console.log('This is ResultData', ResultData);
+            return res.json(final);
+          }
+        }
+        else {
+          // for getting at least max techstop during the journey
+          let selectedTechStops = [];
+          let usedTime = [];
+          let techStopAirportDetails = [];
+          let techStopAirport;
+          let finalLegTechStopDepatureOne;
+
+          for (let i = 0; i < response.data.airport.techstop.length; i++) {
+            techStopAirport = response.data.airport.techstop[i];
+            console.log('this techStopAirport line 1092', techStopAirport);
+            techStopAirportDetails.push(techStopAirport);
+            previousAirport = techStopAirport;
+
+            if (i === 0) {
+              let techStopData = `{
               "departure_airport": "${from}",
               "arrival_airport": "${to}",
               "aircraft": "${operator.operator.Aircraft_type}",
@@ -715,19 +2231,19 @@ exports.calculateFlightTime = async (req, res) => {
               "advise_techstops": true
             }`;
 
-            let techStopResponse = await axios(
-              buildRequestConfig(techStopData)
-            );
-            let techStopAirport = techStopResponse.data.airport.techstop;
-            techStopAirportDetails.push(techStopAirport);
+              let techStopResponse = await axios(
+                buildRequestConfig(techStopData)
+              );
+              let techStopAirport = techStopResponse.data.airport.techstop;
+              techStopAirportDetails.push(techStopAirport);
 
-            console.log('techStopResponse line 1113', techStopResponse.data);
+              console.log('techStopResponse line 1113', techStopResponse.data);
 
-            while (techStopResponse.data.time.airway == null) {
-              if (techStopResponse.data.airport.techstop.length > 0) {
-                techStopAirport = techStopResponse.data.airport.techstop[0];
+              while (techStopResponse.data.time.airway == null) {
+                if (techStopResponse.data.airport.techstop.length > 0) {
+                  techStopAirport = techStopResponse.data.airport.techstop[0];
 
-                techStopData = `{
+                  techStopData = `{
                   "departure_airport": "${originLocationCode}",
                   "arrival_airport": "${techStopAirport}",
                   "aircraft": "${operator.operator.Aircraft_type}",
@@ -737,41 +2253,45 @@ exports.calculateFlightTime = async (req, res) => {
                   "advise_techstops": true
                 }`;
 
-                techStopResponse = await axios(
-                  buildRequestConfig(techStopData)
-                );
-                console.log('techStopResponse line 1136', {
-                  op: techStopResponse.data,
-                  from: techStopData,
-                });
-              } else {
-                break;
+                  techStopResponse = await axios(
+                    buildRequestConfig(techStopData)
+                  );
+                  console.log('techStopResponse line 1136', {
+                    op: techStopResponse.data,
+                    from: techStopData,
+                  });
+                } else {
+                  break;
+                }
               }
-            }
 
-            if (techStopResponse.data.time.airway != null) {
-              firstLegTime = techStopResponse.data.time.airway;
-              usedTime.push(firstLegTime);
-              console.log('firstLeg', firstLegTime);
-              finalLegTechStopDepatureOne =
-                techStopResponse.data.airport.arrival_airport;
-              if (techStopResponse.data.airport.arrival_airport != to) {
-                selectedTechStops.push(
-                  techStopResponse.data.airport.arrival_airport
-                );
+              if (techStopResponse.data.time.airway != null) {
+                console.log('yes am not null 1334', techStopResponse.data.time.airway);
+
+                firstLegTime = techStopResponse.data.time.airway;
+                usedTime.push(firstLegTime);
+                console.log('firstLeg', firstLegTime);
+                console.log('Thsi is used time now line 1339', usedTime);
+
+                finalLegTechStopDepatureOne =
+                  techStopResponse.data.airport.arrival_airport;
+                if (techStopResponse.data.airport.arrival_airport != to) {
+                  selectedTechStops.push(
+                    techStopResponse.data.airport.arrival_airport
+                  );
+                }
               }
             }
           }
-        }
 
-        // Define the continueJourney function
-        async function continueJourneypartOne(
-          fromAirport,
-          toAirport,
-          aircraft
-        ) {
-          if (finalLegTechStopDepatureOne !== toAirport) {
-            const techStopData = `{
+          // Define the continueJourney function
+          async function continueJourneypartOne(
+            fromAirport,
+            toAirport,
+            aircraft
+          ) {
+            if (finalLegTechStopDepatureOne !== toAirport) {
+              const techStopData = `{
         "departure_airport": "${fromAirport}",
         "arrival_airport": "${toAirport}",
         "aircraft": "${aircraft}",
@@ -781,24 +2301,24 @@ exports.calculateFlightTime = async (req, res) => {
         "advise_techstops": true
       }`;
 
-            const techStopResponse = await axios(
-              buildRequestConfig(techStopData)
-            );
-            console.log('Tech Stop Response line 1176', {
-              op: techStopResponse.data,
-              from: techStopData,
-            });
+              const techStopResponse = await axios(
+                buildRequestConfig(techStopData)
+              );
+              console.log('Tech Stop Response line 1176', {
+                op: techStopResponse.data,
+                from: techStopData,
+              });
 
-            if (
-              techStopResponse.data.airport.techstop &&
-              techStopResponse.data.airport.techstop.length > 0
-            ) {
-              // If tech stops are suggested, pick the first one
-              const nextTechStop = techStopResponse.data.airport.techstop[0];
-              // totalTechStopTime += techStopResponse.data.time.airway;
+              if (
+                techStopResponse.data.airport.techstop &&
+                techStopResponse.data.airport.techstop.length > 0
+              ) {
+                // If tech stops are suggested, pick the first one
+                const nextTechStop = techStopResponse.data.airport.techstop[0];
+                // totalTechStopTime += techStopResponse.data.time.airway;
 
-              // Calculate airway time from lastTechStopDepature to nextTechStop
-              const airwayTimeData = `{
+                // Calculate airway time from lastTechStopDepature to nextTechStop
+                const airwayTimeData = `{
           "departure_airport": "${finalLegTechStopDepatureOne}",
           "arrival_airport": "${nextTechStop}",
           "aircraft": "${aircraft}",
@@ -808,47 +2328,47 @@ exports.calculateFlightTime = async (req, res) => {
           "advise_techstops": false
         }`;
 
-              const airwayTimeResponse = await axios(
-                buildRequestConfig(airwayTimeData)
-              );
+                const airwayTimeResponse = await axios(
+                  buildRequestConfig(airwayTimeData)
+                );
 
-              console.log('Airway Time Responsee', airwayTimeResponse.data);
-              console.log('Tech Stop Response line 1201', {
-                op: airwayTimeResponse.data,
-                from: airwayTimeData,
-              });
+                console.log('Airway Time Responsee', airwayTimeResponse.data);
+                console.log('Tech Stop Response line 1201', {
+                  op: airwayTimeResponse.data,
+                  from: airwayTimeData,
+                });
 
-              // Update the finalLegTechStopDepature
-              finalLegTechStopDepatureOne = nextTechStop;
-              if (airwayTimeResponse.data.time.airway != null) {
-                usedTime.push(airwayTimeResponse.data.time.airway);
-                finalLegTechStopDepatureOne =
-                  airwayTimeResponse.data.airport.arrival_airport;
-                if (airwayTimeResponse.data.airport.arrival_airport != to) {
-                  selectedTechStops.push(
-                    airwayTimeResponse.data.airport.arrival_airport
+                // Update the finalLegTechStopDepature
+                finalLegTechStopDepatureOne = nextTechStop;
+                if (airwayTimeResponse.data.time.airway != null) {
+                  usedTime.push(airwayTimeResponse.data.time.airway);
+                  finalLegTechStopDepatureOne =
+                    airwayTimeResponse.data.airport.arrival_airport;
+                  if (airwayTimeResponse.data.airport.arrival_airport != to) {
+                    selectedTechStops.push(
+                      airwayTimeResponse.data.airport.arrival_airport
+                    );
+                  }
+                  console.log(
+                    'finalLegTechStopDepatureOneo',
+                    finalLegTechStopDepatureOne
                   );
                 }
-                console.log(
-                  'finalLegTechStopDepatureOneo',
-                  finalLegTechStopDepatureOne
-                );
               }
             }
-          }
 
-          // console.log("Total Tech Stop Timeeee:", totalTechStopTime);
-          console.log('Final Destinationww:', toAirport);
+            // console.log("Total Tech Stop Timeeee:", totalTechStopTime);
+            console.log('Final Destinationww:', toAirport);
 
-          async function continueJourneypartTwo(
-            fromAirport,
-            toAirport,
-            aircraft
-          ) {
-            let totalTechStopTime = 0;
+            async function continueJourneypartTwo(
+              fromAirport,
+              toAirport,
+              aircraft
+            ) {
+              let totalTechStopTime = 0;
 
-            if (finalLegTechStopDepatureOne !== toAirport) {
-              const techStopData = `{
+              if (finalLegTechStopDepatureOne !== toAirport) {
+                const techStopData = `{
             "departure_airport": "${fromAirport}",
             "arrival_airport": "${toAirport}",
             "aircraft": "${aircraft}",
@@ -858,39 +2378,50 @@ exports.calculateFlightTime = async (req, res) => {
             "advise_techstops": true
           }`;
 
-              const techStopResponse = await axios(
-                buildRequestConfig(techStopData)
-              );
-              console.log('Tech Stop Response', techStopResponse.data);
-              continueJourneyTimeThree = techStopResponse.data.time.airway;
-              console.log('Tech Stop Response line 1253', {
-                op: techStopResponse.data,
-                from: techStopData,
-              });
-
-              if (
-                techStopResponse.data.time.airway != null &&
-                techStopResponse.data.airport.arrival_airport != to
-              ) {
-                usedTime.push(techStopResponse.data.time.airway);
-                selectedTechStops.push(
-                  techStopResponse.data.airport.arrival_airport
+                const techStopResponse = await axios(
+                  buildRequestConfig(techStopData)
                 );
-              }
+                console.log('Tech Stop Response', techStopResponse.data);
+                continueJourneyTimeThree = techStopResponse.data.time.airway;
+                console.log('continueJourneyTimeThree 1451', continueJourneyTimeThree);
 
-              if (
-                techStopResponse.data.airport.techstop &&
-                techStopResponse.data.airport.techstop.length > 0
-              ) {
-                // If tech stops are suggested, pick the first one
+                console.log('Tech Stop Response line 1253', {
+                  op: techStopResponse.data,
+                  from: techStopData,
+                });
 
-                const nextTechStop = techStopResponse.data.airport.techstop[0];
-                console.log('This next here', nextTechStop);
+                if (
+                  techStopResponse.data.time.airway != null
+                ) {
+                  usedTime.push(techStopResponse.data.time.airway);
+                  console.log('used time in this time is now 1463', usedTime);
 
-                totalTechStopTime += techStopResponse.data.time.airway;
 
-                // Calculate airway time from lastTechStopDepature to nextTechStop
-                const airwayTimeData = `{
+                  if (techStopResponse.data.airport.arrival_airport != to) {
+
+                    selectedTechStops.push(
+                      techStopResponse.data.airport.arrival_airport
+                    );
+
+                  }
+
+                  console.log('selected techstop 1545', selectedTechStops);
+
+                }
+
+                if (
+                  techStopResponse.data.airport.techstop &&
+                  techStopResponse.data.airport.techstop.length > 0
+                ) {
+                  // If tech stops are suggested, pick the first one
+
+                  const nextTechStop = techStopResponse.data.airport.techstop[0];
+                  console.log('This next here', nextTechStop);
+
+                  totalTechStopTime += techStopResponse.data.time.airway;
+
+                  // Calculate airway time from lastTechStopDepature to nextTechStop
+                  const airwayTimeData = `{
               "departure_airport": "${finalLegTechStopDepatureOne}",
               "arrival_airport": "${nextTechStop}",
               "aircraft": "${aircraft}",
@@ -900,48 +2431,48 @@ exports.calculateFlightTime = async (req, res) => {
               "advise_techstops": false
             }`;
 
-                const airwayTimeResponse = await axios(
-                  buildRequestConfig(airwayTimeData)
-                );
-                getMoreTechstop = airwayTimeResponse;
-                console.log(
-                  'Airway Time Responsee2222',
-                  airwayTimeResponse.data.airport.techstop
-                );
-                console.log('Tech Stop Response line 1285', {
-                  op: airwayTimeResponse.data,
-                  from: airwayTimeData,
-                });
-                // Update the finalLegTechStopDepature
-                finalLegTechStopDepatureOne = nextTechStop;
-                if (airwayTimeResponse.data.time.airway != null) {
-                  usedTime.push(airwayTimeResponse.data.time.airway);
-                  console.log('firstLeg', firstLegTime);
-                  finalLegTechStopDepatureOne =
-                    airwayTimeResponse.data.airport.arrival_airport;
-                  if (airwayTimeResponse.data.airport.arrival_airport != to) {
-                    selectedTechStops.push(
-                      airwayTimeResponse.data.airport.arrival_airport
+                  const airwayTimeResponse = await axios(
+                    buildRequestConfig(airwayTimeData)
+                  );
+                  getMoreTechstop = airwayTimeResponse;
+                  console.log(
+                    'Airway Time Responsee2222',
+                    airwayTimeResponse.data.airport.techstop
+                  );
+                  console.log('Tech Stop Response line 1285', {
+                    op: airwayTimeResponse.data,
+                    from: airwayTimeData,
+                  });
+                  // Update the finalLegTechStopDepature
+                  finalLegTechStopDepatureOne = nextTechStop;
+                  if (airwayTimeResponse.data.time.airway != null) {
+                    usedTime.push(airwayTimeResponse.data.time.airway);
+                    console.log('firstLeg', firstLegTime);
+                    finalLegTechStopDepatureOne =
+                      airwayTimeResponse.data.airport.arrival_airport;
+                    if (airwayTimeResponse.data.airport.arrival_airport != to) {
+                      selectedTechStops.push(
+                        airwayTimeResponse.data.airport.arrival_airport
+                      );
+                    }
+                    console.log(
+                      'finalLegTechStopDepatureOne',
+                      finalLegTechStopDepatureOne
                     );
                   }
-                  console.log(
-                    'finalLegTechStopDepatureOne',
-                    finalLegTechStopDepatureOne
-                  );
                 }
               }
-            }
 
-            console.log('Total Tech Stop Timeeee:', totalTechStopTime);
-            console.log('Final Destinationww:', toAirport);
-          }
-          // for knowing the averagespeed from the From to To Location
-          async function KnowAverageSpeedTime(
-            fromAirport,
-            toAirport,
-            aircraft
-          ) {
-            const techStopData = `{
+              console.log('Total Tech Stop Timeeee:', totalTechStopTime);
+              console.log('Final Destinationww:', toAirport);
+            }
+            // for knowing the averagespeed from the From to To Location
+            async function KnowAverageSpeedTime(
+              fromAirport,
+              toAirport,
+              aircraft
+            ) {
+              const techStopData = `{
           "departure_airport": "${fromAirport}",
           "arrival_airport": "${toAirport}",
           "aircraft": "${aircraft}",
@@ -952,100 +2483,104 @@ exports.calculateFlightTime = async (req, res) => {
           "average_speed_time": true
         }`;
 
-            const techStopResponse = await axios(
-              buildRequestConfig(techStopData)
-            );
-            finalLegAverageSpeedTime = techStopResponse.data.time.average_speed;
-            console.log(
-              'Tech Stop Response in while loop',
-              techStopResponse.data
-            );
+              const techStopResponse = await axios(
+                buildRequestConfig(techStopData)
+              );
+              finalLegAverageSpeedTime = techStopResponse.data.time.average_speed;
+              console.log(
+                'Tech Stop Response in while loop',
+                techStopResponse.data
+              );
 
-            console.log('finalLegAverageSpeedTime', finalLegAverageSpeedTime);
+              console.log('finalLegAverageSpeedTime', finalLegAverageSpeedTime);
 
-            if (techStopResponse.data) {
-              const finalLegAverageSpeedInAirwayFormat =
-                finalLegAverageSpeedTime / 60;
-              let total = 0;
+              if (techStopResponse.data) {
+                const finalLegAverageSpeedInAirwayFormat =
+                  finalLegAverageSpeedTime / 60;
+                console.log('My techstop average time 1558', finalLegAverageSpeedTime);
 
-              for (let i = 0; i < usedTime.length; i++) {
-                total += usedTime[i];
-              }
+                let total = 0;
 
-              const totalTimeFromToto =
-                (finalLegAverageSpeedInAirwayFormat + total) / 60;
-              console.log(totalTimeFromToto);
-              console.log('this total time for nowoo', totalTimeFromToto);
+                for (let i = 0; i < usedTime.length; i++) {
+                  total += usedTime[i];
+                  console.log('total time 1564', total);
 
-              const data = {
-                ...operator,
-                totalTime:
-                  operator.aviapagesResponse.time.airway + totalTimeFromToto,
-                techStopAirport: {
-                  selectedTechStops: selectedTechStops,
-                  techStopTime: `${0.5}hour / 45minute`,
-                  techStopCost: `${50000}rs`,
-                },
-                TotalPriceWithTechStop:
-                  operator.operator.charges_per_hour *
+                }
+
+                const totalTimeFromToto =
+                  (finalLegAverageSpeedInAirwayFormat + (total / 60))
+                console.log(totalTimeFromToto);
+                console.log('this total time for nowoo', totalTimeFromToto);
+
+                const data = {
+                  ...operator,
+                  totalTime:
+                    operator.aviapagesResponse.time.airway + totalTimeFromToto,
+                  techStopAirport: {
+                    selectedTechStops: selectedTechStops,
+                    techStopTime: `${0.5}hour / 45minute`,
+                    techStopCost: `${50000}rs`,
+                  },
+                  TotalPriceWithTechStop:
+                    operator.operator.charges_per_hour *
                     (operator.aviapagesResponse.time.airway +
                       totalTimeFromToto +
                       selectedTechStops.length * 0.5) +
-                  selectedTechStops.length * 50000,
-                totalPriceWithAdminMargin:
-                  operator.operator.charges_per_hour *
+                    selectedTechStops.length * 50000,
+                  totalPriceWithTechStopAndAdminMargin:
+                    operator.operator.charges_per_hour *
                     (operator.aviapagesResponse.time.airway +
                       totalTimeFromToto +
                       selectedTechStops.length * 0.5) +
-                  selectedTechStops.length * 50000 +
-                  ((operator.operator.charges_per_hour *
-                    (operator.aviapagesResponse.time.airway +
-                      totalTimeFromToto +
-                      selectedTechStops.length * 0.5) +
-                    selectedTechStops.length * 50000) *
-                    operator.operator.margin) /
+                    selectedTechStops.length * 50000 +
+                    ((operator.operator.charges_per_hour *
+                      (operator.aviapagesResponse.time.airway +
+                        totalTimeFromToto +
+                        selectedTechStops.length * 0.5) +
+                      selectedTechStops.length * 50000) *
+                      operator.operator.margin) /
                     100,
-                from: from,
-                to: to,
-               
-              };
+                  from: from,
+                  to: to,
+                };
 
-              console.log("final data with tech halts",data)
-              final.push(data);
-              if (final.length === nearestOperator.length) {
-                const ResultData = new AvipageAircraft({
-                  Response: final,
-                });
-                ResultData.save();
-                 aircraftId = ResultData._id;
-                console.log('This is ResultData', ResultData);
-                return res.json({ final, aircraftId: aircraftId });
+                final.push(data);
+                if (final.length === nearestOperator.length) {
+                  const ResultData = new AvipageAircraft({
+                    Response: final,
+                  });
+                  ResultData.save();
+                  console.log('This is ResultData', ResultData);
+                  return res.json(final);
+                }
               }
             }
+            KnowAverageSpeedTime(from, to, operator.operator.Aircraft_type);
+            continueJourneypartTwo(
+              finalLegTechStopDepatureOne,
+              to,
+              operator.operator.Aircraft_type
+            );
+            console.log('selectedTechStops', selectedTechStops);
           }
-          KnowAverageSpeedTime(from, to, operator.operator.Aircraft_type);
-          continueJourneypartTwo(
+
+          continueJourneypartOne(
             finalLegTechStopDepatureOne,
             to,
             operator.operator.Aircraft_type
           );
-          console.log('selectedTechStops', selectedTechStops);
         }
+      });
 
-        continueJourneypartOne(
-          finalLegTechStopDepatureOne,
-          to,
-          operator.operator.Aircraft_type
-        );
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ error: `Failed to calculate flight time ${error}` });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ error: `Failed to calculate flight time ${error}` });
+    }
   }
 };
+
 
 async function getLatLonFromLocation(location) {
   try {
