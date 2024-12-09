@@ -116,6 +116,325 @@ exports.Login = async (req, res) => {
 };
 
 // Amadeus Aircraft Logic
+// exports.AmedeusTestAPitoken = async (req, res) => {
+//   const {
+//     originLocationCode,
+//     destinationLocationCode,
+//     departureDate,
+//     pax,
+//     mobile,
+//     countryCode,
+//   } = req.body;
+
+//   if (
+//     originLocationCode === undefined ||
+//     destinationLocationCode === undefined ||
+//     departureDate === undefined ||
+//     pax === undefined ||
+//     mobile === undefined ||
+//     countryCode === undefined
+//   ) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: 'originLocationCode,destinationLocationCode,departureDate,pax,mobile,countryCode are required',
+//     });
+//   } else if (
+//     typeof originLocationCode !== 'string' ||
+//     typeof destinationLocationCode !== 'string' ||
+//     typeof departureDate !== 'string' ||
+//     typeof pax !== 'number' ||
+//     typeof mobile !== 'string' ||
+//     typeof countryCode !== 'string'
+//   ) {
+//     return res.status(400).json({
+//       error:
+//         'originLocationCode,destinationLocationCode,departureDate,mobile,countryCode must be a string and pax must be a number',
+//     });
+//   } else if (
+//     originLocationCode === '' ||
+//     destinationLocationCode === '' ||
+//     departureDate === '' ||
+//     pax === 0 ||
+//     mobile === '' ||
+//     countryCode === ''
+//   ) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: `originLocationCode,destinationLocat ionCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+//     });
+//   }
+
+//   try {
+//     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
+//     const accessToken = await Promise.resolve(access_token); // Await resolution if needed
+
+//     const SingleAllAircraft = [];
+//     const TechStopAircraft = [];
+//     let ResponseData = {};
+//     let aircraftId;
+
+//     console.log('access_token line 175', access_token);
+//     const originLocationcode = originLocationCode;
+//     const destinationLocationcode = destinationLocationCode;
+//     const departuredate = departureDate;
+//     const Pax = pax;
+//     const Mobile = mobile;
+//     const countrycode = countryCode;
+//     const Max = 10;
+
+//     const airlines = [
+//       'AC',
+//       '6E',
+//       'AF',
+//       'AI',
+//       'AA',
+//       'BA',
+//       'CX',
+//       'DL',
+//       'EK',
+//       'EY',
+//       'KL',
+//       'LH',
+//       'QF',
+//       'QR',
+//       'SQ',
+//       'TK',
+//       'UA',
+//       'VS',
+//       'THY',
+//       'WY',
+//       'OMA',
+//       'SAA',
+//       'ANA',
+//       'PAL',
+//       'VIR',
+//       'MAU',
+//       'MH',
+//       'SV',
+//       'ANA',
+//       'WB',
+//       'BI',
+//     ];
+
+//     const checkDate = (dateStr) => {
+//       const givenDate = new Date(dateStr);
+//       const currentDate = new Date();
+//       const diffInDays = Math.ceil(
+//         (givenDate - currentDate) / (1000 * 60 * 60 * 24),
+//       );
+//       if (diffInDays >= 3) {
+//         return givenDate.toISOString().split('T')[0];
+//       }
+//       const dayDifference = 3 - diffInDays;
+//       givenDate.setDate(givenDate.getDate() + dayDifference);
+//       return givenDate.toISOString().split('T')[0];
+//     };
+//     const Ticketdate = checkDate(departuredate);
+//     console.log('departuredate', Ticketdate);
+
+//     const requestData = {
+//       originLocationCode: originLocationcode,
+//       destinationLocationCode: destinationLocationcode,
+//       departureDate: Ticketdate,
+//       adults: Pax,
+//       max: Max,
+//     };
+//     console.log('requestData', requestData);
+
+//     await axios
+//       .get(apiUrl, {
+//         params: requestData,
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//           'Content-Type': 'application/json',
+//         },
+//       })
+//       .then(async (response) => {
+//         console.log('response Data data line 989', response.data.data);
+
+//         // const filteredData = response.data.data.filter((item) => {
+//         //   // Flatten all segments from itineraries
+//         //   const segments = item.itineraries.flatMap(
+//         //     (itinerary) => itinerary.segments,
+//         //   );
+
+//         //   // Check if all segments have valid carrier codes
+//         //   const isValid = segments.some(
+//         //     (segment) =>
+//         //       airlines.includes(segment.carrierCode) &&
+//         //       airlines.includes(segment.operating?.carrierCode),
+//         //   );
+
+
+//         //   console.log("valid operating airlines",isValid)
+//         //   // Return true if all segments are valid
+//         //   return isValid;
+//         // });
+
+//         const filteredData = response.data.data.filter((item) => {
+//           const segments = item.itineraries.flatMap((itinerary) => itinerary.segments);
+
+//           // Ensure all segments have valid `operating.carrierCode`
+//           const isValid = segments.every((segment) => {
+//             const operatingCarrierCode = segment.operating?.carrierCode;
+//             console.log('Operating Carrier Code:', operatingCarrierCode); // Debugging
+//             return airlines.includes(operatingCarrierCode); // Match only allowed airlines
+//           });
+
+//           console.log('Is Valid:', isValid); // Debugging
+//           return isValid; // Include only valid items
+//         });
+
+//         console.log('filteredData', filteredData);
+
+//         filteredData.forEach((itemData) => {
+//           const a = 7;
+//           const b = 20;
+
+//           const qualifyingItinerariesForNoTechStop =
+//             itemData.itineraries.filter((itinerarie) => {
+//               return itinerarie.segments.length === 1;
+//             });
+
+//           if (qualifyingItinerariesForNoTechStop.length > 0) {
+//             console.log(
+//               'qualifyingItinerariesForNoTechStop line 778',
+//               qualifyingItinerariesForNoTechStop,
+//             );
+//             SingleAllAircraft.push({
+//               aircraft: itemData,
+//               price: {
+//                 ...itemData.price,
+//                 totalPrice: parseFloat(
+//                   (Number(itemData.price.grandTotal) +
+//                     (Number(itemData.price.grandTotal) * a) / 100) *
+//                   9 +
+//                   ((Number(itemData.price.grandTotal) +
+//                     (Number(itemData.price.grandTotal) * 7) / 100) *
+//                     9 *
+//                     b) /
+//                   100,
+//                 ),
+//               },
+//               From: originLocationcode,
+//               To: destinationLocationcode,
+//             });
+//             const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
+//               (a, b) => {
+//                 a.price.grandTotal - b.price.grandTotal;
+//               },
+//             );
+
+//             console.log(
+//               'sortedAircraftByPrice IS this now::',
+//               sortedAircraftByPrice,
+//             );
+
+//             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
+//             ResponseData.TicketAvailability = Ticketdate;
+//             console.log('ResponseData is now :::', ResponseData);
+//           }
+//           const qualifyingItinerariesForTechStop = itemData.itineraries.filter(
+//             (itinerarie) => {
+//               return (
+//                 itinerarie.segments.length >= 2 &&
+//                 itinerarie.segments[1].carrierCode ===
+//                 itinerarie.segments[0].carrierCode
+//               );
+//             },
+//           );
+
+//           if (qualifyingItinerariesForTechStop.length > 0) {
+//             TechStopAircraft.push({
+//               aircraft: itemData,
+//               price: {
+//                 ...itemData.price,
+//                 totalPrice: parseFloat(
+//                   (Number(itemData.price.grandTotal) +
+//                     (Number(itemData.price.grandTotal) * a) / 100) *
+//                   9 +
+//                   ((Number(itemData.price.grandTotal) +
+//                     (Number(itemData.price.grandTotal) * 7) / 100) *
+//                     9 *
+//                     b) /
+//                   100,
+//                 ),
+//               },
+//               From: originLocationcode,
+//               To: destinationLocationcode,
+//             });
+
+//             const sortedAircraftByPrice = TechStopAircraft.slice().sort(
+//               (a, b) => {
+//                 a.price.grandTotal - b.price.grandTotal;
+//               },
+//             );
+//             console.log(
+//               'sortedAircraftByPrice IS this now::',
+//               sortedAircraftByPrice,
+//             );
+//             ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
+//             ResponseData.TicketAvailability = Ticketdate;
+//             console.log('ResponseData is now :::', ResponseData);
+//           }
+//         });
+//         console.log('ResponseData line ', ResponseData);
+
+//         const ResultData = new AmadusAircraft({
+//           Response: ResponseData,
+//         });
+//         ResultData.save();
+//         console.log('ResultData', ResultData);
+//         aircraftId = ResultData._id;
+
+//         const payload = [
+//           originLocationCode,
+//           destinationLocationCode,
+//           departureDate,
+//           pax,
+//           mobile,
+//           countryCode,
+//         ];
+//         const HEADERS = [
+//           'From',
+//           'To',
+//           'Date',
+//           'Passengers',
+//           ' mobile',
+//           'countryCode',
+//         ];
+//         console.log('aircraftId line 1305', aircraftId, HEADERS);
+//         if (ResponseData != null || undefined) {
+//           await PayloadStoring(
+//             payload,
+//             '1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU',
+//             HEADERS,
+//           );
+
+//           // let whatsappMessage = `*Patient's enquiry:* \n\n*From:* ${originLocationCode} \n*To:* ${destinationLocationCode} \n*Date:* ${departureDate} \n*Contact Number:* ${countryCode} ${mobile}`;
+
+//           // sendWhatsAppMessage('+917777920323', whatsappMessage);
+
+//           sendSearchMail(
+//             originLocationCode,
+//             destinationLocationCode,
+//             departureDate,
+//             pax,
+//             mobile,
+//             countryCode,
+//           );
+//         }
+//         res.json({ aircraftId: aircraftId, ResponseData: ResponseData });
+//         console.log('aircraftId line 1305', aircraftId);
+//       });
+
+//     return { aircraftId, ResponseData };
+//   } catch (error) {
+//     return res.status(500).json({ error: error });
+//   }
+// };
+
+
 exports.AmedeusTestAPitoken = async (req, res) => {
   const {
     originLocationCode,
@@ -160,20 +479,29 @@ exports.AmedeusTestAPitoken = async (req, res) => {
   ) {
     return res.status(400).json({
       success: false,
-      msg: `originLocationCode,destinationLocat ionCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+      msg: `originLocationCode,destinationLocationCode,departureDate,mobile,countryCode cant take an empty string value i.e '' and pax cant be 0`,
+    });
+  } else if (!isValidMobileNumber(mobile)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid mobile',
+    });
+  } else if (!isValidCountryCode(countryCode)) {
+    return res.status(400).json({
+      success: false,
+      msg: 'Invalid countryCode entered example must start with + i.e +234 ',
     });
   }
 
   try {
     const apiUrl = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-    const accessToken = await Promise.resolve(access_token); // Await resolution if needed
-
+    const accessToken = access_token;
     const SingleAllAircraft = [];
     const TechStopAircraft = [];
     let ResponseData = {};
     let aircraftId;
 
-    console.log('access_token line 175', access_token);
+    console.log('access_token', access_token);
     const originLocationcode = originLocationCode;
     const destinationLocationcode = destinationLocationCode;
     const departuredate = departureDate;
@@ -220,7 +548,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       const givenDate = new Date(dateStr);
       const currentDate = new Date();
       const diffInDays = Math.ceil(
-        (givenDate - currentDate) / (1000 * 60 * 60 * 24),
+        (givenDate - currentDate) / (1000 * 60 * 60 * 24)
       );
       if (diffInDays >= 3) {
         return givenDate.toISOString().split('T')[0];
@@ -240,7 +568,6 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       max: Max,
     };
     console.log('requestData', requestData);
-
     await axios
       .get(apiUrl, {
         params: requestData,
@@ -252,37 +579,13 @@ exports.AmedeusTestAPitoken = async (req, res) => {
       .then(async (response) => {
         console.log('response Data data line 989', response.data.data);
 
-        // const filteredData = response.data.data.filter((item) => {
-        //   // Flatten all segments from itineraries
-        //   const segments = item.itineraries.flatMap(
-        //     (itinerary) => itinerary.segments,
-        //   );
-
-        //   // Check if all segments have valid carrier codes
-        //   const isValid = segments.some(
-        //     (segment) =>
-        //       airlines.includes(segment.carrierCode) &&
-        //       airlines.includes(segment.operating?.carrierCode),
-        //   );
-
-
-        //   console.log("valid operating airlines",isValid)
-        //   // Return true if all segments are valid
-        //   return isValid;
-        // });
-
         const filteredData = response.data.data.filter((item) => {
-          const segments = item.itineraries.flatMap((itinerary) => itinerary.segments);
-
-          // Ensure all segments have valid `operating.carrierCode`
-          const isValid = segments.every((segment) => {
-            const operatingCarrierCode = segment.operating?.carrierCode;
-            console.log('Operating Carrier Code:', operatingCarrierCode); // Debugging
-            return airlines.includes(operatingCarrierCode); // Match only allowed airlines
-          });
-
-          console.log('Is Valid:', isValid); // Debugging
-          return isValid; // Include only valid items
+          console.log('item line 1164', item);
+          const segments = item.itineraries.flatMap(
+            (itinerary) => itinerary.segments
+          );
+          const carrierCodes = segments.map((segment) => segment.carrierCode);
+          return carrierCodes.some((code) => airlines.includes(code));
         });
 
         console.log('filteredData', filteredData);
@@ -299,7 +602,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
           if (qualifyingItinerariesForNoTechStop.length > 0) {
             console.log(
               'qualifyingItinerariesForNoTechStop line 778',
-              qualifyingItinerariesForNoTechStop,
+              qualifyingItinerariesForNoTechStop
             );
             SingleAllAircraft.push({
               aircraft: itemData,
@@ -313,23 +616,20 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                     (Number(itemData.price.grandTotal) * 7) / 100) *
                     9 *
                     b) /
-                  100,
+                  100
                 ),
               },
-              From: originLocationcode,
-              To: destinationLocationcode,
             });
             const sortedAircraftByPrice = SingleAllAircraft.slice().sort(
               (a, b) => {
                 a.price.grandTotal - b.price.grandTotal;
-              },
+              }
             );
 
             console.log(
               'sortedAircraftByPrice IS this now::',
-              sortedAircraftByPrice,
+              sortedAircraftByPrice
             );
-
             ResponseData.AirCraftDatawithNotechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
             console.log('ResponseData is now :::', ResponseData);
@@ -341,7 +641,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                 itinerarie.segments[1].carrierCode ===
                 itinerarie.segments[0].carrierCode
               );
-            },
+            }
           );
 
           if (qualifyingItinerariesForTechStop.length > 0) {
@@ -357,21 +657,19 @@ exports.AmedeusTestAPitoken = async (req, res) => {
                     (Number(itemData.price.grandTotal) * 7) / 100) *
                     9 *
                     b) /
-                  100,
+                  100
                 ),
               },
-              From: originLocationcode,
-              To: destinationLocationcode,
             });
 
             const sortedAircraftByPrice = TechStopAircraft.slice().sort(
               (a, b) => {
                 a.price.grandTotal - b.price.grandTotal;
-              },
+              }
             );
             console.log(
               'sortedAircraftByPrice IS this now::',
-              sortedAircraftByPrice,
+              sortedAircraftByPrice
             );
             ResponseData.AirCraftDatawithtechStop = sortedAircraftByPrice;
             ResponseData.TicketAvailability = Ticketdate;
@@ -395,35 +693,30 @@ exports.AmedeusTestAPitoken = async (req, res) => {
           mobile,
           countryCode,
         ];
-        const HEADERS = [
-          'From',
-          'To',
-          'Date',
-          'Passengers',
-          ' mobile',
-          'countryCode',
-        ];
-        console.log('aircraftId line 1305', aircraftId, HEADERS);
-        if (ResponseData != null || undefined) {
-          await PayloadStoring(
-            payload,
-            '1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU',
-            HEADERS,
-          );
-
-          // let whatsappMessage = `*Patient's enquiry:* \n\n*From:* ${originLocationCode} \n*To:* ${destinationLocationCode} \n*Date:* ${departureDate} \n*Contact Number:* ${countryCode} ${mobile}`;
-
-          // sendWhatsAppMessage('+917777920323', whatsappMessage);
-
-          sendSearchMail(
-            originLocationCode,
-            destinationLocationCode,
-            departureDate,
-            pax,
-            mobile,
-            countryCode,
-          );
-        }
+        // const HEADERS = [
+        //   'From',
+        //   'To',
+        //   'Date',
+        //   'Passengers',
+        //   ' mobile',
+        //   'countryCode',
+        // ];
+        // console.log('aircraftId line 1305', aircraftId, HEADERS);
+        // if (ResponseData != null || undefined) {
+        //   await PayloadStoring(
+        //     payload,
+        //     '1CR07x7mcGQGtm4e6hRha9ckBN-QhZM6ApMNdny41YFU',
+        //     HEADERS
+        //   );
+        //   sendSearchMail(
+        //     originLocationCode,
+        //     destinationLocationCode,
+        //     departureDate,
+        //     pax,
+        //     mobile,
+        //     countryCode
+        //   );
+        // }
         res.json({ aircraftId: aircraftId, ResponseData: ResponseData });
         console.log('aircraftId line 1305', aircraftId);
       });
@@ -433,6 +726,7 @@ exports.AmedeusTestAPitoken = async (req, res) => {
     return res.status(500).json({ error: error });
   }
 };
+
 
 
 // exports.calculateFlightTime = async (req, res) => {
