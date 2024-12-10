@@ -47,7 +47,7 @@ const OperatorSchema = new Mongoose.Schema({
 const AircraftOPeratorSchema = new Mongoose.Schema({
   Aircraft_type: {
     type: String,
-    enum: ["Learjet 45", "C90", "B200"],
+    enum: ["Challenger 605", "Learjet 45", "C90", "B200"],
   },
   Tail_sign: {
     type: String,

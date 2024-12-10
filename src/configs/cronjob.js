@@ -7,7 +7,7 @@ const data = {
   client_secret: 'uA0UEOCy3vIIkWZD',
   grant_type: 'client_credentials',
 };
-let access_token =  process.env.AMADUS_ACCESS_TOKEN
+let access_token = process.env.AMADUS_ACCESS_TOKEN
 const urlEncodedData = qs.stringify(data);
 const apiUrl = 'https://test.api.amadeus.com/v1/security/oauth2/token';
 
@@ -26,11 +26,21 @@ async function getProcessedApiData() {
   } catch (error) {
     console.error('Error fetching or processing API data:', error);
     access_token = null;
+    res.status(500).json({ message: 'Internal server Error', error });
+
   }
 }
+
+function getAccessToken() {
+  if (!access_token) {
+    throw new Error('Access token is not available yet.');
+  }
+  return access_token;
+}
+
 console.log('cronjob access_token ', access_token);
-cron.schedule('*/30 * * * *', async () => {
-  const rawApiData = await getProcessedApiData();
+cron.schedule('*/2 * * * *', async () => {
+  await getProcessedApiData()
 });
 
-module.exports = { access_token };
+module.exports = { getAccessToken };
