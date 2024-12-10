@@ -671,7 +671,7 @@ exports.calculateFlightTime = async (req, res) => {
           console.log(totalTimeFromToto);
           const data = {
             ...operator,
-            totalTime: totalTimeFromToto * 60,
+            totalTime: totalTimeFromToto,
             price:
               operator.charges_per_hour * (totalTimeFromToto),
             totalPriceWithAdminMargin:
@@ -1021,7 +1021,7 @@ exports.calculateFlightTime = async (req, res) => {
 
                   const data = {
                     ...operator,
-                    totalTime: totalTimeFromToto * 60,
+                    totalTime: totalTimeFromToto,
                     techStopAirport: {
                       selectedTechStops: selectedTechStops,
                       techStopTime: `${0.5}hour / 45minute`,
@@ -1102,7 +1102,7 @@ exports.calculateFlightTime = async (req, res) => {
             console.log(totalTimeFromToto);
             const data = {
               ...operator,
-              totalTime: operator.totalTime + (totalTimeFromToto * 60),
+              totalTime: operator.totalTime + (totalTimeFromToto),
               price: operator.price + (operator.charges_per_hour * (totalTimeFromToto)),
               totalPriceWithAdminMargin: operator.totalPriceWithTechStopAndAdminMargin ? operator.totalPriceWithTechStopAndAdminMargin + (operator.charges_per_hour * (totalTimeFromToto) + (operator.charges_per_hour *
                 (totalTimeFromToto) *
@@ -1433,7 +1433,7 @@ exports.calculateFlightTime = async (req, res) => {
 
                     const data = {
                       ...operator,
-                      totalTime: operator.totalTime + (totalTimeFromToto * 60),
+                      totalTime: operator.totalTime + (totalTimeFromToto),
                       techStopAirport: {
                         selectedTechStops: operator.techStopAirport ? [...operator.techStopAirport.selectedTechStops, ...selectedTechStops] : selectedTechStops,
                         techStopTime: `${0.5}hour / 45minute`,
@@ -1535,7 +1535,7 @@ exports.calculateFlightTime = async (req, res) => {
           console.log(totalTimeFromToto);
           const data = {
             ...operator,
-            totalTime: (operator.aviapagesResponse.time.airway + totalTimeFromToto) * 60,
+            totalTime: (operator.aviapagesResponse.time.airway + totalTimeFromToto),
             price:
               operator.operator.charges_per_hour *
               (operator.aviapagesResponse.time.airway + totalTimeFromToto),
@@ -1868,7 +1868,7 @@ exports.calculateFlightTime = async (req, res) => {
                 const data = {
                   ...operator,
                   totalTime:
-                    (operator.aviapagesResponse.time.airway + totalTimeFromToto) * 60,
+                    (operator.aviapagesResponse.time.airway + totalTimeFromToto),
                   techStopAirport: {
                     selectedTechStops: selectedTechStops,
                     techStopTime: `${0.5}hour / 45minute`,
