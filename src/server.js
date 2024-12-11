@@ -29,9 +29,8 @@ app.use(
   })
 );
 
-const corsOptions = { origin: `*` };
+const corsOptions = { origin: ['http://localhost:8000'] };
 app.use(cors(corsOptions));
-app.use(cors({ origin: 'http://api.qwiklif.co' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
@@ -98,6 +97,6 @@ app.use('/blogs', BlogRouter);
 app.use('/insurance', InsuranceRouter);
 app.use(errorMiddleware);
 
-app.listen(8000, '0.0.0.0',() => {
+app.listen(8000, '0.0.0.0', () => {
   console.log('node API app is running on port 8000');
 });
