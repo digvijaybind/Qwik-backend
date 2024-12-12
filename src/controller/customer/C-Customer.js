@@ -10,8 +10,6 @@ const { getAccessToken } = require('../../configs/cronjob');
 const AmadusAircraft = require('../../db/AmadusAircraft');
 const AvipageAircraft = require('../../db/AvipageAircraft');
 const { isValidEmail } = require('../../regex/emailRegex');
-const { isValidCountryCode } = require('../../regex/countryCodeRegex');
-const { isValidMobileNumber } = require('../../regex/phoneNumberRegex');
 const geocoder = NodeGeocoder({
   provider: 'google',
   apiKey: process.env.GOOGLE_API_KEY,
@@ -1120,7 +1118,11 @@ exports.calculateFlightTime = async (req, res) => {
               });
               ResultData.save();
               console.log('This is ResultData', ResultData);
-              return res.json(final);
+              aircraftId = ResultData._id;
+              console.log('This is ResultData', ResultData);
+              return res.json({ final, aircraftId: aircraftId });
+
+
             }
           }
           else {
@@ -1468,7 +1470,9 @@ exports.calculateFlightTime = async (req, res) => {
                       });
                       ResultData.save();
                       console.log('This is ResultData', ResultData);
-                      return res.json(final);
+                      aircraftId = ResultData._id;
+                      console.log('This is ResultData', ResultData);
+                      return res.json({ final, aircraftId: aircraftId })
                     }
                   }
                 }
@@ -1556,7 +1560,9 @@ exports.calculateFlightTime = async (req, res) => {
             });
             ResultData.save();
             console.log('This is ResultData', ResultData);
-            return res.json(final);
+            aircraftId = ResultData._id;
+            console.log('This is ResultData', ResultData);
+            return res.json({ final, aircraftId: aircraftId })
           }
         }
         else {
@@ -1904,7 +1910,10 @@ exports.calculateFlightTime = async (req, res) => {
                   });
                   ResultData.save();
                   console.log('This is ResultData', ResultData);
-                  return res.json(final);
+                  aircraftId = ResultData._id;
+                  console.log('This is ResultData', ResultData);
+                  return res.json({ final, aircraftId: aircraftId })
+
                 }
               }
             }
