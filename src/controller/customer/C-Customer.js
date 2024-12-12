@@ -1030,7 +1030,7 @@ exports.calculateFlightTime = async (req, res) => {
                       (totalTimeFromToto +
                         selectedTechStops.length * 0.5) +
                       selectedTechStops.length * 50000,
-                    totalPriceWithTechStopAndAdminMargin:
+                      totalPriceWithAdminMargin:
                       operator.charges_per_hour *
                       (totalTimeFromToto +
                         selectedTechStops.length * 0.5) +
@@ -1102,7 +1102,7 @@ exports.calculateFlightTime = async (req, res) => {
               ...operator,
               totalTime: operator.totalTime + (totalTimeFromToto),
               price: operator.price + (operator.charges_per_hour * (totalTimeFromToto)),
-              totalPriceWithAdminMargin: operator.totalPriceWithTechStopAndAdminMargin ? operator.totalPriceWithTechStopAndAdminMargin + (operator.charges_per_hour * (totalTimeFromToto) + (operator.charges_per_hour *
+              totalPriceWithAdminMargin: operator.totalPriceWithAdminMargin ? operator.totalPriceWithAdminMargin + (operator.charges_per_hour * (totalTimeFromToto) + (operator.charges_per_hour *
                 (totalTimeFromToto) *
                 (operator.margin / 100))) : operator.totalPriceWithAdminMargin + (operator.charges_per_hour * (totalTimeFromToto) + (operator.charges_per_hour *
                   (totalTimeFromToto) *
@@ -1447,8 +1447,8 @@ exports.calculateFlightTime = async (req, res) => {
                           (selectedTechStops.length * 50000)) : (operator.charges_per_hour *
                             (totalTimeFromToto + selectedTechStops.length * 0.5) +
                             (selectedTechStops.length * 50000)),
-                      totalPriceWithTechStopAndAdminMargin: operator.totalPriceWithTechStopAndAdminMargin ?
-                        operator.totalPriceWithTechStopAndAdminMargin + (operator.charges_per_hour *
+                            totalPriceWithAdminMargin: operator.totalPriceWithAdminMargin ?
+                        operator.totalPriceWithAdminMargin + (operator.charges_per_hour *
                           (totalTimeFromToto + (selectedTechStops.length * 0.5))) +
                         (selectedTechStops.length * 50000) + (((operator.charges_per_hour) * (totalTimeFromToto + (selectedTechStops.length * 0.5)) +
                           (selectedTechStops.length * 50000)) *
@@ -1886,7 +1886,7 @@ exports.calculateFlightTime = async (req, res) => {
                       totalTimeFromToto +
                       selectedTechStops.length * 0.5) +
                     selectedTechStops.length * 50000,
-                  totalPriceWithTechStopAndAdminMargin:
+                    totalPriceWithAdminMargin:
                     operator.operator.charges_per_hour *
                     (operator.aviapagesResponse.time.airway +
                       totalTimeFromToto +
